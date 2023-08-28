@@ -6,37 +6,6 @@ import TaskInput from './TaskInput';
 
 const MTaskOngoing = React.memo(TaskOngoing);
 
-const initialTasks = [
-    {
-        id: 0,
-        title: "2Sum Leetcode Easy",
-        link: "",
-        tags:['Stack','Recursion','dynamic programming', 'queues', 'binary search'],
-        created: Date.now(),
-        completed: -1,
-        exp: 4
-    },
-    {
-        id: 1,
-        title: "3Sum Leetcode medium iterative approach",
-        link: "https://www.typescriptlang.org/docs/handbook/basic-types.html",
-        tags:['Stack','Recursion'],
-        created: Date.now(),
-        completed: -1,
-        exp: 4
-    },
-]
-
-const defaultTask = [{
-    id: -999,
-    title: "2Sum Leetcode Easy",
-    link: "",
-    tags:['Stack','Recursion','dynamic programming', 'queues', 'binary search'],
-    created: Date.now(),
-    completed: -1,
-    exp: 4
-}]
-
 export default function Ongoing(){
 
     const [task, setTasks] = useState<OngoingTask[]>([]);
@@ -61,16 +30,17 @@ export default function Ongoing(){
             completed: -1,
             exp: exp
         };
+        console.log(`pushing to front: ${JSON.stringify(data)}`);
         newTasks.push(data);
         setTasks(newTasks);
         setTags([]);
         setAdding(false);
     }
 
-    function addTagDisplay(e: React.MouseEvent<HTMLButtonElement, MouseEvent>){
+    function addTagDisplay(e: string) {
         if(tags) {
             const prev = [...tags];
-            setTags([...prev, (e.currentTarget.parentElement!.previousSibling! as HTMLInputElement).value as string]);
+            setTags([...prev, e]);
             // console.log(tags);
         }
     }
