@@ -31,6 +31,7 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove}) => {
               isOpen={isOpen}
               leastDestructiveRef={cancelRef}
               onClose={onClose}
+              size={'sm'}
             >
               <AlertDialogOverlay>
                 <AlertDialogContent>
