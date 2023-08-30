@@ -1,8 +1,7 @@
 import React from 'react'
-import { Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure } from "@chakra-ui/react"
+import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure } from "@chakra-ui/react"
 import { MinusIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
-
 
 export type OngoingTask = {
     id: number;
@@ -64,13 +63,19 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove}) => {
             <DeleteTaskDialog />
         </Stack>
         <Stack>
-            <p className='ongoingTitle'>{task.title}</p>
-            <HStack wrap='wrap'>
+            <HStack>
+              <Checkbox size={'xl'}> </Checkbox>
+              <p className='ongoingTitle'>{task.title}</p>
+            </HStack>
+            <HStack wrap='wrap' mt={'.5em'}>
                 {task.tags.map((tg, id) => (
                 <Tag key={id}>{tg}</Tag>
                 ))} <Spacer /> <Tag>{task.exp}</Tag>
             </HStack>
         </Stack>
+        <Center>
+          <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='expand task'>...</Button>
+        </Center>
     </Box>
     )
 }

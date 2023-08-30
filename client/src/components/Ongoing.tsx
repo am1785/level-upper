@@ -30,7 +30,7 @@ export default function Ongoing(){
             completed: -1,
             exp: exp
         };
-        console.log(`pushing to front: ${JSON.stringify(data)}`);
+        // console.log(`pushing to front: ${JSON.stringify(data)}`);
         newTasks.push(data);
         setTasks(newTasks);
         setTags([]);

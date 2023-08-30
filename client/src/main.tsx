@@ -8,10 +8,34 @@ import './index.css'
 
 import { Routes, Route } from 'react-router'
 import {BrowserRouter} from "react-router-dom";
+import { checkboxAnatomy } from '@chakra-ui/anatomy'
+import { createMultiStyleConfigHelpers, defineStyle, extendTheme } from '@chakra-ui/react'
+
+const { definePartsStyle, defineMultiStyleConfig } =
+  createMultiStyleConfigHelpers(checkboxAnatomy.keys)
+
+const sizes = {
+  xl: definePartsStyle({
+    control: defineStyle({
+      boxSize: 12,
+      rounded: "full"
+    }),
+    label: defineStyle({
+      fontSize: "3xl",
+      marginLeft: 6
+    })
+  }),
+}
+
+export const checkboxTheme = defineMultiStyleConfig({ sizes })
+
+export const theme = extendTheme({
+  components: { Checkbox: checkboxTheme },
+})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-     <ChakraProvider>
+     <ChakraProvider theme={theme}>
         <BrowserRouter>
         <Root />
           <Routes>
