@@ -2,14 +2,15 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { ChakraProvider } from '@chakra-ui/react'
 import Root from './routes/root.tsx'
-import Footer from './components/Footer.tsx'
-import Ongoing from './components/Ongoing.tsx'
+import Ongoing from './components/home/Ongoing.tsx'
 import './index.css'
 
 import { Routes, Route } from 'react-router'
 import {BrowserRouter} from "react-router-dom";
 import { checkboxAnatomy } from '@chakra-ui/anatomy'
 import { createMultiStyleConfigHelpers, defineStyle, extendTheme } from '@chakra-ui/react'
+import Backlog from './components/home/Backlog.tsx'
+import Mylevel from './components/home/Mylevel.tsx'
 
 const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(checkboxAnatomy.keys)
@@ -40,10 +41,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Root />
           <Routes>
               <Route path="/" element= {<Ongoing />} />
-              <Route path="/backlog" element={<Ongoing />} />
-              <Route path="/mylevel" element={<Ongoing />} />
+              <Route path="/backlog" element={<Backlog />} />
+              <Route path="/mylevel" element={<Mylevel />} />
           </Routes>
-        <Footer />
         </BrowserRouter>
       </ChakraProvider>
   </React.StrictMode>,

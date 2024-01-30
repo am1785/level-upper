@@ -15,39 +15,51 @@ import {
     InputGroup,
     useToast,
     Heading,
+    Textarea,
   } from '@chakra-ui/react'
 import { AddIcon } from '@chakra-ui/icons';
+import { OngoingTask } from './TaskOngoing';
 
 export type InputProps = {
+    task: OngoingTask;
     onCancel: () => void;
     handleSubmit: () => void;
     setTitle: (e: React.FormEvent<HTMLInputElement>) => void;
+    setLink: (e: React.FormEvent<HTMLInputElement>) => void;
     setExp: (e: React.FormEvent<HTMLInputElement>) => void;
+    setContent: (e: React.FormEvent<HTMLTextAreaElement>) => void;
     setTag: (e: any) => void;
-    addingTags: boolean;
+    setRecurring: (e: React.FormEvent<HTMLInputElement>) => void;
 }
 
-const TaskInput: React.FC<InputProps> = ({handleSubmit, onCancel, setTitle, setExp, setTag}) => {
+const TaskInput: React.FC<InputProps> = ({task, handleSubmit, onCancel, setTitle, setExp, setTag, setContent, setLink, setRecurring}) => {
 
 type taskForm = {
 title: string;
-link?: string;
+link?: string[];
+content?: string;
 skills: Set<string> | null;
 exp: number;
+reccuring: boolean;
 }
 
 const [form, setForm] = useState<taskForm>({
 title : '',
-link : '',
+link : [],
+content : '',
 skills : new Set(),
-exp : -1
+exp : 1,
+reccuring: false
 });
 
 const [currTag, setCurrTag] = useState('');
+const [currLink, setCurrLink] = useState('');
 const [tags, setTags] = useState<Set<string> | null>();
+
 const toast = useToast();
 
-async function submitForm(){
+async function submitForm(event:any){
+  event.preventDefault();
   console.log(form);
   setCurrTag('');
 }
@@ -66,11 +78,11 @@ function handleKeyDown (event: React.KeyboardEvent) {
   }
 }
 
-function addTag(t:string) {
+function addTag(t:string) { // using a set to ensure no duplicate tags exist
   if(t.length > 0) {
   tags ? setTags(prev => new Set([...prev as Set<string>, t.toLowerCase()])) : setTags(new Set([t.toLowerCase()]));
   setCurrTag('');
-  setTag(t);
+  setTag(tags);
   updateForm({skills: new Set([...form.skills as Set<string>, t.toLowerCase()])});
   } else {
       toast({
@@ -84,16 +96,16 @@ function addTag(t:string) {
 }
 
 return (<>
-<Heading as={'h1'} size={'sm'}>add a task</Heading>
-<form onSubmit={() => {submitForm(); handleSubmit();}}>
+<Heading as={'h1'} size={'sm'}>add task</Heading>
+<form onSubmit={(e) => {submitForm(e); handleSubmit();}}>
 <FormControl isRequired>
   <FormLabel>title</FormLabel>
-  <Input isRequired type='text' placeholder='title' onChange={(e) => {setTitle(e); updateForm({title:e.currentTarget.value})}}/>
+  <Input isRequired defaultValue={task.title} type='text' placeholder='title' onChange={(e) => {setTitle(e); updateForm({title:e.currentTarget.value})}}/>
 </FormControl>
 
 <FormControl mt={'1em'}>
   <FormLabel>link</FormLabel>
-  <Input type='text' placeholder='any links'/>
+  <Input defaultValue={task.link} type='text' placeholder='any links' onChange={(e) => {setLink(e); updateForm({link:e.currentTarget.value})}}/>
 </FormControl>
 
 <FormControl mt={'1em'}>
@@ -106,7 +118,7 @@ return (<>
   <InputGroup>
     <Input type='text' value={currTag} placeholder='skill tags' onChange={(e)=>setCurrTag(e.currentTarget.value)} onKeyDown={(e) => {handleKeyDown(e);}} />
     <InputRightElement width={'5em'}>
-      <Button h='1.75rem' size='sm' onClick={(e) => {addTag(currTag)}}>
+      <Button h='1.75rem' size='sm' onClick={() => {addTag(currTag)}}>
       {/* <Button h='1.75rem' size='sm' onClick={(e) => setTag(e)}> */}
           + tag
       </Button>
@@ -116,17 +128,24 @@ return (<>
 
 <FormControl isRequired mt={'1em'}>
   <FormLabel>exp</FormLabel>
-  <NumberInput max={12} min={0} placeholder='exp from completion'>
-    <NumberInputField  onChange={(c) => {setExp(c); updateForm({exp: c.currentTarget.value})}}/>
+  <NumberInput max={12} min={1} placeholder='exp from completion'>
+    <NumberInputField defaultValue={task.exp} onChange={(c) => {setExp(c); updateForm({exp: c.currentTarget.value})}}/>
     <NumberInputStepper>
       <NumberIncrementStepper />
       <NumberDecrementStepper />
     </NumberInputStepper>
   </NumberInput>
 </FormControl>
-  <HStack justifyContent={'space-around'}>
-<Button sx={{marginTop: '1em'}} onMouseDown={()=>onCancel()}>cancel</Button>
-<Button type='submit' sx={{marginTop: '1em'}}><AddIcon sx={{marginRight:'10px'}}/>add</Button>
+
+<FormControl mt={'1em'}>
+  <FormLabel>content</FormLabel>
+  <Textarea defaultValue={task.content} placeholder='notes or code' onChange={(e)=>setContent(e)} />
+</FormControl>
+
+<HStack justifyContent={'space-around'}>
+    <Button sx={{marginTop: '1em'}} onMouseDown={()=>onCancel()}>cancel</Button>
+    {/* <Button sx={{marginTop: '1em'}} onMouseDown={()=>onCancel()}>send to backlog</Button> */}
+    <Button type='submit' sx={{marginTop: '1em'}}><AddIcon sx={{marginRight:'10px'}}/>submit</Button>
 </HStack>
 </form>
 </>)

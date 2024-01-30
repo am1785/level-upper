@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Box } from "@chakra-ui/react"
 import { AddIcon } from "@chakra-ui/icons"
-import TaskOngoing, { OngoingTask } from './TaskOngoing';
-import TaskInput from './TaskInput';
+import TaskOngoing, { OngoingTask } from '../task/TaskOngoing';
+import TaskInput from '../task/TaskInput';
 
 const MTaskOngoing = React.memo(TaskOngoing);
 
@@ -11,13 +11,19 @@ export default function Ongoing(){
     const [task, setTasks] = useState<OngoingTask[]>([]);
     const [adding, setAdding] = useState(false);
     const [title, setTitle] = useState("");
-    const [exp, setExp] = useState(0);
+    const [link, setLink] = useState("");
+    const [exp, setExp] = useState(1);
     const [tags, setTags] = useState<string[] | null>([]);
-    const [addingTags, setAddingTags] = useState(false);
+    const [content, setContent] = useState("");
+    const [editing, setEditing] = useState<number | boolean>(false); // state tracking whether the ongoing page is in edit mode
 
     /**
      * add an ongoing task to frontend only
      */
+
+    useEffect(() => {
+        console.log('useEffect triggered!');
+    }, [])
 
     const addTaskDisplay = () => {
         const newTasks = [...task];
@@ -34,6 +40,8 @@ export default function Ongoing(){
         newTasks.push(data);
         setTasks(newTasks);
         setTags([]);
+        setTitle("");
+        setLink("");
         setAdding(false);
     }
 
@@ -64,16 +72,42 @@ export default function Ongoing(){
         setTasks(newTasks);
     }
 
+    function expandTask(id:number){
+        setEditing(id);
+    }
+
+    function findTaskIdx (id:number | boolean) : number {
+        let ans = -999;
+        task.find((obj, i) => {
+            if(obj.id === id){
+                ans = i;
+            }
+        })
+
+        console.log(`findTaskIdx is: ${ans}`);
+
+        if(ans !== undefined){
+            return ans
+        } else{
+            return -999
+        }
+    }
+
     return (<>
     <main>
-        {task && task.length > 0 ? task.map((t, id)=>(
-            <MTaskOngoing key={id} task={t} onRemove={() => {removeTask(t.id)}}/>
-        )): <Box boxShadow='md' p='5' rounded='md' bg='white' mt='3' mb='3'>add some tasks to level up today!</Box>}
+        {!task || task.length == 0 && <Box boxShadow='md' p='5' rounded='md' bg='white' mt='3' mb='3'>add some tasks to level up today!</Box>}
+
+        {!editing && task && task.length > 0 && task.map((t, id)=>(
+            <MTaskOngoing key={id} task={t} onRemove={() => {removeTask(t.id)}} onExpand={()=> {expandTask(t.id)}} />
+        ))}
+
         <div style={{ marginTop:'1em'}}>
             {!adding ? <Button size="lg" onClick={() => setAdding(true)}><AddIcon sx={{marginRight:'10px'}}/>add</Button>
             : <Box boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3'>
-                <TaskInput handleSubmit={addTaskDisplay} onCancel={() => setAdding(false)} setTitle={(e)=>setTitle(e.currentTarget.value)} setExp={(e) => setExp(Number(e.currentTarget.value))} setTag={(e)=> addTagDisplay(e)} addingTags={addingTags} />
-                </Box>}
+                <TaskInput task= {{id: 0, title: title,link: link,tags: [...tags!],created: Date.now(),completed: -1,exp: exp}} editing={false}
+                handleSubmit={addTaskDisplay} onCancel={() => setAdding(false)}
+                setTitle={(e)=>setTitle(e.currentTarget.value)} setLink={(e) => setLink(e.currentTarget.value)} setExp={(e) => setExp(Number(e.currentTarget.value))} setTag={(e)=> addTagDisplay(e)} setContent={(e) => setContent(e.currentTarget.value)} />
+            </Box>}
         </div>
     </main>
     </>)

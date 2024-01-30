@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure } from "@chakra-ui/react"
 import { MinusIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
@@ -6,21 +6,24 @@ import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertD
 export type OngoingTask = {
     id: number;
     title: string;
-    link?: string;
+    link?: string[];
     content?: string;
     tags: string[];
-    created: number; // > 0
-    completed: number; // ongoing = 0, unstarted < 0, completed > 0
+    status: number; // ongoing = 0, backlog = -1, completed = 1
     exp: number;
+    recurring: boolean;
+    author: string;
 }
 
 export type OngoingTaskProps = {
     task: OngoingTask;
     onRemove: (id: number) => void;
+    onExpand: (id: number) => void;
 }
 
-const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove}) => {
-    function DeleteTaskDialog() {
+const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove, onExpand}) => {
+
+  function DeleteTaskDialog() {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const cancelRef = React.useRef(null)
         return (
@@ -57,7 +60,7 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove}) => {
         )
       }
 
-    return (
+    return (<>
         <Box key={task.id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3'>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
             <DeleteTaskDialog />
@@ -74,10 +77,12 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove}) => {
             </HStack>
         </Stack>
         <Center>
-          <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='expand task'>...</Button>
+          <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='expand task' onClick={()=> {onExpand(task.id);}}>...</Button>
         </Center>
     </Box>
-    )
+    {/* {editing && } */}
+
+    </>)
 }
 
 export default TaskOngoing;
