@@ -1,15 +1,15 @@
-import React, {useState} from 'react'
+import React from 'react'
 import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure } from "@chakra-ui/react"
-import { MinusIcon } from "@chakra-ui/icons"
+import { MinusIcon, EditIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 
 export type OngoingTask = {
     id: number;
     title: string;
-    link?: string[];
+    link?: string;
     content?: string;
-    tags: string[];
-    status: number; // ongoing = 0, backlog = -1, completed = 1
+    skills: string[];
+    status: string; // ongoing | backlog | completed
     exp: number;
     recurring: boolean;
     author: string;
@@ -61,7 +61,7 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove, onExpand}) => 
       }
 
     return (<>
-        <Box key={task.id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3'>
+        <Box key={task.id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3' backdropFilter='auto' backdropContrast='30%'>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
             <DeleteTaskDialog />
         </Stack>
@@ -71,13 +71,13 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove, onExpand}) => 
               <p className='ongoingTitle'>{task.title}</p>
             </HStack>
             <HStack wrap='wrap' mt={'.5em'}>
-                {task.tags.map((tg, id) => (
+                {task.skills.map((tg, id) => (
                 <Tag key={id}>{tg}</Tag>
                 ))} <Spacer /> <Tag>{task.exp}</Tag>
             </HStack>
         </Stack>
         <Center>
-          <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='expand task' onClick={()=> {onExpand(task.id);}}>...</Button>
+          <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='expand task' onClick={()=> {onExpand(task.id);}}><EditIcon /></Button>
         </Center>
     </Box>
     {/* {editing && } */}

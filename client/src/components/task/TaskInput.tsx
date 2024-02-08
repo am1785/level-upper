@@ -2,11 +2,7 @@ import React, { useState } from 'react'
 import {
     FormControl,
     Input,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper,
-    NumberDecrementStepper,
-    NumberIncrementStepper,
+    Select,
     FormLabel,
     Button,
     HStack,
@@ -16,52 +12,73 @@ import {
     useToast,
     Heading,
     Textarea,
+    Switch,
   } from '@chakra-ui/react'
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import { OngoingTask } from './TaskOngoing';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+// @ts-ignore
+import * as taskApi from '../../api/tasks.js';
 
 export type InputProps = {
-    task: OngoingTask;
+    recentTasks: OngoingTask[]; // for auto complete capabilities
     onCancel: () => void;
-    handleSubmit: () => void;
-    setTitle: (e: React.FormEvent<HTMLInputElement>) => void;
-    setLink: (e: React.FormEvent<HTMLInputElement>) => void;
-    setExp: (e: React.FormEvent<HTMLInputElement>) => void;
-    setContent: (e: React.FormEvent<HTMLTextAreaElement>) => void;
-    setTag: (e: any) => void;
-    setRecurring: (e: React.FormEvent<HTMLInputElement>) => void;
 }
 
-const TaskInput: React.FC<InputProps> = ({task, handleSubmit, onCancel, setTitle, setExp, setTag, setContent, setLink, setRecurring}) => {
+const TaskInput: React.FC<InputProps> = ({recentTasks, onCancel}) => {
+
+const queryClient = useQueryClient();
+
+const { mutate } = useMutation({
+  mutationFn: (variables: taskForm) => taskApi.addTask(variables),
+  mutationKey: ['addTask'],
+});
+
+const addTaskMutation = async () =>
+  await mutate(form, {
+    onSuccess(data, variables, context) {
+      queryClient.invalidateQueries({queryKey: ['addTask']});
+      queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+      onCancel();
+    },
+  })
 
 type taskForm = {
 title: string;
-link?: string[];
+link?: string;
 content?: string;
-skills: Set<string> | null;
+skills: string[];
 exp: number;
-reccuring: boolean;
+recurring: boolean;
+author: string;
+status: string;
 }
 
 const [form, setForm] = useState<taskForm>({
 title : '',
-link : [],
-content : '',
-skills : new Set(),
+link : '',
+content : "",
+skills : [],
 exp : 1,
-reccuring: false
+recurring: false,
+author: "default",
+status: "ongoing"
 });
 
 const [currTag, setCurrTag] = useState('');
-const [currLink, setCurrLink] = useState('');
 const [tags, setTags] = useState<Set<string> | null>();
 
 const toast = useToast();
 
 async function submitForm(event:any){
   event.preventDefault();
-  console.log(form);
+  // console.log(form);
+  // const data = await addTaskMutation.mutate(form);
+  addTaskMutation();
   setCurrTag('');
+  // console.log(data);
+  // onCancel();
 }
 
 function updateForm(value:any) {
@@ -82,8 +99,8 @@ function addTag(t:string) { // using a set to ensure no duplicate tags exist
   if(t.length > 0) {
   tags ? setTags(prev => new Set([...prev as Set<string>, t.toLowerCase()])) : setTags(new Set([t.toLowerCase()]));
   setCurrTag('');
-  setTag(tags);
-  updateForm({skills: new Set([...form.skills as Set<string>, t.toLowerCase()])});
+  const newTagsSet = new Set([...form.skills, t.toLowerCase()]);
+  updateForm({skills: Array.from(newTagsSet)});
   } else {
       toast({
         title: 'warning',
@@ -95,24 +112,33 @@ function addTag(t:string) { // using a set to ensure no duplicate tags exist
   }
 }
 
+function removeTag(tag:string) {
+  const newTags = tags;
+  newTags?.delete(tag);
+  // console.log(`deleted tag ${tag}`)
+  // console.log(`current set: ${ newTags ? new Array(...newTags).join(' ') : 'none'}`)
+  updateForm({skills:Array.from(newTags as Set<string>)});
+  setTags(newTags);
+}
+
 return (<>
 <Heading as={'h1'} size={'sm'}>add task</Heading>
-<form onSubmit={(e) => {submitForm(e); handleSubmit();}}>
+<form onSubmit={(e) => {submitForm(e);}}>
 <FormControl isRequired>
   <FormLabel>title</FormLabel>
-  <Input isRequired defaultValue={task.title} type='text' placeholder='title' onChange={(e) => {setTitle(e); updateForm({title:e.currentTarget.value})}}/>
+  <Input isRequired type='text' placeholder='title' onChange={(e) => {updateForm({title:e.currentTarget.value})}}/>
 </FormControl>
 
 <FormControl mt={'1em'}>
   <FormLabel>link</FormLabel>
-  <Input defaultValue={task.link} type='text' placeholder='any links' onChange={(e) => {setLink(e); updateForm({link:e.currentTarget.value})}}/>
+  <Input type='text' placeholder='any links' onChange={(e) => {updateForm({link:e.currentTarget.value})}}/>
 </FormControl>
 
 <FormControl mt={'1em'}>
   <FormLabel>skills</FormLabel>
   <HStack mb={'.5em'} wrap='wrap'>
   {tags ? Array.from(tags).map((t, id)=> (
-    <Tag key={id}>{t}</Tag>
+    <Tag key={id}>{t} <CloseIcon fontSize={'.5em'} sx={{ marginLeft: ".75em"}} onClick={()=>removeTag(t)} /></Tag>
   )): <Tag>add skill tags from below</Tag>}
   </HStack>
   <InputGroup>
@@ -128,18 +154,25 @@ return (<>
 
 <FormControl isRequired mt={'1em'}>
   <FormLabel>exp</FormLabel>
-  <NumberInput max={12} min={1} placeholder='exp from completion'>
-    <NumberInputField defaultValue={task.exp} onChange={(c) => {setExp(c); updateForm({exp: c.currentTarget.value})}}/>
-    <NumberInputStepper>
-      <NumberIncrementStepper />
-      <NumberDecrementStepper />
-    </NumberInputStepper>
-  </NumberInput>
+  <Select variant='filled' placeholder='' onChange={(e)=>updateForm({exp: Number(e.currentTarget.value)})}>
+    <option value='1'>XS (1)</option>
+    <option value='2'>S (2)</option>
+    <option value='4'>M (4)</option>
+    <option value='8'>L (8)</option>
+    <option value='12'>XL (12)</option>
+</Select>
 </FormControl>
 
 <FormControl mt={'1em'}>
   <FormLabel>content</FormLabel>
-  <Textarea defaultValue={task.content} placeholder='notes or code' onChange={(e)=>setContent(e)} />
+  <Textarea placeholder='notes or code' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
+</FormControl>
+
+<FormControl mt={'1em'} display='flex' alignItems='center'>
+  <FormLabel htmlFor='recurring' mb='0'>
+    Recurring?
+  </FormLabel>
+  <Switch id='recurring' onChange={(e)=>{updateForm({recurring:!form.recurring})}}/>
 </FormControl>
 
 <HStack justifyContent={'space-around'}>
