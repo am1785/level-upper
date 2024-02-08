@@ -19,21 +19,30 @@ import { OngoingTask } from './TaskOngoing';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // @ts-ignore
-import * as taskApi from '../../api/tasks.js'
+import * as taskApi from '../../api/tasks.js';
 
 export type InputProps = {
-    task: OngoingTask;
+    recentTasks: OngoingTask[]; // for auto complete capabilities
     onCancel: () => void;
 }
 
-const TaskInput: React.FC<InputProps> = ({task, onCancel}) => {
+const TaskInput: React.FC<InputProps> = ({recentTasks, onCancel}) => {
 
 const queryClient = useQueryClient();
 
-const addTaskMutation = useMutation({
+const { mutate } = useMutation({
   mutationFn: (variables: taskForm) => taskApi.addTask(variables),
   mutationKey: ['addTask'],
 });
+
+const addTaskMutation = async () =>
+  await mutate(form, {
+    onSuccess(data, variables, context) {
+      queryClient.invalidateQueries({queryKey: ['addTask']});
+      queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+      onCancel();
+    },
+  })
 
 type taskForm = {
 title: string;
@@ -64,11 +73,12 @@ const toast = useToast();
 
 async function submitForm(event:any){
   event.preventDefault();
-  console.log(form);
-  const data = await addTaskMutation.mutate(form);
-  queryClient.invalidateQueries({queryKey: ['addTask']});
+  // console.log(form);
+  // const data = await addTaskMutation.mutate(form);
+  addTaskMutation();
   setCurrTag('');
-  console.log(data);
+  // console.log(data);
+  // onCancel();
 }
 
 function updateForm(value:any) {

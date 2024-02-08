@@ -1,8 +1,8 @@
 // api routes for react-query
 const BASE_URL = 'http://localhost:5001/tasks';
 
-export const fetchTasks = async () => {
-  const response = await fetch(BASE_URL);
+export const fetchTasks = async (author) => {
+  const response = await fetch(BASE_URL + '/' + author);
   const data = await response.json();
   return data;
 };
@@ -16,7 +16,6 @@ export const addTask = async (newTask) => {
     body: JSON.stringify(newTask),
   });
   const data = await response.json();
-  // queryClient.invalidateQueries(['addTask']);
   return data;
 };
 
