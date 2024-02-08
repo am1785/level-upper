@@ -6,14 +6,14 @@ const taskSchema = new Schema({
         type: String,
         required: true
     },
-    link: [String],
-    content: {
+    link: {
         type: String,
-        required: false
+        required: false,
     },
-    tags: [{type: String}],
+    skills: [{type: String}],
     status: {
-        type: Number, enum: [-1, 0, 1],
+        // type: Number, enum: [-1, 0, 1],
+        type: String,
         required: true,
     }, // ongoing = 0, backlog = -1, completed = 1
     exp: {

@@ -6,7 +6,7 @@ import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertD
 export type OngoingTask = {
     id: number;
     title: string;
-    link?: string[];
+    link?: string;
     content?: string;
     tags: string[];
     status: number; // ongoing = 0, backlog = -1, completed = 1
@@ -61,7 +61,7 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove, onExpand}) => 
       }
 
     return (<>
-        <Box key={task.id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3'>
+        <Box key={task.id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3' backdropFilter='auto' backdropContrast='30%'>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
             <DeleteTaskDialog />
         </Stack>

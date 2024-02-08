@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 const dbo = require("./db/conn");
 
-// app.use(require("./routes/tasks"));
+app.use(require("./routes/tasks"));
 
 // start the Express server
 app.listen(PORT, async () => {
