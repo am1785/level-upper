@@ -16,19 +16,19 @@ export default function Root() {
         <nav>
         <Tabs w="100%" align='center' variant='line'>
         <TabList>
-        <Flex w="100%" justify='space-around'>
+        <Flex w="100%" justify='space-around' mb='4'>
             <Tab border='0px'>
-                <ChakraLink as={ReactRouterLink} to='/' fontSize='lg' _activeLink={{ fontWeight: "bold" }}>
+                <ChakraLink as={ReactRouterLink} to='/' fontSize='md' _activeLink={{ fontWeight: "bold" }}>
                     ongoing
                 </ChakraLink>
             </Tab>
             <Tab border='0px'>
-                <ChakraLink as={ReactRouterLink} to='/backlog' fontSize='lg'>
+                <ChakraLink as={ReactRouterLink} to='/backlog' fontSize='md'>
                     backlog
                 </ChakraLink>
             </Tab>
             <Tab border='0px'>
-                <ChakraLink as={ReactRouterLink} to='/mylevel' fontSize='lg'>
+                <ChakraLink as={ReactRouterLink} to='/mylevel' fontSize='md'>
                     my level
                 </ChakraLink>
             </Tab>

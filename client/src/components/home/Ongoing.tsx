@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Button, Box } from "@chakra-ui/react"
 import { AddIcon } from "@chakra-ui/icons"
 import TaskOngoing, { OngoingTask } from '../task/TaskOngoing';
 import TaskInput from '../task/TaskInput';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 // @ts-ignore
 import * as taskApi from '../../api/tasks.js';
 
@@ -18,20 +18,27 @@ export default function Ongoing(){
 
     const user = 'default'; // TODO: get current user based on auth
 
-    /**
-     * track rerendering
-     */
-
-    useEffect(() => {
-        console.log('useEffect triggered!');
-    }, [])
-
     // function to check if the task is ongoing (updated today)
     const isSameDay = (d:Date) => {
     return currDate.getDate() === d.getDate()
     && currDate.getMonth() === d.getMonth()
     && currDate.getFullYear() === d.getFullYear();
     }
+
+    const queryClient = useQueryClient();
+
+    const { mutate } = useMutation({
+        mutationFn: (_id:string) => taskApi.deleteTask(_id),
+        mutationKey: ['deleteTask'],
+      });
+
+      const removeTaskMutation = async (_id:string) =>
+        await mutate(_id, {
+          onSuccess(data, variables, context) {
+            queryClient.invalidateQueries({queryKey: ['deleteTask']});
+            queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+          },
+        })
 
     const { status, data, error } = useQuery({
         queryKey: ['fetchOngoingTasks'],
@@ -53,13 +60,14 @@ export default function Ongoing(){
             if(isSameDay(updateDate)) {
                 ongoingTasks.push(d);
             } else {
-                console.log(`not ongoing task: ${d.title}`);
+                // console.log(`not ongoing task: ${d.title}`);
             }
         });
       }
 
     function removeTask(_id:string) {
         console.log(`removing task _id: ${_id}`);
+        removeTaskMutation(_id);
     }
     return (<>
     <main>

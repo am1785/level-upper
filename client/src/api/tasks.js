@@ -19,17 +19,29 @@ export const addTask = async (newTask) => {
   return data;
 };
 
-export const editTask = async (taskId) => {
-    const response = await fetch(BASE_URL, {
+export const editTask = async (taskId, updateData) => {
+    const response = await fetch(BASE_URL + '/' + taskId, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newTask),
+      body: JSON.stringify(updateData),
     });
     const data = await response.json();
     return data;
   };
+
+  // export const finishTask = async (taskId) => {
+  //   const response = await fetch(BASE_URL + '/' + taskId, {
+  //     method: 'PUT',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(updateData),
+  //   });
+  //   const data = await response.json();
+  //   return data;
+  // };
 
 export const deleteTask = async (taskId) => {
   const response = await fetch(`${BASE_URL}/${taskId}`, {
