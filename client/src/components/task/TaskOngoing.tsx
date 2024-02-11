@@ -3,8 +3,7 @@ import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, 
 import { MinusIcon, EditIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 import { useQueryClient, useMutation, UseMutationResult } from '@tanstack/react-query'
-// @ts-ignore
-import * as taskApi from '../../api/tasks.js';
+import * as taskApi from '../../api/tasks';
 
 export type OngoingTask = {
     _id: string;
@@ -16,15 +15,18 @@ export type OngoingTask = {
     exp: number;
     recurring: boolean;
     author: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export type OngoingTaskProps = {
     task: OngoingTask;
+    date: Date;
     onRemove: (id: string) => void;
     onExpand: (id: string) => void;
 }
 
-const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove, onExpand}) => {
+const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, onRemove, onExpand}) => {
 
 // Assuming types for _id and update
 type TaskId = string;
@@ -40,7 +42,9 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
   await mutate({ _id, update }, {
     onSuccess: (data, variables, context) => {
       // Handle success if needed
-      queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']})
+      queryClient.invalidateQueries({queryKey: ['deleteTask']});
+      queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+      queryClient.invalidateQueries({queryKey: ['fetchSkills']});
     },
     // Add other options as needed
   });
@@ -49,9 +53,15 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
   function DeleteTaskDialog() {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const cancelRef = React.useRef(null)
+        const diff = Math.abs(new Date(task.createdAt).valueOf() - date.valueOf());
+        const hr_diff =  Math.floor((diff/1000)/60/60);
+        const min_diff = Math.floor((diff/1000)/60) - hr_diff * 60;
         return (
           <>
+            <HStack>
+            <Box fontSize={'xs'} textColor={'gray.500'} className='ongoingAddedWhen' sx={{position:'absolute', top:'-14px', right:'10px'}}>{hr_diff > 0 ? `${hr_diff} hr ${min_diff} min`: `${min_diff} min`} ago</Box>
             <IconButton sx={{position:'absolute', top:'-12px', right:'-12px'}} size={'13px'} variant='solid' colorScheme='red' isRound={true} aria-label='delete task' fontSize='13px' icon={<MinusIcon />} onClick={onOpen} />
+            </HStack>
             <AlertDialog
               isOpen={isOpen}
               leastDestructiveRef={cancelRef}
@@ -84,13 +94,13 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
       }
 
     return (<>
-        <Box key={task._id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3' backdropFilter='auto' backdropContrast='30%'>
+        <Box className={task.status === 'complete' ? 'completeTask' : 'ongoingTask'} key={task._id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3' backdropFilter='auto' backdropContrast='30%'>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
             <DeleteTaskDialog />
         </Stack>
         <Stack>
             <HStack>
-              <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation(task._id, {status: e.target.checked ? "complete" : "ongoing"})}> </Checkbox>
+              <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation(task._id, {author: "default", status: e.target.checked ? "complete" : "ongoing"})}> </Checkbox>
               <p className='ongoingTitle'>{task.title}</p>
             </HStack>
             <HStack wrap='wrap' mt={'.5em'}>

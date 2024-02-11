@@ -23,12 +23,12 @@ export default function Root() {
                 </ChakraLink>
             </Tab>
             <Tab border='0px'>
-                <ChakraLink as={ReactRouterLink} to='/backlog' fontSize='md'>
+                <ChakraLink as={ReactRouterLink} to='/backlog' fontSize='md' _activeLink={{ fontWeight: "bold" }}>
                     backlog
                 </ChakraLink>
             </Tab>
             <Tab border='0px'>
-                <ChakraLink as={ReactRouterLink} to='/mylevel' fontSize='md'>
+                <ChakraLink as={ReactRouterLink} to='/mylevel' fontSize='md' _activeLink={{ fontWeight: "bold" }}>
                     my level
                 </ChakraLink>
             </Tab>

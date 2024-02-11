@@ -17,9 +17,7 @@ import {
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import { OngoingTask } from './TaskOngoing';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-// @ts-ignore
-import * as taskApi from '../../api/tasks.js';
+import * as taskApi from '../../api/tasks';
 
 export type InputProps = {
     recentTasks: OngoingTask[]; // for auto complete capabilities
@@ -73,12 +71,7 @@ const toast = useToast();
 
 async function submitForm(event:any){
   event.preventDefault();
-  // console.log(form);
-  // const data = await addTaskMutation.mutate(form);
   addTaskMutation();
-  setCurrTag('');
-  // console.log(data);
-  // onCancel();
 }
 
 function updateForm(value:any) {
@@ -91,7 +84,6 @@ function handleKeyDown (event: React.KeyboardEvent) {
   if(event.key === 'Enter'){
     event.preventDefault();
     addTag(currTag);
-    setCurrTag('');
   }
 }
 

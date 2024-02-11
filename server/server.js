@@ -11,6 +11,7 @@ app.use(express.json());
 const dbo = require("./db/conn");
 
 app.use(require("./routes/tasks"));
+app.use(require("./routes/skills"));
 
 // start the Express server
 app.listen(PORT, async () => {

@@ -1,13 +1,13 @@
 // api routes for react-query
 const BASE_URL = 'http://localhost:5001/tasks';
 
-export const fetchTasks = async (author) => {
+export const fetchTasks = async (author:string) => {
   const response = await fetch(BASE_URL + '/' + author);
   const data = await response.json();
   return data;
 };
 
-export const addTask = async (newTask) => {
+export const addTask = async (newTask:any) => {
   const response = await fetch(BASE_URL, {
     method: 'POST',
     headers: {
@@ -19,7 +19,7 @@ export const addTask = async (newTask) => {
   return data;
 };
 
-export const editTask = async (taskId, updateData) => {
+export const editTask = async (taskId:string, updateData:object) => {
     const response = await fetch(BASE_URL + '/' + taskId, {
       method: 'PUT',
       headers: {
@@ -43,7 +43,7 @@ export const editTask = async (taskId, updateData) => {
   //   return data;
   // };
 
-export const deleteTask = async (taskId) => {
+export const deleteTask = async (taskId:string) => {
   const response = await fetch(`${BASE_URL}/${taskId}`, {
     method: 'DELETE',
   });
