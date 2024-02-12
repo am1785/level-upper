@@ -1,9 +1,10 @@
 import React, {useCallback} from 'react'
 import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure } from "@chakra-ui/react"
-import { MinusIcon, EditIcon } from "@chakra-ui/icons"
+import { MinusIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 import { useQueryClient, useMutation, UseMutationResult } from '@tanstack/react-query'
 import * as taskApi from '../../api/tasks';
+import TaskEditModal from './TaskEditModal'
 
 export type OngoingTask = {
     _id: string;
@@ -110,7 +111,7 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
             </HStack>
         </Stack>
         <Center>
-          <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='expand task' onClick={()=> {onExpand(task._id);}}><EditIcon /></Button>
+            <TaskEditModal task={task} />
         </Center>
     </Box>
     {/* {editing && } */}

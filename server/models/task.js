@@ -10,6 +10,10 @@ const taskSchema = new Schema({
         type: String,
         required: false,
     },
+    content: {
+        type: String,
+        required: false,
+    },
     skills: [{type: String}],
     status: {
         // type: Number, enum: [-1, 0, 1],

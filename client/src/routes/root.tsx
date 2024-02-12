@@ -9,9 +9,9 @@ import '../App.css'
 export default function Root() {
     const location = useLocation();
 
-    const isOngoingActive = ["/", "/"].includes(location.pathname)
-    const isBacklogActive = ["/backlog"].includes(location.pathname)
-    const isMyLevelActive = ["/mylevel"].includes(location.pathname)
+    // const isOngoingActive = ["/", "/"].includes(location.pathname)
+    // const isBacklogActive = ["/backlog"].includes(location.pathname)
+    // const isMyLevelActive = ["/mylevel"].includes(location.pathname)
 
     return (
       <>
@@ -19,7 +19,7 @@ export default function Root() {
           <Image className="logo" src={logo} alt="levelupper Logo" />
         </Flex>
         <nav>
-          <Tabs w="100%" align="center" variant="unstyled">
+          <Tabs w="100%" align="center" variant="soft-rounded">
             <TabList>
               <Flex w="100%" justify="space-around" mb="4">
                 <Tab border="0px">
@@ -27,7 +27,7 @@ export default function Root() {
                     as={ReactRouterLink}
                     to="/"
                     fontSize="md"
-                    sx={isOngoingActive ? {color: "gray.800", fontWeight: "600", backgroundColor: "gray.100", rounded:"full", p:"6px"} : {color: "gray.500", fontWeight: "500"}}
+                    // sx={isOngoingActive ? {color: "gray.800", fontWeight: "600", backgroundColor: "gray.100", rounded:"full", p:"6px"} : {color: "gray.500", fontWeight: "500"}}
                   >
                     ongoing
                   </ChakraLink>
@@ -37,7 +37,7 @@ export default function Root() {
                     as={ReactRouterLink}
                     to="/backlog"
                     fontSize="md"
-                    sx={isBacklogActive ? {color: "gray.800", fontWeight: "600", backgroundColor: "gray.100", rounded:"full", p:"6px"} : {color: "gray.500", fontWeight: "500"}}
+                    // sx={isBacklogActive ? {color: "gray.800", fontWeight: "600", backgroundColor: "gray.100", rounded:"full", p:"6px"} : {color: "gray.500", fontWeight: "500"}}
                   >
                     backlog
                   </ChakraLink>
@@ -47,7 +47,7 @@ export default function Root() {
                     as={ReactRouterLink}
                     to="/mylevel"
                     fontSize="md"
-                    sx={isMyLevelActive ? {color: "gray.800", fontWeight: "600", backgroundColor: "gray.100", rounded:"full", p:"6px"} : {color: "gray.500", fontWeight: "500"}}
+                    // sx={isMyLevelActive ? {color: "gray.800", fontWeight: "600", backgroundColor: "gray.100", rounded:"full", p:"6px"} : {color: "gray.500", fontWeight: "500"}}
                   >
                     my level
                   </ChakraLink>

@@ -1,5 +1,5 @@
 // api routes for react-query
-const BASE_URL = 'http://localhost:5001/tasks';
+const BASE_URL = 'http://192.168.1.8:5001/tasks';
 
 export const fetchTasks = async (author:string) => {
   const response = await fetch(BASE_URL + '/' + author);

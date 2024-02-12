@@ -14,7 +14,7 @@ import {
     Textarea,
     Switch,
   } from '@chakra-ui/react'
-import { AddIcon, CloseIcon } from '@chakra-ui/icons';
+import { AddIcon, CloseIcon, EditIcon } from '@chakra-ui/icons';
 import { OngoingTask } from './TaskOngoing';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
@@ -23,6 +23,17 @@ export type InputProps = {
     recentTasks: OngoingTask[]; // for auto complete capabilities
     onCancel: () => void;
 }
+
+export type taskForm = {
+  title: string;
+  link?: string;
+  content?: string;
+  skills: string[];
+  exp: number;
+  recurring: boolean;
+  author: string;
+  status: string;
+  }
 
 const TaskInput: React.FC<InputProps> = ({recentTasks, onCancel}) => {
 
@@ -41,17 +52,6 @@ const addTaskMutation = async () =>
       onCancel();
     },
   })
-
-type taskForm = {
-title: string;
-link?: string;
-content?: string;
-skills: string[];
-exp: number;
-recurring: boolean;
-author: string;
-status: string;
-}
 
 const [form, setForm] = useState<taskForm>({
 title : '',
@@ -157,7 +157,7 @@ return (<>
 
 <FormControl mt={'1em'}>
   <FormLabel>content</FormLabel>
-  <Textarea placeholder='notes or code' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
+  <Textarea maxLength={4000} placeholder='notes or code, try using Markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
 </FormControl>
 
 <FormControl mt={'1em'} display='flex' alignItems='center'>

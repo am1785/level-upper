@@ -18,9 +18,10 @@ router.post('/tasks', async (req, res) => {
 // get all recent tasks from an author / user
 router.get('/tasks/:author', async (req, res) => {
     try {
-        const tasks = await Task.find({author: req.params.author}).limit(24).sort([['_id', -1]])
-        // .limit( 24 )
-        // .sort( '-createdAt' )
+        // console.log('an incoming request');
+        // console.log(req.rawHeaders);
+        // console.log('-----------');
+        const tasks = await Task.find({author: req.params.author}).limit(48).sort([['_id', -1]])
         res.status(200).json(tasks)
     } catch (err) {
         res.status(400).json({error: err.message})
