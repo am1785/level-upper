@@ -1,34 +1,68 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure } from "@chakra-ui/react"
-import { MinusIcon, EditIcon } from "@chakra-ui/icons"
+import { MinusIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
+import { useQueryClient, useMutation, UseMutationResult } from '@tanstack/react-query'
+import * as taskApi from '../../api/tasks';
+import TaskEditModal from './TaskEditModal'
 
 export type OngoingTask = {
-    id: number;
+    _id: string;
     title: string;
     link?: string;
     content?: string;
     skills: string[];
-    status: string; // ongoing | backlog | completed
+    status: string; // ongoing | completed
     exp: number;
     recurring: boolean;
     author: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export type OngoingTaskProps = {
     task: OngoingTask;
-    onRemove: (id: number) => void;
-    onExpand: (id: number) => void;
+    date: Date;
+    onRemove: (id: string) => void;
+    onExpand: (id: string) => void;
 }
 
-const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove, onExpand}) => {
+const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, onRemove, onExpand}) => {
+
+// Assuming types for _id and update
+type TaskId = string;
+type TaskUpdate = any; // Adjust this type according to your data structure
+
+const queryClient = useQueryClient();
+const { mutate }: UseMutationResult<void, unknown, { _id: TaskId; update: TaskUpdate }> = useMutation({
+  mutationFn: ({ _id, update }) => taskApi.editTask(_id, update),
+  mutationKey: ['editTask'],
+});
+
+const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
+  await mutate({ _id, update }, {
+    onSuccess: (data, variables, context) => {
+      // Handle success if needed
+      queryClient.invalidateQueries({queryKey: ['deleteTask']});
+      queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+      queryClient.invalidateQueries({queryKey: ['fetchSkills']});
+    },
+    // Add other options as needed
+  });
+};
 
   function DeleteTaskDialog() {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const cancelRef = React.useRef(null)
+        const diff = Math.abs(new Date(task.createdAt).valueOf() - date.valueOf());
+        const hr_diff =  Math.floor((diff/1000)/60/60);
+        const min_diff = Math.floor((diff/1000)/60) - hr_diff * 60;
         return (
           <>
+            <HStack>
+            <Box fontSize={'xs'} textColor={'gray.500'} className='ongoingAddedWhen' sx={{position:'absolute', top:'-14px', right:'10px'}}>{hr_diff > 0 ? `${hr_diff} hr ${min_diff} min`: `${min_diff} min`} ago</Box>
             <IconButton sx={{position:'absolute', top:'-12px', right:'-12px'}} size={'13px'} variant='solid' colorScheme='red' isRound={true} aria-label='delete task' fontSize='13px' icon={<MinusIcon />} onClick={onOpen} />
+            </HStack>
             <AlertDialog
               isOpen={isOpen}
               leastDestructiveRef={cancelRef}
@@ -49,7 +83,7 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove, onExpand}) => 
                     <Button ref={cancelRef} onClick={onClose}>
                       Cancel
                     </Button>
-                    <Button colorScheme='red' onClick={() => {onRemove(task.id); onClose();}} ml={2}>
+                    <Button colorScheme='red' onClick={() => {onRemove(task._id); onClose();}} ml={2}>
                       Delete
                     </Button>
                   </AlertDialogFooter>
@@ -61,13 +95,13 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove, onExpand}) => 
       }
 
     return (<>
-        <Box key={task.id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3' backdropFilter='auto' backdropContrast='30%'>
+        <Box className={task.status === 'complete' ? 'completeTask' : 'ongoingTask'} key={task._id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3' backdropFilter='auto' backdropContrast='30%'>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
             <DeleteTaskDialog />
         </Stack>
         <Stack>
             <HStack>
-              <Checkbox size={'xl'}> </Checkbox>
+              <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation(task._id, {author: "default", status: e.target.checked ? "complete" : "ongoing"})}> </Checkbox>
               <p className='ongoingTitle'>{task.title}</p>
             </HStack>
             <HStack wrap='wrap' mt={'.5em'}>
@@ -77,7 +111,7 @@ const TaskOngoing: React.FC<OngoingTaskProps> = ({task, onRemove, onExpand}) => 
             </HStack>
         </Stack>
         <Center>
-          <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='expand task' onClick={()=> {onExpand(task.id);}}><EditIcon /></Button>
+            <TaskEditModal task={task} />
         </Center>
     </Box>
     {/* {editing && } */}
