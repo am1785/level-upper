@@ -157,7 +157,7 @@ return (<>
 
 <FormControl mt={'1em'}>
   <FormLabel>content</FormLabel>
-  <Textarea maxLength={4000} placeholder='notes or code, try using Markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
+  <Textarea maxLength={4000} placeholder='plain text or markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
 </FormControl>
 
 <FormControl mt={'1em'} display='flex' alignItems='center'>

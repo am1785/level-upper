@@ -21,7 +21,14 @@ router.get('/tasks/:author', async (req, res) => {
         // console.log('an incoming request');
         // console.log(req.rawHeaders);
         // console.log('-----------');
-        const tasks = await Task.find({author: req.params.author}).limit(48).sort([['_id', -1]])
+
+        // req.query.page ? console.log(`page: ${req.query.page}`) : console.log('page not found');
+        let tasks = []
+        if(req.query.all) {
+            tasks = await Task.find({author: req.params.author}).sort([['_id', -1]])
+        } else {
+            tasks = await Task.find({author: req.params.author}).limit(48).sort([['_id', -1]])
+        }
         res.status(200).json(tasks)
     } catch (err) {
         res.status(400).json({error: err.message})

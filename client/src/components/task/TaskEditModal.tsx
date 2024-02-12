@@ -167,7 +167,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task}) => {
 
                 <FormControl mt={'1em'}>
                 <FormLabel>content</FormLabel>
-                <Textarea maxLength={4000} h={'15em'} defaultValue={task.content} placeholder='notes or code' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
+                <Textarea maxLength={4000} h={'15em'} defaultValue={task.content} placeholder='plain text or markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
                 </FormControl>
 
                 <FormControl mt={'1em'} display='flex' alignItems='center'>
