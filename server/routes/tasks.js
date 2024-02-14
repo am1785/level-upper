@@ -27,11 +27,14 @@ router.get('/tasks/:author', async (req, res) => {
         if(req.query.all) {
             tasks = await Task.find({author: req.params.author}).sort([['_id', -1]])
         } else {
-            tasks = await Task.find({author: req.params.author}).limit(48).sort([['_id', -1]])
+            tasks = await Task.find({author: req.params.author, createdAt: {
+                $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // get tasks within 7 days
+                $lt: new Date()
+            }}).limit(150).sort([['_id', -1]]);
         }
-        res.status(200).json(tasks)
+        res.status(200).json(tasks);
     } catch (err) {
-        res.status(400).json({error: err.message})
+        res.status(400).json({error: err.message});
     }
 })
 

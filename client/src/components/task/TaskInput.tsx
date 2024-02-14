@@ -169,7 +169,7 @@ return (<>
 <HStack justifyContent={'space-around'}>
     <Button sx={{marginTop: '1em'}} onMouseDown={()=>onCancel()}>cancel</Button>
     {/* <Button sx={{marginTop: '1em'}} onMouseDown={()=>onCancel()}>send to backlog</Button> */}
-    <Button type='submit' sx={{marginTop: '1em'}}><AddIcon sx={{marginRight:'10px'}}/>submit</Button>
+    <Button type='submit' colorScheme='blue' sx={{marginTop: '1em'}}><AddIcon sx={{marginRight:'10px'}}/>submit</Button>
 </HStack>
 </form>
 </>)
