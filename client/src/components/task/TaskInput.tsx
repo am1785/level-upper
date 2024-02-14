@@ -114,7 +114,6 @@ function removeTag(tag:string) {
 }
 
 return (<>
-<Heading as={'h1'} size={'sm'}>add task</Heading>
 <form onSubmit={(e) => {submitForm(e);}}>
 <FormControl isRequired>
   <FormLabel>title</FormLabel>

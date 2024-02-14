@@ -55,12 +55,13 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const cancelRef = React.useRef(null)
         const diff = Math.abs(new Date(task.createdAt).valueOf() - date.valueOf());
-        const hr_diff =  Math.floor((diff/1000)/60/60);
+        const day_diff = Math.floor((diff/1000)/60/60/24);
+        const hr_diff =  Math.floor((diff/1000)/60/60) - day_diff * 24;
         const min_diff = Math.floor((diff/1000)/60) - hr_diff * 60;
         return (
           <>
             <HStack>
-            <Box fontSize={'xs'} textColor={'gray.500'} className='ongoingAddedWhen' sx={{position:'absolute', top:'-14px', right:'10px'}}>{hr_diff > 0 ? `${hr_diff} hr ${min_diff} min`: `${min_diff} min`} ago</Box>
+            <Box fontSize={'xs'} textColor={'gray.500'} className='ongoingAddedWhen' sx={{position:'absolute', top:'-14px', right:'10px'}}>{day_diff > 0 ? `${day_diff} day ${hr_diff} hr`: hr_diff > 0 ? `${hr_diff} hr ${min_diff} min`: `${min_diff} min`} ago</Box>
             <IconButton sx={{position:'absolute', top:'-12px', right:'-12px'}} size={'13px'} variant='solid' colorScheme='red' isRound={true} aria-label='delete task' fontSize='13px' icon={<MinusIcon />} onClick={onOpen} />
             </HStack>
             <AlertDialog
