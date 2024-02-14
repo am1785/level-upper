@@ -40,7 +40,7 @@ const TaskTable: React.FC<TaskTableProps> = ({data}) => {
         {
             accessorKey: "status",
             header: "status",
-            cell: (props:any) => <Text color={props.getValue() === 'complete' ? 'green.400': 'red.400'}>{props.getValue()}</Text>
+            cell: (props:any) => <Text color={props.getValue() === 'complete' ? 'blue.400': 'red.300'}>{props.getValue()}</Text>
         }
     ], []);
 
