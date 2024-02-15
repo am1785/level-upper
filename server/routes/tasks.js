@@ -46,7 +46,7 @@ router.put('/tasks/:_id', async (req, res) => {
     try {
       const updatedTask = await Task.findByIdAndUpdate(taskId, updatedTaskData, { new: true });
 
-      // logic for updating user skill set when a status change is detected
+      // logic for updating user skill set when a status change is detected, not needed due to aggregate function approach
     //   if (updatedTask.status !== updatedTaskData.status) {
     //     if (updatedTask.status === "complete") {
     //         try {

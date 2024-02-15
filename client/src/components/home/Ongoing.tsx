@@ -15,6 +15,7 @@ export default function Ongoing(){
     let ongoingTasks: OngoingTask[] = [];
     let weeklyTasks: OngoingTask[] = [];
     let weeklyExp = 0;
+    let weeklyComplete = 0;
     const [adding, setAdding] = useState(false);
 
     const user = 'default'; // TODO: get current user based on auth
@@ -88,9 +89,15 @@ export default function Ongoing(){
               const diff = dayDiff(createdDate)
               if(diff === 0) {
                   ongoingTasks.push(d);
+                  if(d.status === "complete") {
+                    weeklyExp += d.exp;
+                    weeklyComplete += 1}
               } else if(diff <= 7) {
                 weeklyTasks.push(d);
-                weeklyExp += d.exp;
+                if(d.status === "complete") {
+                  weeklyExp += d.exp;
+                  weeklyComplete += 1
+                }
               } else {
                 // console.log(`not ongoing task: ${d.title}`);
               }
@@ -142,7 +149,7 @@ export default function Ongoing(){
                 <HStack justify={'end'}>
                   <Text>complete</Text>
                   <CheckIcon color={'blue.400'}/>
-                  <Text>{weeklyTasks.length}</Text>
+                  <Text>{weeklyComplete}</Text>
                 </HStack>
                 <HStack justify={'end'}>
                   <Text>earned</Text>

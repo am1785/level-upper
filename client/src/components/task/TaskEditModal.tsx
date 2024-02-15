@@ -7,13 +7,14 @@ import { useQueryClient, UseMutationResult, useMutation } from "@tanstack/react-
 import * as taskApi from '../../api/tasks'
 
 export type TaskEditProps = {
-    task: OngoingTask
+    task: OngoingTask,
+    className: string,
 }
 
 type TaskId = string;
 type TaskUpdate = any;
 
-const TaskEditModal:React.FC<TaskEditProps> = ({task}) => {
+const TaskEditModal:React.FC<TaskEditProps> = ({task, className}) => {
 
     const queryClient = useQueryClient();
     const { mutate }: UseMutationResult<void, unknown, { _id: TaskId; update: TaskUpdate }> = useMutation({
@@ -34,18 +35,18 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task}) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [form, setForm] = useState<taskForm>({
-        title : task.title,
-        link : task.link,
-        content : task.content,
-        skills : task.skills,
-        exp : task.exp,
-        recurring: task.recurring,
-        author: task.author,
-        status: task.status
+        title : task?.title,
+        link : task?.link,
+        content : task?.content,
+        skills : task?.skills,
+        exp : task?.exp,
+        recurring: task?.recurring,
+        author: task?.author,
+        status: task?.status
         });
 
         const [currTag, setCurrTag] = useState('');
-        const [tags, setTags] = useState(new Set(task.skills));
+        const [tags, setTags] = useState(new Set(task?.skills));
         const toast = useToast();
 
     async function submitForm(event:any){
@@ -117,7 +118,8 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task}) => {
       }
     return (
         <>
-          <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='edit task' onClick={onOpen}><EditIcon /></Button>
+          {className === 'ongoingEdit' ? <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='edit task' onClick={onOpen}><EditIcon /></Button> :
+          <Button aria-label='edit task' onClick={onOpen}><EditIcon /></Button>}
           <Modal isOpen={isOpen} onClose={onClose} isCentered size={'lg'} scrollBehavior={'inside'}>
             <ModalOverlay />
             <ModalContent>
@@ -128,12 +130,12 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task}) => {
               <form onSubmit={(e) => {resetForm(); submitForm(e);}}>
                 <FormControl isRequired>
                 <FormLabel>title</FormLabel>
-                <Input isRequired type='text' placeholder='title' defaultValue={task.title} onChange={(e) => {updateForm({title:e.currentTarget.value})}}/>
+                <Input isRequired type='text' placeholder='title' defaultValue={task?.title} onChange={(e) => {updateForm({title:e.currentTarget.value})}}/>
                 </FormControl>
 
                 <FormControl mt={'1em'}>
                 <FormLabel>link</FormLabel>
-                <Input type='text' placeholder='any links' defaultValue={task.link} onChange={(e) => {updateForm({link:e.currentTarget.value})}}/>
+                <Input type='text' placeholder='any links' defaultValue={task?.link} onChange={(e) => {updateForm({link:e.currentTarget.value})}}/>
                 </FormControl>
 
                 <FormControl mt={'1em'}>
@@ -156,7 +158,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task}) => {
 
                 <FormControl isRequired mt={'1em'}>
                 <FormLabel>exp</FormLabel>
-                <Select variant='filled' defaultValue={task.exp} placeholder='' onChange={(e)=>updateForm({exp: Number(e.currentTarget.value)})}>
+                <Select variant='filled' defaultValue={task?.exp} placeholder='' onChange={(e)=>updateForm({exp: Number(e.currentTarget.value)})}>
                     <option value='1'>XS (1)</option>
                     <option value='2'>S (2)</option>
                     <option value='4'>M (4)</option>
@@ -167,15 +169,23 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task}) => {
 
                 <FormControl mt={'1em'}>
                 <FormLabel>content</FormLabel>
-                <Textarea maxLength={4000} h={'15em'} defaultValue={task.content} placeholder='plain text or markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
+                <Textarea maxLength={4000} h={'15em'} defaultValue={task?.content} placeholder='plain text or markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
                 </FormControl>
 
                 <FormControl mt={'1em'} display='flex' alignItems='center'>
                 <FormLabel htmlFor='recurring' mb='0'>
                     Recurring?
                 </FormLabel>
-                <Switch defaultChecked={task.recurring} id='recurring' onChange={(e)=>{updateForm({recurring:!form.recurring})}}/>
+                <Switch defaultChecked={task?.recurring} id='recurring' onChange={(e)=>{updateForm({recurring:!form.recurring})}}/>
                 </FormControl>
+
+                <FormControl mt={'1em'} display='flex' alignItems='center'>
+                <FormLabel htmlFor='status' mb='0'>
+                    Complete?
+                </FormLabel>
+                <Switch defaultChecked={task?.status === "complete"} id='status' onChange={(e)=>{updateForm({status: task?.status === "complete" ? "ongoing" : "complete"})}}/>
+                </FormControl>
+
                 <HStack justifyContent={'space-around'} mt={'2em'}>
                     <Button variant='ghost' onClick={() => {resetForm(); onClose()}}>Close</Button>
                     <Button type='submit' colorScheme='blue' onClick={onClose} mr={3}>Save</Button>
