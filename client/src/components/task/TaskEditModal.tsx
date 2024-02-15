@@ -9,14 +9,15 @@ import * as taskApi from '../../api/tasks'
 export type TaskEditProps = {
     task: OngoingTask,
     className: string,
+    onSuccess: () => void,
 }
 
 type TaskId = string;
 type TaskUpdate = any;
 
-const TaskEditModal:React.FC<TaskEditProps> = ({task, className}) => {
+const TaskEditModal:React.FC<TaskEditProps> = ({task, className, onSuccess}) => {
 
-    const queryClient = useQueryClient();
+    // const queryClient = useQueryClient();
     const { mutate }: UseMutationResult<void, unknown, { _id: TaskId; update: TaskUpdate }> = useMutation({
     mutationFn: ({ _id, update }) => taskApi.editTask(_id, update),
     mutationKey: ['editTask'],
@@ -26,8 +27,9 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className}) => {
     await mutate({ _id, update }, {
         onSuccess: (data, variables, context) => {
         // Handle success if needed
-        queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
-        queryClient.invalidateQueries({queryKey: ['fetchSkills']});
+        // queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+        // queryClient.invalidateQueries({queryKey: ['fetchSkills']});
+        onSuccess();
         },
         // Add other options as needed
     });
@@ -52,7 +54,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className}) => {
     async function submitForm(event:any){
         event.preventDefault();
         // if edited, submit, else don't submit
-        JSON.stringify(form) !== JSON.stringify({
+        const edited = JSON.stringify(form) !== JSON.stringify({
             title : task.title,
             link : task.link,
             content : task.content,
@@ -61,8 +63,14 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className}) => {
             recurring: task.recurring,
             author: task.author,
             status: task.status
-            }) ?
-        editTaskMutation(task._id, form) : resetForm();
+            })
+            // (editTaskMutation(task._id, form); resetForm()) : resetForm();
+        if(edited) {
+          editTaskMutation(task._id, form);
+          resetForm();
+        } else {
+          resetForm();
+        }
       }
 
       function updateForm(value:any) {
@@ -72,18 +80,19 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className}) => {
       }
 
       function resetForm() {
-        setTags(new Set(task.skills));
         setCurrTag('');
-        updateForm({
-            title : task.title,
-            link : task.link,
-            content : task.content,
-            skills : task.skills,
-            exp : task.exp,
-            recurring: task.recurring,
-            author: task.author,
-            status: task.status
-            });
+        // updateForm({
+        //     title : task.title,
+        //     link : task.link,
+        //     content : task.content,
+        //     skills : task.skills,
+        //     exp : task.exp,
+        //     recurring: task.recurring,
+        //     author: task.author,
+        //     status: task.status
+        //     });
+        // setTags(new Set(task.skills));
+        onClose();
       }
 
       function handleKeyDown (event: React.KeyboardEvent) {
@@ -183,12 +192,12 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className}) => {
                 <FormLabel htmlFor='status' mb='0'>
                     Complete?
                 </FormLabel>
-                <Switch defaultChecked={task?.status === "complete"} id='status' onChange={(e)=>{updateForm({status: task?.status === "complete" ? "ongoing" : "complete"})}}/>
+                <Switch defaultChecked={task?.status === "complete"} id='status' onChange={(e)=>{ updateForm({status: e.target.checked ? "complete" : "ongoing"})}}/>
                 </FormControl>
 
                 <HStack justifyContent={'space-around'} mt={'2em'}>
-                    <Button variant='ghost' onClick={() => {resetForm(); onClose()}}>Close</Button>
-                    <Button type='submit' colorScheme='blue' onClick={onClose} mr={3}>Save</Button>
+                    <Button variant='ghost' onClick={() => {resetForm()}}>Close</Button>
+                    <Button type='submit' colorScheme='blue' mr={3}>Save</Button>
                 </HStack>
                 </form>
               </ModalBody>

@@ -12,6 +12,7 @@ import { checkboxAnatomy } from '@chakra-ui/anatomy'
 import { createMultiStyleConfigHelpers, defineStyle, extendTheme } from '@chakra-ui/react'
 import Backlog from './components/home/Backlog.tsx'
 import Mylevel from './components/home/Mylevel.tsx'
+import TaskView from './components/backlog/TaskView.tsx'
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="/" element = {<Ongoing />} />
               <Route path="/backlog" element = {<Backlog />} />
               <Route path="/mylevel" element = {<Mylevel />} />
+              <Route path="/view/:task_id" element = {<TaskView />} />
           </Routes>
         </BrowserRouter>
       </ChakraProvider>

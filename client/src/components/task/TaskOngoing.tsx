@@ -112,7 +112,8 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
             </HStack>
         </Stack>
         <Center>
-            <TaskEditModal task={task} className='ongoingEdit'/>
+            <TaskEditModal onSuccess={() => { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+            queryClient.invalidateQueries({queryKey: ['fetchSkills']});}} task={task} className='ongoingEdit'/>
         </Center>
     </Box>
     {/* {editing && } */}

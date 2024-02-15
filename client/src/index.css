@@ -60,6 +60,16 @@ button:focus-visible {
   opacity: 90%;
 }
 
+.markdownView > * {
+  text-align: start;
+}
+
+.markdownView h2{
+  font-size: large;
+  font-weight: 500;
+  margin-bottom: 1em;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

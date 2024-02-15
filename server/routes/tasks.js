@@ -23,6 +23,7 @@ router.get('/tasks/:author', async (req, res) => {
         // console.log('-----------');
 
         // req.query.page ? console.log(`page: ${req.query.page}`) : console.log('page not found');
+        // console.log('getting many records')
         let tasks = []
         if(req.query.all) {
             tasks = await Task.find({author: req.params.author}).sort([['_id', -1]])
@@ -33,6 +34,17 @@ router.get('/tasks/:author', async (req, res) => {
             }}).limit(150).sort([['_id', -1]]);
         }
         res.status(200).json(tasks);
+    } catch (err) {
+        res.status(400).json({error: err.message});
+    }
+})
+
+// get a single task based on task _id
+router.get('/tasks/view/:_id', async (req, res) => {
+    console.log('getting a single record')
+    try {
+        const task = await Task.findOne({_id: req.params._id})
+        res.status(200).json(task);
     } catch (err) {
         res.status(400).json({error: err.message});
     }
