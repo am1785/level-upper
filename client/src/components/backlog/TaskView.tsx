@@ -72,7 +72,7 @@ const TaskView: React.FC = () => {
         <CardFooter justifyContent={'end'}>
             <Stack divider={<StackDivider />} spacing='4'>
                 <Box>
-                    <Text fontSize={'xs'}>updated {new Date(data.updatedAt).toLocaleDateString()} {new Date(data.updatedAt).toLocaleDateString()}</Text>
+                    <Text fontSize={'xs'}>updated {new Date(data.updatedAt).toLocaleDateString()} {new Date(data.updatedAt).toLocaleTimeString()}</Text>
                 </Box>
             </Stack>
         </CardFooter>

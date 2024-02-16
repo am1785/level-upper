@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { OngoingTask } from "./TaskOngoing"
-import { Button, FormControl, FormLabel, HStack, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Switch, Tag, Textarea, useDisclosure, useToast } from "@chakra-ui/react"
-import { CloseIcon, EditIcon } from "@chakra-ui/icons"
+import { Button, FormControl, FormLabel, HStack, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Switch, Tag, Textarea, useDisclosure, useToast } from "@chakra-ui/react"
+import { CloseIcon, EditIcon, ArrowUpDownIcon } from "@chakra-ui/icons"
 import { taskForm } from "./TaskInput"
 import { useQueryClient, UseMutationResult, useMutation } from "@tanstack/react-query"
 import * as taskApi from '../../api/tasks'
@@ -47,6 +47,8 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className, onSuccess}) => 
         status: task?.status
         });
 
+    const [expanded, setExpanded] = useState(false);
+
         const [currTag, setCurrTag] = useState('');
         const [tags, setTags] = useState(new Set(task?.skills));
         const toast = useToast();
@@ -81,17 +83,6 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className, onSuccess}) => 
 
       function resetForm() {
         setCurrTag('');
-        // updateForm({
-        //     title : task.title,
-        //     link : task.link,
-        //     content : task.content,
-        //     skills : task.skills,
-        //     exp : task.exp,
-        //     recurring: task.recurring,
-        //     author: task.author,
-        //     status: task.status
-        //     });
-        // setTags(new Set(task.skills));
         onClose();
       }
 
@@ -125,13 +116,17 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className, onSuccess}) => 
         updateForm({skills:Array.from(newTags as Set<string>)});
         setTags(newTags);
       }
+
+      function toggleExpand(){
+        setExpanded((prev) => !prev) // functional way of updating value
+      }
     return (
         <>
-          {className === 'ongoingEdit' ? <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='edit task' onClick={onOpen}><EditIcon /></Button> :
-          <Button aria-label='edit task' onClick={onOpen}><EditIcon /></Button>}
+        {className === 'ongoingEdit' ? <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='edit task' onClick={onOpen}><EditIcon /></Button> :
+        <Button aria-label='edit task' onClick={onOpen}><EditIcon /></Button>}
           <Modal isOpen={isOpen} onClose={onClose} isCentered size={'lg'} scrollBehavior={'inside'}>
             <ModalOverlay />
-            <ModalContent>
+            <ModalContent maxW={expanded ? "100%" : "90%"} maxH={expanded ? "100%" : "90%"}>
               <ModalHeader>Edit Task</ModalHeader>
               <ModalCloseButton />
 
@@ -178,8 +173,11 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className, onSuccess}) => 
 
                 <FormControl mt={'1em'}>
                 <FormLabel>content</FormLabel>
-                <Textarea maxLength={4000} h={'15em'} defaultValue={task?.content} placeholder='plain text or markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
+                <Textarea maxLength={4000} h={expanded ? '30em' : '15em'} defaultValue={task?.content} placeholder='plain text or markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
                 </FormControl>
+                <HStack justifyContent='end' mt={'.5em'}>
+                  <Button onClick={toggleExpand} size={'sm'} _active={{transform: 'scale(1.2)'}} colorScheme={expanded ? "blue" : "gray"}><ArrowUpDownIcon /></Button>
+                </HStack>
 
                 <FormControl mt={'1em'} display='flex' alignItems='center'>
                 <FormLabel htmlFor='recurring' mb='0'>

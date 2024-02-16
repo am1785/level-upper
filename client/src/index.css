@@ -70,6 +70,10 @@ button:focus-visible {
   margin-bottom: 1em;
 }
 
+.markdownView a{
+  color: #747bff;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

@@ -41,7 +41,6 @@ router.get('/tasks/:author', async (req, res) => {
 
 // get a single task based on task _id
 router.get('/tasks/view/:_id', async (req, res) => {
-    console.log('getting a single record')
     try {
         const task = await Task.findOne({_id: req.params._id})
         res.status(200).json(task);
