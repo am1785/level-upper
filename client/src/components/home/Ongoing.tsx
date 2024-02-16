@@ -14,6 +14,8 @@ export default function Ongoing(){
     let recentTasks: OngoingTask[] = [];
     let ongoingTasks: OngoingTask[] = [];
     let weeklyTasks: OngoingTask[] = [];
+    let ongoingExp = 0;
+    let ongoingComplete = 0;
     let weeklyExp = 0;
     let weeklyComplete = 0;
     const [adding, setAdding] = useState(false);
@@ -91,6 +93,8 @@ export default function Ongoing(){
                   ongoingTasks.push(d);
                   if(d.status === "complete") {
                     weeklyExp += d.exp;
+                    ongoingExp += d.exp;
+                    ongoingComplete += 1;
                     weeklyComplete += 1}
               } else if(diff <= 7) {
                 weeklyTasks.push(d);
@@ -115,6 +119,19 @@ export default function Ongoing(){
     <main>
         {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack> : status === "error" ? <Text>{error.message}</Text>:null}
         {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' bg='white' mt='3' mb='3'>add some tasks to level up today!</Box>}
+
+        {!!ongoingTasks && <Box fontSize={'xs'} mb={'5'}>
+                <HStack justify={'end'}>
+                  <Text>complete</Text>
+                  <CheckIcon color={'blue.400'}/>
+                  <Text>{ongoingComplete}</Text>
+                </HStack>
+                <HStack justify={'end'}>
+                  <Text>earned</Text>
+                  <StarIcon color={'yellow.400'}/>
+                  <Text>{ongoingExp}</Text>
+                </HStack>
+              </Box>}
 
         {ongoingTasks && ongoingTasks.length > 0 && ongoingTasks.map((t:any)=>(
             <MTaskOngoing key={t._id} task={t} date={currDate} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
