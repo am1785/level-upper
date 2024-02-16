@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack } from "@chakra-ui/react"
-import { AddIcon } from "@chakra-ui/icons"
+import { Center, Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack } from "@chakra-ui/react"
+import { CheckIcon, StarIcon, AddIcon } from "@chakra-ui/icons"
 import TaskOngoing, { OngoingTask } from '../task/TaskOngoing';
 import TaskInput from '../task/TaskInput';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,6 +14,8 @@ export default function Ongoing(){
     let recentTasks: OngoingTask[] = [];
     let ongoingTasks: OngoingTask[] = [];
     let weeklyTasks: OngoingTask[] = [];
+    let weeklyExp = 0;
+    let weeklyComplete = 0;
     const [adding, setAdding] = useState(false);
 
     const user = 'default'; // TODO: get current user based on auth
@@ -87,8 +89,15 @@ export default function Ongoing(){
               const diff = dayDiff(createdDate)
               if(diff === 0) {
                   ongoingTasks.push(d);
+                  if(d.status === "complete") {
+                    weeklyExp += d.exp;
+                    weeklyComplete += 1}
               } else if(diff <= 7) {
                 weeklyTasks.push(d);
+                if(d.status === "complete") {
+                  weeklyExp += d.exp;
+                  weeklyComplete += 1
+                }
               } else {
                 // console.log(`not ongoing task: ${d.title}`);
               }
@@ -136,7 +145,19 @@ export default function Ongoing(){
               </AccordionButton>
             </h2>
             <AccordionPanel pb={4}>
-              {!!weeklyTasks.length &&weeklyTasks.map((t: OngoingTask) => ( // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
+              {!!weeklyTasks && <Box fontSize={'xs'} mb={'5'}>
+                <HStack justify={'end'}>
+                  <Text>complete</Text>
+                  <CheckIcon color={'blue.400'}/>
+                  <Text>{weeklyComplete}</Text>
+                </HStack>
+                <HStack justify={'end'}>
+                  <Text>earned</Text>
+                  <StarIcon color={'yellow.400'}/>
+                  <Text>{weeklyExp}</Text>
+                </HStack>
+              </Box>}
+              {!!weeklyTasks.length && weeklyTasks.map((t: OngoingTask) => ( // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
                 <MTaskOngoing key={t._id} task={t} date={currDate} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
               ))}
             </AccordionPanel>

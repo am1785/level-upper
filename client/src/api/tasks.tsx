@@ -7,6 +7,12 @@ export const fetchTasks = async (author:string) => {
   return data;
 };
 
+export const fetchView = async (_id:string) => {
+  const response = await fetch(BASE_URL + '/view/' + _id);
+  const data = await response.json();
+  return data;
+};
+
 export const addTask = async (newTask:any) => {
   const response = await fetch(BASE_URL, {
     method: 'POST',

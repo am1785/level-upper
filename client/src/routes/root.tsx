@@ -9,10 +9,6 @@ import '../App.css'
 export default function Root() {
     const location = useLocation();
 
-    // const isOngoingActive = ["/", "/"].includes(location.pathname)
-    // const isBacklogActive = ["/backlog"].includes(location.pathname)
-    // const isMyLevelActive = ["/mylevel"].includes(location.pathname)
-
     return (
       <>
         <Flex align="center" justify="center">

@@ -23,15 +23,29 @@ router.get('/tasks/:author', async (req, res) => {
         // console.log('-----------');
 
         // req.query.page ? console.log(`page: ${req.query.page}`) : console.log('page not found');
+        // console.log('getting many records')
         let tasks = []
         if(req.query.all) {
             tasks = await Task.find({author: req.params.author}).sort([['_id', -1]])
         } else {
-            tasks = await Task.find({author: req.params.author}).limit(48).sort([['_id', -1]])
+            tasks = await Task.find({author: req.params.author, createdAt: {
+                $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // get tasks within 7 days
+                $lt: new Date()
+            }}).limit(150).sort([['_id', -1]]);
         }
-        res.status(200).json(tasks)
+        res.status(200).json(tasks);
     } catch (err) {
-        res.status(400).json({error: err.message})
+        res.status(400).json({error: err.message});
+    }
+})
+
+// get a single task based on task _id
+router.get('/tasks/view/:_id', async (req, res) => {
+    try {
+        const task = await Task.findOne({_id: req.params._id})
+        res.status(200).json(task);
+    } catch (err) {
+        res.status(400).json({error: err.message});
     }
 })
 
@@ -43,7 +57,7 @@ router.put('/tasks/:_id', async (req, res) => {
     try {
       const updatedTask = await Task.findByIdAndUpdate(taskId, updatedTaskData, { new: true });
 
-      // logic for updating user skill set when a status change is detected
+      // logic for updating user skill set when a status change is detected, not needed due to aggregate function approach
     //   if (updatedTask.status !== updatedTaskData.status) {
     //     if (updatedTask.status === "complete") {
     //         try {

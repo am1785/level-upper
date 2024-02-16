@@ -12,7 +12,7 @@ export type OngoingTask = {
     link?: string;
     content?: string;
     skills: string[];
-    status: string; // ongoing | completed
+    status: string; // ongoing | complete
     exp: number;
     recurring: boolean;
     author: string;
@@ -51,7 +51,7 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
   });
 };
 
-  function DeleteTaskDialog() {
+ function DeleteTaskDialog() {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const cancelRef = React.useRef(null)
         const diff = Math.abs(new Date(task.createdAt).valueOf() - date.valueOf());
@@ -112,7 +112,8 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
             </HStack>
         </Stack>
         <Center>
-            <TaskEditModal task={task} />
+            <TaskEditModal onSuccess={() => { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+            queryClient.invalidateQueries({queryKey: ['fetchSkills']});}} task={task} className='ongoingEdit'/>
         </Center>
     </Box>
     {/* {editing && } */}
