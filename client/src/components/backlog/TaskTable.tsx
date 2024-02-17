@@ -44,12 +44,12 @@ export type CellTaskDelete = {
     _id: string;
 }
 
-const EXP_MAP = new Map([
-    [1, 'xs'],
-    [2, 's'],
-    [4, 'm'],
-    [8, 'l'],
-    [12, 'xl'],
+export const EXP_MAP = new Map([
+    [1, Object({size: 'xs', variant:'solid', colorScheme: 'gray'})],
+    [2, Object({size: 's', variant:'solid', colorScheme: 'blue'})],
+    [4, Object({size: 'm', variant:'solid', colorScheme: 'teal'})],
+    [8, Object({size: 'l', variant:'solid', colorScheme: 'orange'})],
+    [12, Object({size: 'xl', variant:'solid', colorScheme: 'purple'})],
 ])
 
 const TaskTable: React.FC= () => {
@@ -128,11 +128,7 @@ const TaskTable: React.FC= () => {
             accessorKey: "title",
             header: "title",
             cell: (props:any) => <HStack>
-                <Center w='20px' h='20px' bg='red.300' color='white' rounded={'4'}>
-                    <Box as='span' fontSize='sm' fontWeight={'600'}>
-                    {data && data[props.row.id] && EXP_MAP.get(data[props.row.id]['exp'])}
-                    </Box>
-                </Center>
+                {data && data[props.row.id] && <Tag colorScheme={EXP_MAP.get(data[props.row.id]['exp'])['colorScheme']}>{EXP_MAP.get(data[props.row.id]['exp'])['size']}</Tag>}
                 <Text>
                 {props.getValue()}
                 </Text>

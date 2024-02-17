@@ -5,6 +5,7 @@ import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertD
 import { useQueryClient, useMutation, UseMutationResult } from '@tanstack/react-query'
 import * as taskApi from '../../api/tasks';
 import TaskEditModal from './TaskEditModal'
+import { EXP_MAP } from '../backlog/TaskTable';
 
 export type OngoingTask = {
     _id: string;
@@ -108,7 +109,7 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
             <HStack wrap='wrap' mt={'.5em'}>
                 {task.skills.map((tg, id) => (
                 <Tag key={id}>{tg}</Tag>
-                ))} <Spacer /> <Tag>{task.exp}</Tag>
+                ))} <Spacer /> <Tag colorScheme={EXP_MAP.get(task.exp)['colorScheme']}>{task.exp}</Tag>
             </HStack>
         </Stack>
         <Center>
