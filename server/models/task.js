@@ -31,7 +31,8 @@ const taskSchema = new Schema({
     author: {
         type: String,
         required: true
-    }
+    },
+    task_collection: [{type: String}]
   }, { timestamps: true });
 
 module.exports = mongoose.model('task', taskSchema);

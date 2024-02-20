@@ -24,14 +24,12 @@ import {
     HStack,
     IconButton,
     useDisclosure,
-    Box,
-    Center,
     Skeleton,
     Stack,
 } from "@chakra-ui/react";
 import React from "react";
 import { useReactTable, getCoreRowModel, flexRender, Cell } from '@tanstack/react-table';
-import {ChevronDownIcon, MinusIcon, ViewIcon} from '@chakra-ui/icons';
+import {ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
 import { OngoingTask } from "../task/TaskOngoing";
 import TaskEditModal from "../task/TaskEditModal";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -120,14 +118,10 @@ const TaskTable: React.FC= () => {
 
     const columns = React.useMemo(() => [
         {
-            accessorKey: "createdAt",
-            header: "date",
-            cell: (props:any) => <Text>{new Date(props.getValue()).toLocaleDateString()}</Text>
-        },
-        {
             accessorKey: "title",
             header: "title",
             cell: (props:any) => <HStack>
+                {data && data[props.row.id] && data[props.row.id]['status'] === "complete" ? <CheckCircleIcon color={'green.400'} /> : <SpinnerIcon />}
                 {data && data[props.row.id] && <Tag colorScheme={EXP_MAP.get(data[props.row.id]['exp'])['colorScheme']}>{EXP_MAP.get(data[props.row.id]['exp'])['size']}</Tag>}
                 <Text>
                 {props.getValue()}
@@ -144,28 +138,29 @@ const TaskTable: React.FC= () => {
             size: 400
         },
         {
-            accessorKey: "status",
-            header: "status",
-            cell: (props:any) => <Text color={props.getValue() === 'complete' ? 'blue.400': 'red.300'}>{props.getValue()}</Text>
-        },
+          accessorKey: "_id",
+          header: "actions",
+          size: 100,
+          cell:  (prop:any) => <Popover>
+          <PopoverTrigger>
+            <Button><ChevronDownIcon /></Button>
+          </PopoverTrigger>
+          <PopoverContent w={'15em'}>
+            <PopoverArrow />
+            <PopoverCloseButton />
+          <PopoverBody>
+              {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(data[prop.row.id]._id)}/></HStack> <= an arrow function here WILL DELETE EVERYTHING  */}
+              {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(prop.getValue())}></DeleteTaskDialog></HStack> <= this still DELETES EVERYTHING WTF */}
+              <HStack justify={'start'}><Button colorScheme="teal" onClick={() => getView(prop.getValue())}><ViewIcon /></Button><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
+          </PopoverBody>
+          </PopoverContent>
+        </Popover>
+      },
         {
-            accessorKey: "_id",
-            header: "actions",
-            cell:  (prop:any) => <Popover>
-            <PopoverTrigger>
-              <Button><ChevronDownIcon /></Button>
-            </PopoverTrigger>
-            <PopoverContent w={'15em'}>
-              <PopoverArrow />
-              <PopoverCloseButton />
-            <PopoverBody>
-                {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(data[prop.row.id]._id)}/></HStack> <= an arrow function here WILL DELETE EVERYTHING  */}
-                {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(prop.getValue())}></DeleteTaskDialog></HStack> <= this still DELETES EVERYTHING WTF */}
-                <HStack justify={'start'}><Button colorScheme="teal" onClick={() => getView(prop.getValue())}><ViewIcon /></Button><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
-            </PopoverBody>
-            </PopoverContent>
-          </Popover>
-        }
+          accessorKey: "createdAt",
+          header: "date",
+          cell: (props:any) => <Text>{new Date(props.getValue()).toLocaleDateString()}</Text>
+      },
     ], [data]);
 
     const table = useReactTable({
