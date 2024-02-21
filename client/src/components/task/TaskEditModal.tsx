@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { OngoingTask } from "./TaskOngoing"
-import { Button, FormControl, FormLabel, HStack, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Switch, Tag, Textarea, useDisclosure, useToast } from "@chakra-ui/react"
+import { Button, FormControl, FormLabel, HStack, IconButton, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Switch, Tag, Textarea, useDisclosure, useToast } from "@chakra-ui/react"
 import { CloseIcon, EditIcon, ArrowUpDownIcon } from "@chakra-ui/icons"
 import { taskForm } from "./TaskInput"
 import { useQueryClient, UseMutationResult, useMutation } from "@tanstack/react-query"
@@ -122,8 +122,8 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task, className, onSuccess}) => 
       }
     return (
         <>
-        {className === 'ongoingEdit' ? <Button mt={'1em'} mb={'-.25em'} h={"1.25em"} w={"75%"} aria-label='edit task' onClick={onOpen}><EditIcon /></Button> :
-        <Button aria-label='edit task' onClick={onOpen}><EditIcon /></Button>}
+        {className === 'ongoingEdit' ? <IconButton p={'2px'} bgColor={'whiteAlpha.100'} size={'s'} aria-label='edit task' onClick={onOpen} icon={<EditIcon />}></IconButton> :
+        <IconButton size="md" aria-label='edit task' onClick={onOpen} icon={<EditIcon stroke={'gray'}/>}></IconButton>}
           <Modal isOpen={isOpen} onClose={onClose} isCentered size={'lg'} scrollBehavior={'inside'}>
             <ModalOverlay />
             <ModalContent maxW={expanded ? "100%" : "90%"} maxH={expanded ? "100%" : "90%"}>

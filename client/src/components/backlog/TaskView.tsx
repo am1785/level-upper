@@ -33,7 +33,7 @@ const TaskView: React.FC = () => {
         <CardBody>
             <Stack divider={<StackDivider />} spacing='4'>
             <Box>
-                <Link pt={'2'} fontSize={'sm'} textColor={'blue.500'}>
+                <Link href={data.link} pt={'2'} fontSize={'sm'} textColor={'blue.500'}>
                     {data.link}
                 </Link>
             </Box>

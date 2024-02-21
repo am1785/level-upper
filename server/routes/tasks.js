@@ -18,12 +18,6 @@ router.post('/tasks', async (req, res) => {
 // get all recent tasks from an author / user
 router.get('/tasks/:author', async (req, res) => {
     try {
-        // console.log('an incoming request');
-        // console.log(req.rawHeaders);
-        // console.log('-----------');
-
-        // req.query.page ? console.log(`page: ${req.query.page}`) : console.log('page not found');
-        // console.log('getting many records')
         let tasks = []
         if(req.query.all) {
             tasks = await Task.find({author: req.params.author}).sort([['_id', -1]])
@@ -38,6 +32,16 @@ router.get('/tasks/:author', async (req, res) => {
         res.status(400).json({error: err.message});
     }
 })
+
+// get all distinct collections from a user
+router.get('/tasks/collections/:author', async (req, res) => {
+    try {
+        const collections = await Task.distinct("task_collection", {author: req.params.author});
+        res.status(200).json(collections);
+    } catch (err) {
+        res.status(400).json({error: err.message});
+    }
+});
 
 // get a single task based on task _id
 router.get('/tasks/view/:_id', async (req, res) => {
