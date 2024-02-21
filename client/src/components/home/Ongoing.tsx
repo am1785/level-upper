@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack } from "@chakra-ui/react"
+import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack, IconButton } from "@chakra-ui/react"
 import { StarIcon, AddIcon, CheckCircleIcon } from "@chakra-ui/icons"
 import TaskOngoing, { OngoingTask } from '../task/TaskOngoing';
 import TaskInput from '../task/TaskInput';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
 
-const MTaskOngoing = React.memo(TaskOngoing);
+// const MTaskOngoing = React.memo(TaskOngoing);
 
 export default function Ongoing(){
 
@@ -62,7 +62,7 @@ export default function Ongoing(){
         queryKey: ['fetchOngoingTasks', { user }],
       })
 
-    const collectionData = useQuery({
+    const { status:collectionStatus, data:collectionData, error:collectionError } = useQuery({
         queryFn: () => taskApi.fetchCollections(user),
         queryKey: ['fetchCollections', { user }],
     })
@@ -137,12 +137,12 @@ export default function Ongoing(){
                 </HStack>
               </Box>}
 
-        {ongoingTasks && ongoingTasks.length > 0 && ongoingTasks.map((t:any)=>(
-            <MTaskOngoing key={t._id} task={t} date={currDate} collections={collectionData.data} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
+        {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=>(
+            <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
         ))}
 
         <Box mt={'1em'}>
-        <Button onClick={onOpen}><AddIcon mr={'.5em'}/>add task</Button>
+        <IconButton onClick={onOpen} icon={<AddIcon/>} aria-label='addTask' colorScheme='blue' isRound={true}></IconButton>
         <Modal isOpen={isOpen} onClose={onClose} isCentered size={'lg'} scrollBehavior={'inside'}>
             <ModalOverlay />
             <ModalContent>
@@ -176,8 +176,8 @@ export default function Ongoing(){
                   <Text>{weeklyExp}</Text>
                 </HStack>
               </Box>}
-              {!!weeklyTasks.length && weeklyTasks.map((t: OngoingTask) => ( // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
-                <MTaskOngoing key={t._id} task={t} date={currDate} collections={collectionData.data} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
+              {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => ( // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
+                <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
               ))}
             </AccordionPanel>
           </AccordionItem>

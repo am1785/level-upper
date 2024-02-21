@@ -18,7 +18,7 @@ export type OngoingTask = {
     exp: number;
     recurring: boolean;
     author: string;
-    task_collections: string[];
+    task_collection: string[];
     createdAt: string;
     updatedAt: string;
 }
@@ -31,7 +31,11 @@ export type OngoingTaskProps = {
     onExpand: (id: string) => void;
 }
 
-const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, onRemove, onExpand}) => {
+const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, collections, onRemove, onExpand}) => {
+
+// TODO: memo edit modals and collection popovers for performance
+// const MEditModal = React.memo(TaskEditModal);
+// const MCollectionPopover = React.memo(TaskCollectionPopover);
 
 // Assuming types for _id and update
 type TaskId = string;
@@ -116,7 +120,7 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
             </HStack>
         </Stack>
         <Stack direction={'row'} mt={'1em'} gap={'0'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
-            <TaskCollectionPopover task={task} collections={["favorites", "default", "1", "1", "1", "1", "1", "1", "1", "1"]}/>
+            <TaskCollectionPopover onSuccess={()=> { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchCollections']}); }} task={task} collections={collections}/>
             <TaskEditModal onSuccess={() => { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
             queryClient.invalidateQueries({queryKey: ['fetchSkills']});}} task={task} className='ongoingEdit'/>
         </Stack>
