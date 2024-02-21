@@ -80,7 +80,7 @@ const TaskTable: React.FC= () => {
         // console.log(props);
         return (
           <>
-            <IconButton variant='solid' colorScheme='red' isRound={true} aria-label='delete task' icon={<MinusIcon />} onClick={onOpen} />
+            <IconButton size="sm" variant='solid' colorScheme='red' isRound={true} aria-label='delete task' icon={<MinusIcon />} onClick={onOpen} />
             <AlertDialog
               isOpen={isOpen}
               leastDestructiveRef={cancelRef}
@@ -145,13 +145,17 @@ const TaskTable: React.FC= () => {
           <PopoverTrigger>
             <Button><ChevronDownIcon /></Button>
           </PopoverTrigger>
-          <PopoverContent w={'15em'}>
+          <PopoverContent w={'13.25em'}>
             <PopoverArrow />
             <PopoverCloseButton />
           <PopoverBody>
               {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(data[prop.row.id]._id)}/></HStack> <= an arrow function here WILL DELETE EVERYTHING  */}
               {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(prop.getValue())}></DeleteTaskDialog></HStack> <= this still DELETES EVERYTHING WTF */}
-              <HStack justify={'start'}><Button colorScheme="teal" onClick={() => getView(prop.getValue())}><ViewIcon /></Button><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
+              {/* <HStack justify={'start'}><Button colorScheme="teal" onClick={() => getView(prop.getValue())}><ViewIcon /></Button><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
+               <= this also deletes EVERYTHING */}
+
+              <HStack justify={'start'}><IconButton icon={<ViewIcon />} size="md" colorScheme="teal" aria-label="viewTask" onClick={() => getView(prop.getValue())} /><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
+
           </PopoverBody>
           </PopoverContent>
         </Popover>
