@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react'
 import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure, ButtonGroup } from "@chakra-ui/react"
-import { MinusIcon } from "@chakra-ui/icons"
+import { MinusIcon, ViewIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 import { useQueryClient, useMutation, UseMutationResult } from '@tanstack/react-query'
 import * as taskApi from '../../api/tasks';
@@ -103,6 +103,10 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
         )
       }
 
+    function getView(_id:string) {
+        window.open(`/view/${_id}`, "_blank") //to open new page;
+    }
+
     return (
         <Box className={task.status === 'complete' ? 'completeTask' : 'ongoingTask'} key={task._id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3' backdropFilter='auto' backdropContrast='30%'>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
@@ -119,10 +123,11 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
                 ))} <Spacer /> <Tag colorScheme={EXP_MAP.get(task.exp)['colorScheme']}>{task.exp}</Tag>
             </HStack>
         </Stack>
-        <Stack direction={'row'} mt={'1em'} gap={'0'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
+        <Stack direction={'row'} mt={'1em'} gap={'1'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
             <TaskCollectionPopover onSuccess={()=> { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchCollections']}); }} task={task} collections={collections}/>
             <TaskEditModal onSuccess={() => { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
             queryClient.invalidateQueries({queryKey: ['fetchSkills']});}} task={task} className='ongoingEdit'/>
+            <IconButton icon={<ViewIcon />} p={'2px'} size={'s'} bgColor={'whiteAlpha.100'} aria-label="viewTask" onClick={() => getView(task._id)} />
         </Stack>
     </Box>
     )

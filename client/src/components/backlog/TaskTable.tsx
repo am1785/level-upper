@@ -118,10 +118,18 @@ const TaskTable: React.FC= () => {
 
     const columns = React.useMemo(() => [
         {
+          accessorKey: "status",
+          header: "status",
+          size: 50,
+          cell: (props:any) =>
+          <Text textAlign={'center'}>
+            {data && data[props.row.id] && props.getValue() === "complete" ? <CheckCircleIcon color={'green.400'} /> : <SpinnerIcon />}
+          </Text>
+        },
+        {
             accessorKey: "title",
             header: "title",
             cell: (props:any) => <HStack>
-                {data && data[props.row.id] && data[props.row.id]['status'] === "complete" ? <CheckCircleIcon color={'green.400'} /> : <SpinnerIcon />}
                 {data && data[props.row.id] && <Tag colorScheme={EXP_MAP.get(data[props.row.id]['exp'])['colorScheme']}>{EXP_MAP.get(data[props.row.id]['exp'])['size']}</Tag>}
                 <Text>
                 {props.getValue()}
