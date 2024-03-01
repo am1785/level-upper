@@ -124,7 +124,10 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
             </HStack>
         </Stack>
         <Stack direction={'row'} mt={'1em'} gap={'1'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
-            <TaskCollectionPopover onSuccess={()=> { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchCollections']}); }} task={task} collections={collections}/>
+            <TaskCollectionPopover onSuccess={()=> {
+              queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchCollections']}); 
+              
+              }} task={task} collections={collections}/>
             <TaskEditModal onSuccess={() => { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
             queryClient.invalidateQueries({queryKey: ['fetchSkills']});}} task={task} className='ongoingEdit'/>
             <IconButton icon={<ViewIcon />} p={'2px'} size={'s'} bgColor={'whiteAlpha.100'} aria-label="viewTask" onClick={() => getView(task._id)} />

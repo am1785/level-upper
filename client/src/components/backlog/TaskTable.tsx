@@ -28,7 +28,7 @@ import {
     Stack,
 } from "@chakra-ui/react";
 import React from "react";
-import { useReactTable, getCoreRowModel, flexRender, Cell } from '@tanstack/react-table';
+import { Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef } from '@tanstack/react-table';
 import {ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
 import { OngoingTask } from "../task/TaskOngoing";
 import TaskEditModal from "../task/TaskEditModal";
@@ -116,21 +116,30 @@ const TaskTable: React.FC= () => {
         window.open(`/view/${_id}`, "_blank") //to open new page;
     }
 
-    const columns = React.useMemo(() => [
+    const columns = React.useMemo<ColumnDef<{col1: string}>[]>(() => [
         {
           accessorKey: "status",
           header: "status",
-          size: 50,
+          size: 0,
+          enableSorting: true,
           cell: (props:any) =>
           <Text textAlign={'center'}>
             {data && data[props.row.id] && props.getValue() === "complete" ? <CheckCircleIcon color={'green.400'} /> : <SpinnerIcon />}
           </Text>
         },
         {
+          accessorKey: "exp",
+          header: "size",
+          size: 0,
+          cell: (props:any) =>
+          <Text textAlign={'center'}>
+            {data && data[props.row.id] && <Tag colorScheme={EXP_MAP.get(data[props.row.id]['exp'])['colorScheme']}>{EXP_MAP.get(data[props.row.id]['exp'])['size']}</Tag>}
+          </Text>
+        },
+        {
             accessorKey: "title",
             header: "title",
             cell: (props:any) => <HStack>
-                {data && data[props.row.id] && <Tag colorScheme={EXP_MAP.get(data[props.row.id]['exp'])['colorScheme']}>{EXP_MAP.get(data[props.row.id]['exp'])['size']}</Tag>}
                 <Text>
                 {props.getValue()}
                 </Text>
@@ -140,10 +149,11 @@ const TaskTable: React.FC= () => {
         {
             accessorKey: "skills",
             header: "skills",
-            cell: (props:any) => <p>{Array.from(props.getValue()).map((s:any, id:number) => (
-                <Tag key={id} m={'1'}>{s}</Tag>
-            ))}</p>,
-            size: 400
+            cell: (props:any) => <Text>{Array.from(props.getValue()).map((s:any, id:number) => (
+                <Button p={'0'} variant={"unstyled"} h={'min-content'} w={'min-content'} _hover={{borderColor:"white"}}><Tag key={id} marginLeft={'1'} marginRight={'1'}>{s}</Tag></Button>
+            ))}</Text>,
+            filterFn: 'arrIncludes',
+            size: 400,
         },
         {
           accessorKey: "_id",
@@ -175,10 +185,24 @@ const TaskTable: React.FC= () => {
       },
     ], [data]);
 
+    const [columnFilters, setColumnFilters] = React.useState([
+      {
+        id:'skills',
+        value:'mern',
+      }
+    ]);
+
+    // console.log(columnFilters);
+    // console.log(data);
+
     const table = useReactTable({
         data,
         columns,
+        state: {
+          columnFilters
+        },
         getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel()
     });
 
     // console.log(table.getHeaderGroups());
