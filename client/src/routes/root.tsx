@@ -1,5 +1,5 @@
-import { Image, Flex } from "@chakra-ui/react"
-import { Tabs, TabList, Tab } from '@chakra-ui/react'
+import { Image, Flex, Badge } from "@chakra-ui/react"
+import { Tabs, TabList, Tab, TabIndicator } from '@chakra-ui/react'
 import { NavLink as ReactRouterLink, useLocation } from 'react-router-dom'
 import { Link as ChakraLink } from '@chakra-ui/react'
 
@@ -29,10 +29,10 @@ export default function Root() {
                   >
                     ongoing
                   </ChakraLink> */}
-                  <ReactRouterLink to={"/"} end
-                  className={({ isActive }) =>`nav-link ${isActive && 'active'}`}>
-                    ongoing
-                  </ReactRouterLink>
+                    <ReactRouterLink to={"/"} end
+                    className={({ isActive }) =>`nav-link ${isActive && 'active'}`}>
+                      ongoing
+                    </ReactRouterLink>
                 </Tab>
                 <Tab border="0px">
                   {/* <ChakraLink

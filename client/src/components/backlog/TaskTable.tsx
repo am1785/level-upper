@@ -30,6 +30,7 @@ import {
     Box,
     VStack,
     Portal,
+    Input,
 } from "@chakra-ui/react";
 import React from "react";
 import { Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef, getPaginationRowModel } from '@tanstack/react-table';
@@ -155,7 +156,6 @@ const TaskTable: React.FC= () => {
                 {props.getValue()}
                 </Text>
                 </HStack>,
-            size: 400
         },
         {
             accessorKey: "skills",
@@ -167,7 +167,6 @@ const TaskTable: React.FC= () => {
               ))}
             </HStack>,
             filterFn: 'arrIncludes',
-            size: 400,
         },
         {
           accessorKey: "_id",
@@ -219,6 +218,12 @@ const TaskTable: React.FC= () => {
         getPaginationRowModel: getPaginationRowModel(),
     });
 
+    const handlePageTurn = (event:React.KeyboardEvent<HTMLInputElement>) => {
+      const page = Number(event.currentTarget.value);
+      isNaN(page) ? 0 :
+      table.setPageIndex(Math.min(page-1, table.getPageCount()-1));
+    }
+
     // console.log(table.getHeaderGroups());
     return(<>
     {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack>
@@ -257,18 +262,19 @@ const TaskTable: React.FC= () => {
         </Table>
     </TableContainer>
     <Box>
-    <Text mb={2} mt={2} fontSize={'sm'}>
-      page {table.getState().pagination.pageIndex + 1} of {" "}
-      {table.getPageCount()}
-    </Text>
-    <ButtonGroup size={"sm"} isAttached variant={"outline"}>
-    <Button onClick={()=> table.previousPage()} isDisabled={!table.getCanPreviousPage()}>
+    <ButtonGroup size={"sm"} isAttached variant={"outline"} mb={2} mt={2}>
+      <Button onClick={()=> table.previousPage()} isDisabled={!table.getCanPreviousPage()}>
           {"<"}
       </Button>
+        <Input onKeyDown={(e) => e.key === "Enter" ? handlePageTurn(e) : null} size={'sm'} fontSize={'xs'} w={'3em'} marginLeft={".5em"} marginRight={".5em"} min={1} max={table.getPageCount()} />
       <Button onClick={()=> table.nextPage()} isDisabled={!table.getCanNextPage()}>
           {">"}
       </Button>
     </ButtonGroup>
+    <Text fontSize={'xs'}>
+      page {table.getState().pagination.pageIndex + 1} of {" "}
+      {table.getPageCount()}
+    </Text>
     </Box>
     </Box>
 </>}
