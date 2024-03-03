@@ -15,17 +15,17 @@ router.post('/tasks', async (req, res) => {
     }
 });
 
-// get all recent tasks from an author / user
+// get all recent tasks from an author / user, without content
 router.get('/tasks/:author', async (req, res) => {
     try {
         let tasks = []
         if(req.query.all) {
-            tasks = await Task.find({author: req.params.author}).sort([['_id', -1]])
+            tasks = await Task.find({author: req.params.author}, '-content').sort([['_id', -1]]);
         } else {
-            tasks = await Task.find({author: req.params.author, createdAt: {
+            tasks = await Task.find({author: req.params.author, updatedAt: {
                 $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // get tasks within 7 days
                 $lt: new Date()
-            }}).limit(150).sort([['_id', -1]]);
+            }}, '-content').limit(150).sort([['_id', -1]]);
         }
         res.status(200).json(tasks);
     } catch (err) {
@@ -43,7 +43,7 @@ router.get('/tasks/collections/:author', async (req, res) => {
     }
 });
 
-// get a single task based on task _id
+// get all data for a single task based on task _id
 router.get('/tasks/view/:_id', async (req, res) => {
     try {
         const task = await Task.findOne({_id: req.params._id})

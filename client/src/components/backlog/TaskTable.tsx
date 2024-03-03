@@ -26,15 +26,19 @@ import {
     useDisclosure,
     Skeleton,
     Stack,
+    ButtonGroup,
+    Box,
+    VStack,
+    Portal,
 } from "@chakra-ui/react";
 import React from "react";
-import { Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef } from '@tanstack/react-table';
+import { Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef, getPaginationRowModel } from '@tanstack/react-table';
 import {ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
-import { OngoingTask } from "../task/TaskOngoing";
 import TaskEditModal from "../task/TaskEditModal";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
 import * as backlogApi from '../../api/backlog';
+import TableSkillTag from "./TableSkillTag";
 
 
 export type CellTaskDelete = {
@@ -116,6 +120,13 @@ const TaskTable: React.FC= () => {
         window.open(`/view/${_id}`, "_blank") //to open new page;
     }
 
+    const [columnFilters, setColumnFilters] = React.useState([
+      {
+        id:'title',
+        value:'',
+      }
+    ]);
+
     const columns = React.useMemo<ColumnDef<{col1: string}>[]>(() => [
         {
           accessorKey: "status",
@@ -149,9 +160,12 @@ const TaskTable: React.FC= () => {
         {
             accessorKey: "skills",
             header: "skills",
-            cell: (props:any) => <Text>{Array.from(props.getValue()).map((s:any, id:number) => (
-                <Button p={'0'} variant={"unstyled"} h={'min-content'} w={'min-content'} _hover={{borderColor:"white"}}><Tag key={id} marginLeft={'1'} marginRight={'1'}>{s}</Tag></Button>
-            ))}</Text>,
+            cell: (props:any) =>
+              <HStack rowGap={'1'}>
+                {Array.from(props.getValue()).map((s:any, id:number) => (
+                  <TableSkillTag key={id} skillName={s} onClick={(s) => toggleSkillFilter(s)} active={columnFilters.some((c) => c.value === s)}/>
+              ))}
+            </HStack>,
             filterFn: 'arrIncludes',
             size: 400,
         },
@@ -172,7 +186,7 @@ const TaskTable: React.FC= () => {
               {/* <HStack justify={'start'}><Button colorScheme="teal" onClick={() => getView(prop.getValue())}><ViewIcon /></Button><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
                <= this also deletes EVERYTHING */}
 
-              <HStack justify={'start'}><IconButton icon={<ViewIcon />} size="md" colorScheme="teal" aria-label="viewTask" onClick={() => getView(prop.getValue())} /><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
+              <HStack justify={'start'}><IconButton icon={<ViewIcon />} size="md" colorScheme="teal" aria-label="viewTask" onClick={() => getView(prop.getValue())} /><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task_id={data[prop.row.id]._id}/><CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
 
           </PopoverBody>
           </PopoverContent>
@@ -183,17 +197,16 @@ const TaskTable: React.FC= () => {
           header: "date",
           cell: (props:any) => <Text>{new Date(props.getValue()).toLocaleDateString()}</Text>
       },
-    ], [data]);
-
-    const [columnFilters, setColumnFilters] = React.useState([
-      {
-        id:'skills',
-        value:'mern',
-      }
-    ]);
+    ], [data, columnFilters]);
 
     // console.log(columnFilters);
-    // console.log(data);
+    // console.log(columnFilters.some((c) => c.value === "react.js"));
+
+    const toggleSkillFilter = (skill:string) => {
+      columnFilters?.find((c) => c.value === skill) ?
+      setColumnFilters(columnFilters.filter((c) => c.value !== skill)) :
+      setColumnFilters((prev) => [...prev, {id: 'skills', value: skill}])
+    }
 
     const table = useReactTable({
         data,
@@ -202,14 +215,16 @@ const TaskTable: React.FC= () => {
           columnFilters
         },
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel()
+        getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
     });
 
     // console.log(table.getHeaderGroups());
     return(<>
     {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack>
     : status === "error" ? <Text>{error.message}</Text>
-    : <div style={{ width: '100%', maxHeight:'60vh', overflowX:'auto', tableLayout: 'fixed'}}>
+    // : <div style={{ width: '100%', maxHeight:'60vh', overflowX:'auto', tableLayout: 'fixed'}}>
+    : <> <Box w={'100%'} overflowX={'auto'}>
     <TableContainer mt={'1em'}>
         <Table style={{minWidth: 'max-content', width: '100%'}} variant={'simple'} size={'sm'}>
             <Thead>
@@ -241,7 +256,22 @@ const TaskTable: React.FC= () => {
             </Tbody>
         </Table>
     </TableContainer>
-    </div>}
+    <Box>
+    <Text mb={2} mt={2} fontSize={'sm'}>
+      page {table.getState().pagination.pageIndex + 1} of {" "}
+      {table.getPageCount()}
+    </Text>
+    <ButtonGroup size={"sm"} isAttached variant={"outline"}>
+    <Button onClick={()=> table.previousPage()} isDisabled={!table.getCanPreviousPage()}>
+          {"<"}
+      </Button>
+      <Button onClick={()=> table.nextPage()} isDisabled={!table.getCanNextPage()}>
+          {">"}
+      </Button>
+    </ButtonGroup>
+    </Box>
+    </Box>
+</>}
     </>)
 }
 

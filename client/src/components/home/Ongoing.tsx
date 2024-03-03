@@ -91,7 +91,7 @@ export default function Ongoing(){
       // }
 
       data?.forEach((d:any) => {
-              const createdDate = new Date(d.createdAt);
+              const createdDate = new Date(d.updatedAt); // checking update date instead
               const diff = dayDiff(createdDate)
               if(diff === 0) {
                   ongoingTasks.push(d);
