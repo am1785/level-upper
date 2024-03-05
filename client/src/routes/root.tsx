@@ -5,18 +5,20 @@ import { NavLink as ReactRouterLink, useLocation } from 'react-router-dom'
 import { Link as ChakraLink } from '@chakra-ui/react'
 
 import logo from '../assets/img/logo.png'
+import logoDark from '../assets/img/logo-dark.png'
 import '../App.css'
+import { color } from "framer-motion";
 
 export default function Root() {
     const location = useLocation();
     const {pathname} = location;
     const { colorMode, toggleColorMode } = useColorMode();
 
-
     return (
       <>
         <Flex align="center" justify="space-around">
-          <Image className="logo" src={logo} alt="levelupper Logo" />
+          {colorMode === "dark" ? <Image className="logo" src={logoDark} alt="levelupper Logo" />
+                                : <Image className="logo" src={logo} alt="levelupper Logo" />}
           <IconButton aria-label="color mode toggle" colorScheme="none" color={"gray.400"} icon={<MoonIcon />} onClick={toggleColorMode} _dark={{color: 'yellow.300'}}/>
         </Flex>
         <nav>
