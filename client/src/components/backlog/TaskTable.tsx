@@ -37,14 +37,14 @@ import {
     Badge,
 } from "@chakra-ui/react";
 import React from "react";
-import { VisibilityState, Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef, getPaginationRowModel } from '@tanstack/react-table';
-import { SearchIcon, ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
+import { VisibilityState, Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef, getPaginationRowModel, getSortedRowModel } from '@tanstack/react-table';
+import { ArrowUpDownIcon, SearchIcon, ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
 import TaskEditModal from "../task/TaskEditModal";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
 import * as backlogApi from '../../api/backlog';
 import TableSkillTag from "./TableSkillTag";
-
+import TaskCollectionPopover from "../task/TaskCollectionPopover";
 
 export type CellTaskDelete = {
     onRemove: (_id:string) => void,
@@ -191,6 +191,7 @@ const TaskTable: React.FC= () => {
           accessorKey: "_id",
           header: "actions",
           size: 100,
+          enableSorting: false,
           cell:  (prop:any) => <Popover>
           <PopoverTrigger>
             <Button><ChevronDownIcon /></Button>
@@ -204,7 +205,11 @@ const TaskTable: React.FC= () => {
               {/* <HStack justify={'start'}><Button colorScheme="teal" onClick={() => getView(prop.getValue())}><ViewIcon /></Button><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
                <= this also deletes EVERYTHING */}
 
-              <HStack justify={'start'}><IconButton icon={<ViewIcon />} size="md" colorScheme="teal" aria-label="viewTask" onClick={() => getView(prop.getValue())} /><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task_id={data[prop.row.id]._id}/><CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
+              <HStack justify={'start'}>
+                <IconButton icon={<ViewIcon />} size="md" colorScheme="teal" aria-label="viewTask" onClick={() => getView(prop.getValue())} />
+                <TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task_id={data[prop.row.id]._id}/>
+                <CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete>
+              </HStack>
 
           </PopoverBody>
           </PopoverContent>
@@ -246,6 +251,7 @@ const TaskTable: React.FC= () => {
         },
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     });
 
@@ -314,6 +320,10 @@ const TaskTable: React.FC= () => {
                             width: header.getSize() !== 0 ? header.getSize() : undefined, // to style individual columns in 2024
                         }}>
                             {header.column.columnDef.header as React.ReactNode}
+                            {
+                              header.column.getCanSort() && <ArrowUpDownIcon
+                                fontSize={"xs"} mx={1} onClick={header.column.getToggleSortingHandler()}/>
+                            }
                         </Th>
                     ))}
                 </Tr>
