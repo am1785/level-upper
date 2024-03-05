@@ -1,4 +1,5 @@
-import { Image, Flex, Badge } from "@chakra-ui/react"
+import { Image, Flex, Badge, useColorMode, IconButton } from "@chakra-ui/react"
+import { MoonIcon } from "@chakra-ui/icons";
 import { Tabs, TabList, Tab, TabIndicator } from '@chakra-ui/react'
 import { NavLink as ReactRouterLink, useLocation } from 'react-router-dom'
 import { Link as ChakraLink } from '@chakra-ui/react'
@@ -9,12 +10,14 @@ import '../App.css'
 export default function Root() {
     const location = useLocation();
     const {pathname} = location;
+    const { colorMode, toggleColorMode } = useColorMode();
 
 
     return (
       <>
-        <Flex align="center" justify="center">
+        <Flex align="center" justify="space-around">
           <Image className="logo" src={logo} alt="levelupper Logo" />
+          <IconButton aria-label="color mode toggle" colorScheme="none" color={"gray.400"} icon={<MoonIcon />} onClick={toggleColorMode} _dark={{color: 'yellow.300'}}/>
         </Flex>
         <nav>
           <Tabs isFitted variant='enclosed' mb={4}>

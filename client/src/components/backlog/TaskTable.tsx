@@ -31,10 +31,13 @@ import {
     VStack,
     Portal,
     Input,
+    Select,
+    Flex,
+    Spacer,
 } from "@chakra-ui/react";
 import React from "react";
 import { Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef, getPaginationRowModel } from '@tanstack/react-table';
-import {ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
+import { SearchIcon, ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
 import TaskEditModal from "../task/TaskEditModal";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
@@ -63,7 +66,7 @@ const TaskTable: React.FC= () => {
     const { status, data, error } = useQuery({
         queryFn: () => backlogApi.fetchAllTasks(user),
         queryKey: ['fetchOngoingTasks', { user }],
-      })
+      });
 
     const { mutate } = useMutation({
         mutationFn: (_id:string) => taskApi.deleteTask(_id),
@@ -225,11 +228,20 @@ const TaskTable: React.FC= () => {
     }
 
     // console.log(table.getHeaderGroups());
-    return(<>
+    return (<>
     {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack>
     : status === "error" ? <Text>{error.message}</Text>
     // : <div style={{ width: '100%', maxHeight:'60vh', overflowX:'auto', tableLayout: 'fixed'}}>
-    : <> <Box w={'100%'} overflowX={'auto'}>
+    : <> <Box w={'100%'} overflowX={'auto'} mt={'.5em'}>
+    <Flex alignItems={'center'} gap={2} mt={'3'}>
+      <HStack w={'50%'}><SearchIcon fontSize={'sm'} /> <Input size={"sm"} variant={'flushed'} /></HStack>
+      <Spacer />
+      <Select placeholder='collection' w={'50%'} size={'sm'}>
+        <option value='option1'>Option 1</option>
+        <option value='option2'>Option 2</option>
+        <option value='option3'>Option 3</option>
+      </Select>
+    </Flex>
     <TableContainer mt={'1em'}>
         <Table style={{minWidth: 'max-content', width: '100%'}} variant={'simple'} size={'sm'}>
             <Thead>
@@ -277,8 +289,8 @@ const TaskTable: React.FC= () => {
     </Text>
     </Box>
     </Box>
-</>}
-    </>)
+    </>}
+  </>)
 }
 
 export default TaskTable;

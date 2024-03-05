@@ -108,7 +108,7 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
     }
 
     return (
-        <Box className={task.status === 'complete' ? 'completeTask' : 'ongoingTask'} key={task._id} boxShadow='base' p='5' rounded='md' bg='white' mt='3' mb='3' backdropFilter='auto' backdropContrast='30%'>
+        <Box key={task._id} boxShadow='base' p='5' rounded='md' mt='3' mb='3' opacity={task.status === "complete" ? "70%" :"100%"} _dark={{border: "2px solid #718096"}}>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
             <DeleteTaskDialog />
         </Stack>

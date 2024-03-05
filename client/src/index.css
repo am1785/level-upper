@@ -55,11 +55,6 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-.completeTask {
-  background-color: #f9f9ff !important;
-  opacity: 90%;
-}
-
 .markdownView > * {
   text-align: start;
 }
