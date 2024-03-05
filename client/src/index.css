@@ -59,6 +59,15 @@ button:focus-visible {
   text-align: start;
 }
 
+.markdownView h1{
+  font-size: large;
+  font-weight: 600;
+  margin-bottom: 1em;
+  border-left: solid 4px #747bff;
+  padding: 3px;
+  width: min-content;
+}
+
 .markdownView h2{
   font-size: large;
   font-weight: 500;
@@ -67,6 +76,10 @@ button:focus-visible {
 
 .markdownView a{
   color: #747bff;
+}
+
+.markdownView ol {
+  margin-left: 1em;
 }
 
 @media (prefers-color-scheme: light) {

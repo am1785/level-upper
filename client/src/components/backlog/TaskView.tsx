@@ -64,7 +64,8 @@ const TaskView: React.FC = () => {
                         </code>
                         )
                     }
-                , h1: "h2"}}>{data.content}</Markdown>
+                // , h1: "h2"}}>{data.content}</Markdown> <= substitute h1 for h2 tags
+                }}>{data.content}</Markdown>
                 </article>
             </div>
             </Stack>

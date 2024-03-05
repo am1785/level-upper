@@ -34,9 +34,10 @@ import {
     Select,
     Flex,
     Spacer,
+    Badge,
 } from "@chakra-ui/react";
 import React from "react";
-import { Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef, getPaginationRowModel } from '@tanstack/react-table';
+import { VisibilityState, Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef, getPaginationRowModel } from '@tanstack/react-table';
 import { SearchIcon, ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
 import TaskEditModal from "../task/TaskEditModal";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -61,11 +62,11 @@ export const EXP_MAP = new Map([
 const TaskTable: React.FC= () => {
     const queryClient = useQueryClient();
 
-    const user = 'default'; // TODO: get current user based on auth
+    const USER = 'default'; // TODO: get current user based on auth
 
     const { status, data, error } = useQuery({
-        queryFn: () => backlogApi.fetchAllTasks(user),
-        queryKey: ['fetchOngoingTasks', { user }],
+        queryFn: () => backlogApi.fetchAllTasks(USER),
+        queryKey: ['fetchOngoingTasks', { USER }],
       });
 
     const { mutate } = useMutation({
@@ -81,6 +82,17 @@ const TaskTable: React.FC= () => {
             queryClient.invalidateQueries({queryKey: ['fetchSkills']});
           },
         })
+
+    let COLLECTIONS: string[] = [];
+
+    if(status === "success") {
+      data.forEach((d:any) => {
+        d.task_collection.forEach((c:string) => {
+          COLLECTIONS.indexOf(c) === -1 && COLLECTIONS.push(c);
+        })
+      })
+      // console.log(COLLECTIONS);
+    }
 
     const CellTaskDelete:React.FC<CellTaskDelete> = ({onRemove, _id}) => {
         const { isOpen, onOpen, onClose } = useDisclosure()
@@ -128,8 +140,12 @@ const TaskTable: React.FC= () => {
       {
         id:'title',
         value:'',
-      }
+      },
     ]);
+
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+      'task_collection': false,
+  })
 
     const columns = React.useMemo<ColumnDef<{col1: string}>[]>(() => [
         {
@@ -194,11 +210,22 @@ const TaskTable: React.FC= () => {
           </PopoverContent>
         </Popover>
       },
-        {
+      {
           accessorKey: "createdAt",
           header: "date",
-          cell: (props:any) => <Text>{new Date(props.getValue()).toLocaleDateString()}</Text>
-      },
+          cell: (props:any) => <Text>{new Date(props.getValue()).toLocaleDateString()}</Text>,
+          size: 100
+        },
+      {
+        accessorKey: "task_collection",
+        header: "collection",
+        cell: (props:any) => <HStack rowGap={'1'}>
+        {Array.from(props.getValue()).map((c:any, id:number) => (
+          <Badge key={id}>{c}</Badge>
+        ))}
+        </HStack>,
+        filterFn: 'arrIncludes'
+    },
     ], [data, columnFilters]);
 
     // console.log(columnFilters);
@@ -214,7 +241,8 @@ const TaskTable: React.FC= () => {
         data,
         columns,
         state: {
-          columnFilters
+          columnFilters,
+          columnVisibility,
         },
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -227,19 +255,50 @@ const TaskTable: React.FC= () => {
       table.setPageIndex(Math.min(page-1, table.getPageCount()-1));
     }
 
+    const handleTextFilter = (query : string) => {
+      setColumnFilters(prev => [{id: 'title', value: query}, ...prev.slice(1)]);
+    }
+
+    const handleCollectionFilter = (c:string) => {
+      // the default selection option returns an empty string, which is not truthy
+      // console.log(c);
+      // console.log(!c && 1);
+
+      if(!c) {
+        setColumnFilters((prev) => prev.filter((f) => f.id !== "task_collection"));
+        return
+      }
+
+      const c_filter_idx = columnFilters.findIndex((collection) => collection.id === "task_collection");
+
+      if(c_filter_idx === -1) {
+        setColumnFilters((prev) => [...prev, {id: "task_collection", value: c}])
+      } else {
+        let newFilters:any = [];
+        columnFilters.forEach((filter, id) => {
+          id !== c_filter_idx ? newFilters.push(filter)
+                              : newFilters.push({id:"task_collection", value:c});
+        });
+        setColumnFilters(newFilters);
+      }
+
+      return
+    }
+
     // console.log(table.getHeaderGroups());
+    // console.log(data);
     return (<>
     {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack>
     : status === "error" ? <Text>{error.message}</Text>
     // : <div style={{ width: '100%', maxHeight:'60vh', overflowX:'auto', tableLayout: 'fixed'}}>
     : <> <Box w={'100%'} overflowX={'auto'} mt={'.5em'}>
     <Flex alignItems={'center'} gap={2} mt={'3'}>
-      <HStack w={'50%'}><SearchIcon fontSize={'sm'} /> <Input size={"sm"} variant={'flushed'} /></HStack>
+      <HStack w={'50%'}><SearchIcon fontSize={'sm'} /> <Input size={"sm"} variant={'flushed'} onChange={(e) => handleTextFilter(e.currentTarget.value)}/></HStack>
       <Spacer />
-      <Select placeholder='collection' w={'50%'} size={'sm'}>
-        <option value='option1'>Option 1</option>
-        <option value='option2'>Option 2</option>
-        <option value='option3'>Option 3</option>
+      <Select placeholder='collection' w={'50%'} size={'sm'} onChange={(e) => handleCollectionFilter(e.currentTarget.value)}>
+        {COLLECTIONS?.map((c, id) => (
+          <option key={id} value={c}>{c}</option>
+        ))}
       </Select>
     </Flex>
     <TableContainer mt={'1em'}>
