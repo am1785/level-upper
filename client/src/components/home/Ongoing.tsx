@@ -91,7 +91,7 @@ export default function Ongoing(){
       // }
 
       data?.forEach((d:any) => {
-              const createdDate = new Date(d.createdAt);
+              const createdDate = new Date(d.updatedAt); // checking update date instead
               const diff = dayDiff(createdDate)
               if(diff === 0) {
                   ongoingTasks.push(d);
@@ -120,9 +120,9 @@ export default function Ongoing(){
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (<>
-    <main>
+    <main style={{minHeight: "100vh"}}>
         {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack> : status === "error" ? <Text>{error.message}</Text>:null}
-        {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' bg='white' mt='3' mb='3'>add some tasks to level up today!</Box>}
+        {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
 
         {!!ongoingTasks && <Box fontSize={'xs'} mb={'5'}>
                 <HStack justify={'end'}>

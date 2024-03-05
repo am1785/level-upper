@@ -38,7 +38,7 @@ export default function Mylevel(){
     data.sort(compareExp, );
 
     return (<>
-    <main>
+    <main style={{minHeight: "100vh"}}>
     {!data || data.length === 0 && <Box boxShadow='md' p='5' rounded='md' bg='white' mt='3' mb='3'>add some tasks to level up today!</Box>}
     <Stack direction={'row'} wrap={'wrap'} spacing={'3'} mt={'1em'} justifyContent={'space-evenly'}>
         {data.map( (s:skill, id:number) => ( // () instead of {} so that something is returned explicitly
