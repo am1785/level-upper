@@ -1,5 +1,5 @@
 import {CheckCircleIcon} from '@chakra-ui/icons';
-import { Tag, Box, Stack, Card, Text, CardHeader, CardBody } from "@chakra-ui/react"
+import { Tag, Box, Stack, Card, Text, CardHeader, CardBody, Badge } from "@chakra-ui/react"
 import * as skillsApi from '../../api/skills';
 import { useQuery } from '@tanstack/react-query';
 
@@ -43,10 +43,10 @@ export default function Mylevel(){
     <Stack direction={'row'} wrap={'wrap'} spacing={'3'} mt={'1em'} justifyContent={'space-evenly'}>
         {data.map( (s:skill, id:number) => ( // () instead of {} so that something is returned explicitly
                 <Card key={id} variant={id % 2 === 0 ? 'outline' : 'filled'}>
-                    <CardHeader fontSize={'md'} fontWeight={'600'}>{s._id}</CardHeader>
+                    <CardHeader fontSize={'md'} fontWeight={'600'} _dark={{"color": "yellow.300"}}>{s._id}</CardHeader>
                     <CardBody mt={'-2em'}>
-                    <Text fontSize={'sm'}>tasks <CheckCircleIcon /><Tag backgroundColor={id % 2 === 0 ? '': 'white'}>{s.count}</Tag></Text>
-                    <Text fontSize={'sm'}>exp earned <Tag backgroundColor={id % 2 === 0 ? '': 'white'}>{s.exp_earned}</Tag></Text>
+                    <Text fontSize={'sm'}>tasks <Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.count}</Badge></Text>
+                    <Text fontSize={'sm'}>exp earned <Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.exp_earned}</Badge></Text>
                     </CardBody>
                 </Card>
         ))}
