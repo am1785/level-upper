@@ -298,10 +298,12 @@ const TaskTable: React.FC= () => {
     : status === "error" ? <Text>{error.message}</Text>
     // : <div style={{ width: '100%', maxHeight:'60vh', overflowX:'auto', tableLayout: 'fixed'}}>
     : <> <Box w={'100%'} overflowX={'auto'} mt={'.5em'}>
-    <Flex alignItems={'center'} gap={2} mt={'3'}>
-      <HStack w={'50%'}><SearchIcon fontSize={'sm'} /> <Input size={"sm"} variant={'flushed'} onChange={(e) => handleTextFilter(e.currentTarget.value)}/></HStack>
-      <Spacer />
-      <Select placeholder='collection' w={'50%'} size={'sm'} onChange={(e) => handleCollectionFilter(e.currentTarget.value)}>
+    <Flex alignItems={'center'} alignContent={'center'} gap={5} mt={'3'}>
+      <HStack>
+        <SearchIcon fontSize={'sm'} />
+        <Input size={"sm"} maxW={'8em'} variant={'flushed'} onChange={(e) => handleTextFilter(e.currentTarget.value)}/>
+      </HStack>
+      <Select placeholder='collection' size={'sm'} maxW={'8em'} onChange={(e) => handleCollectionFilter(e.currentTarget.value)}>
         {COLLECTIONS?.map((c, id) => (
           <option key={id} value={c}>{c}</option>
         ))}
