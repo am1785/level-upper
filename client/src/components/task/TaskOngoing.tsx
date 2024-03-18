@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react'
 import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure, ButtonGroup } from "@chakra-ui/react"
 import { MinusIcon, ViewIcon } from "@chakra-ui/icons"
-import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
+import { Link, AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 import { useQueryClient, useMutation, UseMutationResult } from '@tanstack/react-query'
 import * as taskApi from '../../api/tasks';
 import TaskEditModal from './TaskEditModal'
@@ -115,7 +115,10 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
         <Stack>
             <HStack>
               <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation(task._id, {author: "default", status: e.target.checked ? "complete" : "ongoing"})}> </Checkbox>
-              <p className='ongoingTitle'>{task.title}</p>
+              {
+                task.link ? <Link href={task.link}><p className='ongoingTitle'>{task.title}</p></Link>
+                          : <p className='ongoingTitle'>{task.title}</p>
+              }
             </HStack>
             <HStack wrap='wrap' mt={'.5em'}>
                 {task.skills.map((tg, id) => (

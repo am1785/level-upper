@@ -29,34 +29,32 @@ const TaskCollectionPopover: React.FC<TaskCollectionPopoverProps> = ({task, coll
         const editTaskMutation = async (_id: TaskId, update: TaskUpdate) => {
         await mutate({ _id, update }, {
             onSuccess: (data, variables, context) => {
+                toast({
+                    title: 'success',
+                    status: 'success',
+                    duration: 1250,
+                    isClosable: true,
+                    });
                 onSuccess();
             },
+            onError: () => {
+                toast({
+                    title: 'error',
+                    status: 'error',
+                    duration: 1250,
+                    isClosable: true,
+                    });
+            }
             // Add other options as needed
         });
         };
 
         const addToCollection = (task_id: string, collection:string) => {
             editTaskMutation(task_id, {task_collection: Array.from(new Set([...task.task_collection || [], collection]))}); // TODO: clean up duplicate value issue, state management
-
-            toast({
-                title: 'success',
-                description: "added to collection",
-                status: 'success',
-                duration: 1250,
-                isClosable: true,
-              })
         }
 
         const removeFromCollection = (task_id:string, collection:string) => {
             editTaskMutation(task_id, {task_collection: (task.task_collection || []).filter((c) => !(c.includes(collection)))});
-
-            toast({
-                title: 'success',
-                description: "removed from collection",
-                status: 'success',
-                duration: 1250,
-                isClosable: true,
-              })
         }
 
     const handleSubmit = (event:FormEvent) => {

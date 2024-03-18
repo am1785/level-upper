@@ -22,14 +22,27 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
     mutationKey: ['editTask'],
     });
 
+    const toast = useToast();
+
     const editTaskMutation = async (_id: TaskId, update: TaskUpdate) => {
     await mutate({ _id, update }, {
         onSuccess: (data, variables, context) => {
-        // Handle success if needed
-        // queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
-        // queryClient.invalidateQueries({queryKey: ['fetchSkills']});
+          toast({
+            title: 'success',
+            status: 'success',
+            duration: 1250,
+            isClosable: true,
+            });
         onSuccess();
         },
+        onError: () => {
+          toast({
+              title: 'error',
+              status: 'error',
+              duration: 1250,
+              isClosable: true,
+              });
+        }
         // Add other options as needed
     });
     };
@@ -99,7 +112,6 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
     const [currTag, setCurrTag] = useState('');
     const [tags, setTags] = useState(new Set(task?.skills));
-    const toast = useToast();
 
     async function submitForm(event:any){
         event.preventDefault();
