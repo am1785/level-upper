@@ -1,7 +1,8 @@
-import {CheckCircleIcon} from '@chakra-ui/icons';
-import { Tag, Box, Stack, Card, Text, CardHeader, CardBody, Badge } from "@chakra-ui/react"
+import { Tabs, Tab, TabList, TabPanels, TabPanel, Icon, Box } from "@chakra-ui/react"
 import * as skillsApi from '../../api/skills';
 import { useQuery } from '@tanstack/react-query';
+import LevelCardView from '../level/LevelCardView';
+import LevelGraphView from "../level/LevelGraphView";
 
 export type skill = {
     _id:string, // name of skill
@@ -30,27 +31,36 @@ export default function Mylevel(){
         // console.log(data);
       }
 
-      // A compare function to sort data by the exp_earned field descendingly
-    function compareExp(a:skill, b:skill) {
-        return b.exp_earned - a.exp_earned;
-    }
-
-    data.sort(compareExp, );
 
     return (<>
     <main style={{minHeight: "100vh"}}>
-    {!data || data.length === 0 && <Box boxShadow='md' p='5' rounded='md' bg='white' mt='3' mb='3'>add some tasks to level up today!</Box>}
-    <Stack direction={'row'} wrap={'wrap'} spacing={'3'} mt={'1em'} justifyContent={'space-evenly'}>
-        {data.map( (s:skill, id:number) => ( // () instead of {} so that something is returned explicitly
-                <Card key={id} variant={id % 2 === 0 ? 'outline' : 'filled'}>
-                    <CardHeader fontSize={'md'} fontWeight={'600'} _dark={{"color": "yellow.300"}}>{s._id}</CardHeader>
-                    <CardBody mt={'-2em'}>
-                    <Text fontSize={'sm'}>tasks <Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.count}</Badge></Text>
-                    <Text fontSize={'sm'}>exp earned <Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.exp_earned}</Badge></Text>
-                    </CardBody>
-                </Card>
-        ))}
-    </Stack>
+      <Tabs isFitted variant='enclosed'>
+        <TabList mb='1em'>
+          <Tab>
+            <Icon viewBox="0 0 576 512">
+            <path
+              fill="currentColor"
+              d="M304 240V16.6c0-9 7-16.6 16-16.6C443.7 0 544 100.3 544 224c0 9-7.6 16-16.6 16H304zM32 272C32 150.7 122.1 50.3 239 34.3c9.2-1.3 17 6.1 17 15.4V288L412.5 444.5c6.7 6.7 6.2 17.7-1.5 23.1C371.8 495.6 323.8 512 272 512C139.5 512 32 404.6 32 272zm526.4 16c9.3 0 16.6 7.8 15.4 17c-7.7 55.9-34.6 105.6-73.9 142.3c-6 5.6-15.4 5.2-21.2-.7L320 288H558.4z"/>
+            </Icon>
+          </Tab>
+          <Tab>
+            <Icon viewBox="0 0 576 512">
+              <path
+                fill="currentColor"
+                d="M284.3 11.7c-15.6-15.6-40.9-15.6-56.6 0l-216 216c-15.6 15.6-15.6 40.9 0 56.6l216 216c15.6 15.6 40.9 15.6 56.6 0l216-216c15.6-15.6 15.6-40.9 0-56.6l-216-216z"
+              />
+            </Icon>
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel display={'flex'} justifyContent={'center'}>
+            <LevelGraphView data={data}/>
+          </TabPanel>
+          <TabPanel>
+            <LevelCardView data={data} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </main>
     </>)
 
