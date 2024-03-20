@@ -1,6 +1,6 @@
 import React, { FormEvent } from "react";
 import { StarIcon } from "@chakra-ui/icons"
-import { Text, IconButton, Checkbox, Button, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, List, ListItem, Skeleton, Portal, Input, HStack, useToast } from "@chakra-ui/react";
+import { Text, IconButton, Checkbox, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, List, ListItem, Skeleton, Portal, Input, HStack, useToast } from "@chakra-ui/react";
 import { useMutation, UseMutationResult } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
 import { OngoingTask } from "./TaskOngoing";
@@ -29,34 +29,32 @@ const TaskCollectionPopover: React.FC<TaskCollectionPopoverProps> = ({task, coll
         const editTaskMutation = async (_id: TaskId, update: TaskUpdate) => {
         await mutate({ _id, update }, {
             onSuccess: (data, variables, context) => {
+                toast({
+                    title: 'success',
+                    status: 'success',
+                    duration: 1250,
+                    isClosable: true,
+                    });
                 onSuccess();
             },
+            onError: () => {
+                toast({
+                    title: 'error',
+                    status: 'error',
+                    duration: 1250,
+                    isClosable: true,
+                    });
+            }
             // Add other options as needed
         });
         };
 
         const addToCollection = (task_id: string, collection:string) => {
             editTaskMutation(task_id, {task_collection: Array.from(new Set([...task.task_collection || [], collection]))}); // TODO: clean up duplicate value issue, state management
-
-            toast({
-                title: 'success',
-                description: "added to collection",
-                status: 'success',
-                duration: 1250,
-                isClosable: true,
-              })
         }
 
         const removeFromCollection = (task_id:string, collection:string) => {
             editTaskMutation(task_id, {task_collection: (task.task_collection || []).filter((c) => !(c.includes(collection)))});
-
-            toast({
-                title: 'success',
-                description: "removed from collection",
-                status: 'success',
-                duration: 1250,
-                isClosable: true,
-              })
         }
 
     const handleSubmit = (event:FormEvent) => {

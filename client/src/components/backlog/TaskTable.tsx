@@ -28,23 +28,19 @@ import {
     Stack,
     ButtonGroup,
     Box,
-    VStack,
-    Portal,
     Input,
     Select,
     Flex,
-    Spacer,
     Badge,
 } from "@chakra-ui/react";
 import React from "react";
-import { VisibilityState, Column, useReactTable, getCoreRowModel, flexRender, Cell, getFilteredRowModel, ColumnDef, getPaginationRowModel, getSortedRowModel } from '@tanstack/react-table';
+import { VisibilityState, useReactTable, getCoreRowModel, flexRender, getFilteredRowModel, ColumnDef, getPaginationRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { ArrowUpDownIcon, SearchIcon, ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
 import TaskEditModal from "../task/TaskEditModal";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
 import * as backlogApi from '../../api/backlog';
 import TableSkillTag from "./TableSkillTag";
-import TaskCollectionPopover from "../task/TaskCollectionPopover";
 
 export type CellTaskDelete = {
     onRemove: (_id:string) => void,
