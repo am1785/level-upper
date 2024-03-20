@@ -63,6 +63,7 @@ button:focus-visible {
   font-size: large;
   font-weight: 600;
   margin-bottom: 1em;
+  margin-top: 1em;
   border-left: solid 3px #747bff;
   padding: 3px;
 }
@@ -70,6 +71,14 @@ button:focus-visible {
 .markdownView h2{
   font-size: large;
   font-weight: 500;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.markdownView h3{
+  font-size: medium;
+  font-weight: 500;
+  margin-top: 1em;
   margin-bottom: 1em;
 }
 

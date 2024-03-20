@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure, ButtonGroup } from "@chakra-ui/react"
+import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure, ButtonGroup, useToast } from "@chakra-ui/react"
 import { MinusIcon, ViewIcon } from "@chakra-ui/icons"
 import { Link, AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 import { useQueryClient, useMutation, UseMutationResult } from '@tanstack/react-query'
@@ -7,6 +7,7 @@ import * as taskApi from '../../api/tasks';
 import TaskEditModal from './TaskEditModal'
 import { EXP_MAP } from '../backlog/TaskTable';
 import TaskCollectionPopover from './TaskCollectionPopover'
+import LevelupIcon from '../../assets/img/icon.png'
 
 export type OngoingTask = {
     _id: string;
@@ -47,6 +48,8 @@ const { mutate }: UseMutationResult<void, unknown, { _id: TaskId; update: TaskUp
   mutationKey: ['editTask'],
 });
 
+const toast = useToast();
+
 const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
   await mutate({ _id, update }, {
     onSuccess: (data, variables, context) => {
@@ -54,6 +57,17 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
       queryClient.invalidateQueries({queryKey: ['deleteTask']});
       queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
       queryClient.invalidateQueries({queryKey: ['fetchSkills']});
+
+      if (task.status === "ongoing") {toast({
+        title: 'level up!',
+        status: 'info',
+        description: `earned ${task.exp} exp!`,
+        duration: 3000,
+        isClosable: true,
+        variant: "subtle",
+        icon: <img src={LevelupIcon} style={{height:"1.25em", marginTop: "0.15em"}}/>
+        });
+      }
     },
     // Add other options as needed
   });

@@ -15,7 +15,7 @@ export default function LevelCardView(prop:LevelCardViewProps){
     data.sort(compareExp, );
 
     return (<>
-    {!data || data.length === 0 && <Box boxShadow='md' p='5' rounded='md' bg='white' mt='3' mb='3'>add some tasks to level up today!</Box>}
+    {!data || data.length === 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
     <Stack direction={'row'} wrap={'wrap'} spacing={'3'} mt={'1em'} justifyContent={'space-evenly'}>
         {data.map( (s:skill, id:number) => ( // () instead of {} so that something is returned explicitly
                 <Card key={id} variant={id % 2 === 0 ? 'outline' : 'filled'}>

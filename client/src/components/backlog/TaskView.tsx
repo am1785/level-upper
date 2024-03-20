@@ -10,18 +10,14 @@ import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 //@ts-ignore
 import {atomDark} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-
-// use params and fetch data within component instead
-// export type TaskViewProps = {
-//     task: OngoingTask,
-// }
-
 const TaskView: React.FC = () => {
+    // TODO: USER AUTH
+    const user = "default";
     const {task_id} = useParams();
     const { status, data, error } = useQuery({
         queryFn: () => taskApi.fetchView(task_id as string),
         queryKey: ['fetchOngoingTask', { task_id }],
-      });
+    });
 
 
     return(<>

@@ -1,5 +1,7 @@
-import { Tabs, Tab, TabList, TabPanels, TabPanel, Icon, Box } from "@chakra-ui/react"
+import React from "react";
+import { Tabs, Tab, TabList, TabPanels, TabPanel, Icon, Box, Select, VStack } from "@chakra-ui/react"
 import * as skillsApi from '../../api/skills';
+import * as taskApi from '../../api/tasks';
 import { useQuery } from '@tanstack/react-query';
 import LevelCardView from '../level/LevelCardView';
 import LevelGraphView from "../level/LevelGraphView";
@@ -12,12 +14,19 @@ export type skill = {
 
 export default function Mylevel(){
 
+    // TODO: IMPLEMENT user authentication
     const user = 'default';
+    const [collection, setCollection] = React.useState("");
 
     const { status, data, error } = useQuery({
-        queryFn: () => skillsApi.fetchSkills(user),
-        queryKey: ['fetchSkills', { user }],
-      })
+        queryFn: () => skillsApi.fetchSkills(user, collection),
+        queryKey: ['fetchSkills', { user, collection }],
+      });
+
+    const { status:collectionStatus, data:collectionData, error:collectionError } = useQuery({
+        queryFn: () => taskApi.fetchCollections(user),
+        queryKey: ['fetchCollections', { user }],
+    })
 
       if (status === 'pending') {
         return <span>Loading...</span>
@@ -28,8 +37,12 @@ export default function Mylevel(){
       }
 
       else { // or status === 'success'
-        // console.log(data);
+        console.log(data);
       }
+
+    const handleCollectionFilter = (value:any) => {
+      setCollection(value);
+    }
 
 
     return (<>
@@ -54,7 +67,14 @@ export default function Mylevel(){
         </TabList>
         <TabPanels>
           <TabPanel display={'flex'} justifyContent={'center'}>
-            <LevelGraphView data={data}/>
+            <VStack>
+              <Select defaultValue={collection} placeholder='collection' size={'md'} mb={'1em'} onChange={(e) => handleCollectionFilter(e.currentTarget.value)}>
+              {collectionData?.map((c:any, id:number) => (
+                <option key={id} value={c}>{c}</option>
+              ))}
+              </Select>
+              <LevelGraphView data={data}/>
+            </VStack>
           </TabPanel>
           <TabPanel>
             <LevelCardView data={data} />
