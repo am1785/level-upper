@@ -3,15 +3,17 @@ import { Center, Fade, useDisclosure, HStack, IconButton } from '@chakra-ui/reac
 import { StarIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
 import TaskEditModal from "../task/TaskEditModal";
 import TableFloatingDeleteBtn from "./TableFloatingDeleteBtn";
+import TableFloatingCollectionsModal from "./TableFloatingCollectionsModal";
 
 export type TableFloatingActionsProps = {
     actionIds: string[],
     prevIdsLength: number,
+    taskCollections: string[],
     onEditSuccess: () => void, // to pass in query invalidate from parent element
     onDeleteSuccess: () => void, // clear selected state from parent element
 }
 
-const TableFloatingActions: React.FC<TableFloatingActionsProps> = ({actionIds, prevIdsLength, onEditSuccess, onDeleteSuccess}) => {
+const TableFloatingActions: React.FC<TableFloatingActionsProps> = ({actionIds, prevIdsLength, taskCollections, onEditSuccess, onDeleteSuccess}) => {
 
     const { isOpen, onToggle } = useDisclosure();
 
@@ -45,7 +47,7 @@ const TableFloatingActions: React.FC<TableFloatingActionsProps> = ({actionIds, p
           <HStack gap={2}>
             {actionIds.length === 1 && <IconButton colorScheme="teal" variant={"outline"} bg={"white"} _dark={{bg: "gray.700"}} icon={<ViewIcon />} aria-label="View button" 
             onClick={() => getView(actionIds[0])}/> }
-            <IconButton colorScheme="yellow" variant={"outline"} bg={"white"} _light={{color:"yellow.400"}} _dark={{bg: "gray.700"}} icon={<StarIcon />} aria-label="add to collection button" />
+            <TableFloatingCollectionsModal task_ids={actionIds} collections={taskCollections} />
             {actionIds.length === 1 && <TaskEditModal task_id={actionIds[0]} className="logEdit" onSuccess={onEditSuccess}/> }
             <TableFloatingDeleteBtn task_ids={actionIds} onSuccess={onDeleteSuccess}/>
           </HStack>
