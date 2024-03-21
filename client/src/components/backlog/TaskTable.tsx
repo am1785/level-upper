@@ -38,11 +38,6 @@ import * as backlogApi from '../../api/backlog';
 import TableSkillTag from "./TableSkillTag";
 import TableFloatingActions from "./TableFloatingActions";
 
-// export type CellTaskDelete = {
-//     onRemove: (_id:string) => void,
-//     _id: string;
-// }
-
 export const EXP_MAP = new Map([
     [1, Object({size: 'xs', variant:'solid', colorScheme: 'gray'})],
     [2, Object({size: 's', variant:'solid', colorScheme: 'blue'})],
@@ -61,20 +56,6 @@ const TaskTable: React.FC= () => {
         queryFn: () => backlogApi.fetchAllTasks(USER),
         queryKey: ['fetchOngoingTasks', { USER }],
       });
-
-    // const { mutate } = useMutation({
-    //     mutationFn: (_id:string) => taskApi.deleteTask(_id),
-    //     mutationKey: ['deleteTask'],
-    //   });
-
-    //   const removeTaskMutation = async (_id:string) =>
-    //     await mutate(_id, {
-    //       onSuccess(data, variables, context) {
-    //         queryClient.invalidateQueries({queryKey: ['deleteTask']});
-    //         queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
-    //         queryClient.invalidateQueries({queryKey: ['fetchSkills']});
-    //       },
-    //     })
 
     let COLLECTIONS: string[] = [];
 
@@ -162,34 +143,6 @@ const TaskTable: React.FC= () => {
             </HStack>,
             filterFn: 'arrIncludes',
         },
-      //   {
-      //     accessorKey: "_id",
-      //     header: "actions",
-      //     size: 100,
-      //     enableSorting: false,
-      //     cell:  (prop:any) => <Popover>
-      //     <PopoverTrigger>
-      //       <Button><ChevronDownIcon /></Button>
-      //     </PopoverTrigger>
-      //     <PopoverContent w={'13.25em'}>
-      //       <PopoverArrow />
-      //       <PopoverCloseButton />
-      //     <PopoverBody>
-      //         {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(data[prop.row.id]._id)}/></HStack> <= an arrow function here WILL DELETE EVERYTHING  */}
-      //         {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(prop.getValue())}></DeleteTaskDialog></HStack> <= this still DELETES EVERYTHING WTF */}
-      //         {/* <HStack justify={'start'}><Button colorScheme="teal" onClick={() => getView(prop.getValue())}><ViewIcon /></Button><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
-      //          <= this also deletes EVERYTHING */}
-
-      //         <HStack justify={'start'}>
-      //           <IconButton icon={<ViewIcon />} size="md" colorScheme="teal" aria-label="viewTask" onClick={() => getView(prop.getValue())} />
-      //           <TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task_id={data[prop.row.id]._id}/>
-      //           <CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete>
-      //         </HStack>
-
-      //     </PopoverBody>
-      //     </PopoverContent>
-      //   </Popover>
-      // },
       {
           accessorKey: "createdAt",
           header: "date",
@@ -320,7 +273,7 @@ const TaskTable: React.FC= () => {
         </Table>
     </TableContainer>
 
-    <TableFloatingActions actionIds={selected} prevIdsLength={prevSelectedLen}
+    <TableFloatingActions actionIds={selected} prevIdsLength={prevSelectedLen} taskCollections={COLLECTIONS}
     onEditSuccess={() => queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']})}
     onDeleteSuccess={() => {setSelected([]); setPrevSelectedLen(selected.length);} }
     />

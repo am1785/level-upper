@@ -19,3 +19,15 @@ export const deleteTasks = async (_ids:string[]) => {
   const data = await response.json();
   return data;
 };
+
+export const editTaskCollections = async (_ids:string[], collection:string, operation:string) => {
+  const response = await fetch(BASE_URL, {
+    method: 'PUT',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ task_ids: _ids, task_collection: collection, operation: operation })
+  });
+  const data = await response.json();
+  return data;
+};

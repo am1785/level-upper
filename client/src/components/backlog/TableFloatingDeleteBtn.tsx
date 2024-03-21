@@ -40,7 +40,7 @@ const TableFloatingDeleteBtn:React.FC<TableFloatingDeleteBtnProps> = ({task_ids,
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                Delete Task:
+                Delete Tasks
               </AlertDialogHeader>
 
               <AlertDialogBody>

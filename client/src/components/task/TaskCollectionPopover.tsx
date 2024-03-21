@@ -89,15 +89,12 @@ return (<>
             <List spacing={3}>
             {collectData?.map((collection:string, id:number)  => (
                 <ListItem key={id}>
-                    <HStack>
-                        <Checkbox defaultChecked={task.task_collection?.includes(collection)} size={'md'}
-                        onChange={(e) => {
-                            // console.log(task);
-                            // console.log(task.task_collection);
-                            e.target.checked ? addToCollection(task._id, collection) : removeFromCollection(task._id, collection);
-                        }}/>
-                        <Text>{collection}</Text>
-                    </HStack>
+                    <Checkbox defaultChecked={task.task_collection?.includes(collection)} size={'md'}
+                    onChange={(e) => {
+                        // console.log(task);
+                        // console.log(task.task_collection);
+                        e.target.checked ? addToCollection(task._id, collection) : removeFromCollection(task._id, collection);
+                    }}>{collection}</Checkbox>
                 </ListItem>
             ))}
 
