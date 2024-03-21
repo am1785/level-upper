@@ -187,7 +187,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
     return (
         <>
         {className === 'ongoingEdit' ? <IconButton p={'2px'} bgColor={'whiteAlpha.100'} size={'s'} aria-label='edit task' onClick={onOpen} icon={<EditIcon />}></IconButton> :
-        <IconButton size="md" aria-label='edit task' onClick={onOpen} icon={<EditIcon stroke={'gray'}/>}></IconButton>}
+        <IconButton onClick={onOpen} colorScheme="gray" variant={"outline"} bg={"white"} _dark={{bg: "gray.700"}} icon={<EditIcon />} aria-label="Edit button" />}
           <Modal isOpen={isOpen} onClose={onClose} isCentered size={'lg'} scrollBehavior={'inside'}>
             <ModalOverlay />
             <ModalContent maxW={expanded ? "100%" : "90%"} maxH={expanded ? "100%" : "90%"}>

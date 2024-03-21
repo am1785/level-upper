@@ -9,12 +9,6 @@ import {
     Th,
     Td,
     TableContainer,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverBody,
-    PopoverArrow,
-    PopoverCloseButton,
     AlertDialog,
     AlertDialogBody,
     AlertDialogContent,
@@ -32,6 +26,7 @@ import {
     Select,
     Flex,
     Badge,
+    Checkbox
 } from "@chakra-ui/react";
 import React from "react";
 import { VisibilityState, useReactTable, getCoreRowModel, flexRender, getFilteredRowModel, ColumnDef, getPaginationRowModel, getSortedRowModel } from '@tanstack/react-table';
@@ -41,11 +36,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
 import * as backlogApi from '../../api/backlog';
 import TableSkillTag from "./TableSkillTag";
+import TableFloatingActions from "./TableFloatingActions";
 
-export type CellTaskDelete = {
-    onRemove: (_id:string) => void,
-    _id: string;
-}
+// export type CellTaskDelete = {
+//     onRemove: (_id:string) => void,
+//     _id: string;
+// }
 
 export const EXP_MAP = new Map([
     [1, Object({size: 'xs', variant:'solid', colorScheme: 'gray'})],
@@ -57,27 +53,28 @@ export const EXP_MAP = new Map([
 
 const TaskTable: React.FC= () => {
     const queryClient = useQueryClient();
-
     const USER = 'default'; // TODO: get current user based on auth
+    const [selected, setSelected] = React.useState<string[]>([]);
+    const [prevSelectedLen, setPrevSelectedLen] = React.useState<number>(0);
 
     const { status, data, error } = useQuery({
         queryFn: () => backlogApi.fetchAllTasks(USER),
         queryKey: ['fetchOngoingTasks', { USER }],
       });
 
-    const { mutate } = useMutation({
-        mutationFn: (_id:string) => taskApi.deleteTask(_id),
-        mutationKey: ['deleteTask'],
-      });
+    // const { mutate } = useMutation({
+    //     mutationFn: (_id:string) => taskApi.deleteTask(_id),
+    //     mutationKey: ['deleteTask'],
+    //   });
 
-      const removeTaskMutation = async (_id:string) =>
-        await mutate(_id, {
-          onSuccess(data, variables, context) {
-            queryClient.invalidateQueries({queryKey: ['deleteTask']});
-            queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
-            queryClient.invalidateQueries({queryKey: ['fetchSkills']});
-          },
-        })
+    //   const removeTaskMutation = async (_id:string) =>
+    //     await mutate(_id, {
+    //       onSuccess(data, variables, context) {
+    //         queryClient.invalidateQueries({queryKey: ['deleteTask']});
+    //         queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+    //         queryClient.invalidateQueries({queryKey: ['fetchSkills']});
+    //       },
+    //     })
 
     let COLLECTIONS: string[] = [];
 
@@ -90,47 +87,19 @@ const TaskTable: React.FC= () => {
       // console.log(COLLECTIONS);
     }
 
-    const CellTaskDelete:React.FC<CellTaskDelete> = ({onRemove, _id}) => {
-        const { isOpen, onOpen, onClose } = useDisclosure()
-        const cancelRef = React.useRef(null)
-        // console.log(props);
-        return (
-          <>
-            <IconButton size="sm" variant='solid' colorScheme='red' isRound={true} aria-label='delete task' icon={<MinusIcon />} onClick={onOpen} />
-            <AlertDialog
-              isOpen={isOpen}
-              leastDestructiveRef={cancelRef}
-              onClose={onClose}
-              size={'sm'}
-            >
-              <AlertDialogOverlay>
-                <AlertDialogContent>
-                  <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                    Delete Task:
-                  </AlertDialogHeader>
+    function handleSelect(_id: string) {
+      setPrevSelectedLen(selected.length);
 
-                  <AlertDialogBody>
-                    Are you sure? You can't undo this action afterwards.
-                  </AlertDialogBody>
-
-                  <AlertDialogFooter>
-                    <Button ref={cancelRef} onClick={onClose}>
-                      Cancel
-                    </Button>
-                    <Button colorScheme='red' ml={2} onClick={() => {onRemove(_id); onClose();}}>
-                      Delete
-                    </Button>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialogOverlay>
-            </AlertDialog>
-          </>
-        )
+      if (selected.find((id) => id === _id)) {
+        // console.log("contains!");
+        setSelected((prev) => prev.filter(id => id !== _id));
+      } else {
+        // console.log("doesn't contain!");
+        setSelected((prev) => [...prev, _id]);
       }
-
-    function getView(_id:string) {
-        window.open(`/view/${_id}`, "_blank") //to open new page;
     }
+
+    // console.log(selected);
 
     const [columnFilters, setColumnFilters] = React.useState([
       {
@@ -144,6 +113,16 @@ const TaskTable: React.FC= () => {
   })
 
     const columns = React.useMemo<ColumnDef<{col1: string}>[]>(() => [
+        {
+          accessorKey: "_id",
+          header: "",
+          size: 0,
+          enableSorting: false,
+          cell: (props:any) =>
+            <Box textAlign={'center'}>
+              <Checkbox isChecked={selected.includes(String(props.getValue()))} onChange={() => handleSelect(String(props.getValue()))}></Checkbox>
+            </Box>
+        },
         {
           accessorKey: "status",
           header: "status",
@@ -183,34 +162,34 @@ const TaskTable: React.FC= () => {
             </HStack>,
             filterFn: 'arrIncludes',
         },
-        {
-          accessorKey: "_id",
-          header: "actions",
-          size: 100,
-          enableSorting: false,
-          cell:  (prop:any) => <Popover>
-          <PopoverTrigger>
-            <Button><ChevronDownIcon /></Button>
-          </PopoverTrigger>
-          <PopoverContent w={'13.25em'}>
-            <PopoverArrow />
-            <PopoverCloseButton />
-          <PopoverBody>
-              {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(data[prop.row.id]._id)}/></HStack> <= an arrow function here WILL DELETE EVERYTHING  */}
-              {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(prop.getValue())}></DeleteTaskDialog></HStack> <= this still DELETES EVERYTHING WTF */}
-              {/* <HStack justify={'start'}><Button colorScheme="teal" onClick={() => getView(prop.getValue())}><ViewIcon /></Button><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
-               <= this also deletes EVERYTHING */}
+      //   {
+      //     accessorKey: "_id",
+      //     header: "actions",
+      //     size: 100,
+      //     enableSorting: false,
+      //     cell:  (prop:any) => <Popover>
+      //     <PopoverTrigger>
+      //       <Button><ChevronDownIcon /></Button>
+      //     </PopoverTrigger>
+      //     <PopoverContent w={'13.25em'}>
+      //       <PopoverArrow />
+      //       <PopoverCloseButton />
+      //     <PopoverBody>
+      //         {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(data[prop.row.id]._id)}/></HStack> <= an arrow function here WILL DELETE EVERYTHING  */}
+      //         {/* <HStack justify={'start'}><Button colorScheme="teal"><ViewIcon /></Button><TaskEditModal className="backlogEdit" task={data[prop.row.id]}/><DeleteTaskDialog props={prop.getValue()} onRemove = {removeTaskMutation(prop.getValue())}></DeleteTaskDialog></HStack> <= this still DELETES EVERYTHING WTF */}
+      //         {/* <HStack justify={'start'}><Button colorScheme="teal" onClick={() => getView(prop.getValue())}><ViewIcon /></Button><TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task={data[prop.row.id]}/><CellTaskDelete onRemove = {removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete></HStack>
+      //          <= this also deletes EVERYTHING */}
 
-              <HStack justify={'start'}>
-                <IconButton icon={<ViewIcon />} size="md" colorScheme="teal" aria-label="viewTask" onClick={() => getView(prop.getValue())} />
-                <TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task_id={data[prop.row.id]._id}/>
-                <CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete>
-              </HStack>
+      //         <HStack justify={'start'}>
+      //           <IconButton icon={<ViewIcon />} size="md" colorScheme="teal" aria-label="viewTask" onClick={() => getView(prop.getValue())} />
+      //           <TaskEditModal onSuccess={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchSkills']})}} className="backlogEdit" task_id={data[prop.row.id]._id}/>
+      //           <CellTaskDelete onRemove = {() => removeTaskMutation(prop.getValue())} _id={prop.getValue()}></CellTaskDelete>
+      //         </HStack>
 
-          </PopoverBody>
-          </PopoverContent>
-        </Popover>
-      },
+      //     </PopoverBody>
+      //     </PopoverContent>
+      //   </Popover>
+      // },
       {
           accessorKey: "createdAt",
           header: "date",
@@ -227,7 +206,7 @@ const TaskTable: React.FC= () => {
         </HStack>,
         filterFn: 'arrIncludes'
     },
-    ], [data, columnFilters]);
+    ], [data, columnFilters, selected]);
 
     // console.log(columnFilters);
     // console.log(columnFilters.some((c) => c.value === "react.js"));
@@ -320,7 +299,7 @@ const TaskTable: React.FC= () => {
                             {header.column.columnDef.header as React.ReactNode}
                             {
                               header.column.getCanSort() && <ArrowUpDownIcon
-                                fontSize={"xs"} mx={1} onClick={header.column.getToggleSortingHandler()}/>
+                                fontSize={"10px"} mx={1} onClick={header.column.getToggleSortingHandler()}/>
                             }
                         </Th>
                     ))}
@@ -340,6 +319,12 @@ const TaskTable: React.FC= () => {
             </Tbody>
         </Table>
     </TableContainer>
+
+    <TableFloatingActions actionIds={selected} prevIdsLength={prevSelectedLen}
+    onEditSuccess={() => queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']})}
+    onDeleteSuccess={() => {setSelected([]); setPrevSelectedLen(selected.length);} }
+    />
+
     <Box>
     <ButtonGroup size={"sm"} isAttached variant={"outline"} mb={2} mt={2}>
       <Button onClick={()=> table.previousPage()} isDisabled={!table.getCanPreviousPage()}>
