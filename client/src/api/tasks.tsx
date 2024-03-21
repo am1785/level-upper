@@ -1,6 +1,9 @@
 // api routes for react-query
 const BASE_URL = 'http://192.168.1.8:5001/tasks';
 
+// for showcase vscode
+// const BASE_URL = "https://l3n3cjbp-5001.use.devtunnels.ms/tasks";
+
 export const fetchTasks = async (author:string) => {
   const response = await fetch(BASE_URL + '/' + author);
   const data = await response.json();

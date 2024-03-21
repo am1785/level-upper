@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { OngoingTask } from "./TaskOngoing"
-import { Skeleton, Button, FormControl, FormLabel, HStack, IconButton, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Switch, Tag, Textarea, useDisclosure, useToast } from "@chakra-ui/react"
+import { Text, Skeleton, Button, FormControl, FormLabel, HStack, IconButton, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Switch, Tag, Textarea, useDisclosure, useToast } from "@chakra-ui/react"
 import { CloseIcon, EditIcon, ArrowUpDownIcon } from "@chakra-ui/icons"
 import { taskForm } from "./TaskInput"
 import { useQueryClient, UseMutationResult, useMutation, } from "@tanstack/react-query"
@@ -112,6 +112,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
     const [currTag, setCurrTag] = useState('');
     const [tags, setTags] = useState(new Set(task?.skills));
+    const [contentSize, setContentSize] = useState(0);
 
     async function submitForm(event:any){
         event.preventDefault();
@@ -238,7 +239,8 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
               <FormControl mt={'1em'}>
               <FormLabel>content</FormLabel>
-              <Textarea maxLength={4000} h={expanded ? '30em' : '15em'} defaultValue={task?.content} placeholder='plain text or markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
+              <Textarea maxLength={4000} h={expanded ? '30em' : '15em'} defaultValue={task?.content} placeholder='plain text or markdown' onChange={(e)=> {updateForm({content:e.currentTarget.value}); setContentSize(e.currentTarget.textLength)}} />
+              <Text fontSize={"xs"} mt={1}>{4000 - contentSize} characters remain</Text>
               </FormControl>
               <HStack justifyContent='end' mt={'.5em'}>
                 <Button onClick={toggleExpand} size={'sm'} _active={{transform: 'scale(1.2)'}} colorScheme={expanded ? "blue" : "gray"}><ArrowUpDownIcon /></Button>
