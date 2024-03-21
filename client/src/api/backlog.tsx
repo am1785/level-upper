@@ -1,8 +1,21 @@
 // api routes for react-query
-const BASE_URL = 'http://192.168.1.8:5001/tasks';
+const BASE_URL = 'http://192.168.1.8:5001/backlog';
+const BASE_FETCH_URL = 'http://192.168.1.8:5001/tasks';
 
 export const fetchAllTasks = async (author:string) => {
-  const response = await fetch(BASE_URL + '/' + author + '?all=1');
+  const response = await fetch(BASE_FETCH_URL + '/' + author + '?all=1');
+  const data = await response.json();
+  return data;
+};
+
+export const deleteTasks = async (_ids:string[]) => {
+  const response = await fetch(BASE_URL, {
+    method: 'DELETE',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ task_ids: _ids })
+  });
   const data = await response.json();
   return data;
 };
