@@ -124,7 +124,7 @@ export default function Ongoing(){
         {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack> : status === "error" ? <Text>{error.message}</Text>:null}
         {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
 
-        {!!ongoingTasks && <Box fontSize={'xs'} mb={'5'}>
+        {/* {!!ongoingTasks && <Box fontSize={'xs'} mb={'5'}>
                 <HStack justify={'end'}>
                   <Text>complete</Text>
                   <CheckCircleIcon color={'green.400'}/>
@@ -135,11 +135,13 @@ export default function Ongoing(){
                   <StarIcon color={'yellow.300'}/>
                   <Text>{ongoingExp}</Text>
                 </HStack>
-              </Box>}
+              </Box>} */}
 
-        {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=>(
-            <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
-        ))}
+        {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=> {
+            if(!t.hidden) {
+              return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} />
+            }
+        })}
 
         <Box mt={'1em'}>
         <IconButton onClick={onOpen} icon={<AddIcon/>} aria-label='addTask' colorScheme='blue' isRound={true}></IconButton>
@@ -176,9 +178,12 @@ export default function Ongoing(){
                   <Text>{weeklyExp}</Text>
                 </HStack>
               </Box>}
-              {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => ( // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
-                <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
-              ))}
+              {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => { // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
+                if(!t.hidden) {
+                  return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} />
+                  }
+                })
+              }
             </AccordionPanel>
           </AccordionItem>
         </Accordion>

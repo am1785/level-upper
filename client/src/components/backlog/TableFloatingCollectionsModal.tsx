@@ -23,7 +23,7 @@ const TableFloatingCollectionsModal:React.FC<TableFloatingCollectionsModalProps>
 
         const editTaskCollectionMutation = async (_ids: string[], collection: string, op: string) => {
         await mutate({ _ids, collection, op }, {
-            onSuccess: (data, variables, context) => {
+            onSuccess: () => {
                 // queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
                 const opDescription = op === "add_col_to_set" ? `added ${_ids.length} tasks to collection` : `removed ${_ids.length} tasks from collection`
                 queryClient.invalidateQueries({queryKey: ['fetchSkills']});

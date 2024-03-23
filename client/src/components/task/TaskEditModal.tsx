@@ -12,19 +12,16 @@ export type TaskEditProps = {
     onSuccess: () => void,
 }
 
-type TaskId = string;
-type TaskUpdate = any;
-
 const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) => {
 
-    const { mutate }: UseMutationResult<void, unknown, { _id: TaskId; update: TaskUpdate }> = useMutation({
+    const { mutate }: UseMutationResult<void, unknown, { _id: string; update: any }> = useMutation({
     mutationFn: ({ _id, update }) => taskApi.editTask(_id, update),
     mutationKey: ['editTask'],
     });
 
     const toast = useToast();
 
-    const editTaskMutation = async (_id: TaskId, update: TaskUpdate) => {
+    const editTaskMutation = async (_id: string, update: any) => {
     await mutate({ _id, update }, {
         onSuccess: (data, variables, context) => {
           toast({
@@ -56,7 +53,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
       skills: [""],
       status: "",
       exp: 1,
-      recurring: false,
+      hidden: false,
       author: "default",
       task_collection: [""],
       createdAt: "",
@@ -80,7 +77,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
               content : res.content,
               skills : res.skills,
               exp : res.exp,
-              recurring: res.recurring,
+              hidden: res.hidden,
               author: res.author,
               status: res.status
             });
@@ -103,7 +100,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
         content : task?.content,
         skills : task?.skills,
         exp : task?.exp,
-        recurring: task?.recurring,
+        hidden: task?.hidden,
         author: task?.author,
         status: task?.status
         });
@@ -123,7 +120,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
             content : task.content,
             skills : task.skills,
             exp : task.exp,
-            recurring: task.recurring,
+            hidden: task.hidden,
             author: task.author,
             status: task.status
             })
@@ -247,10 +244,10 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
               </HStack>
 
               <FormControl mt={'1em'} display='flex' alignItems='center'>
-              <FormLabel htmlFor='recurring' mb='0'>
-                  Recurring?
+              <FormLabel htmlFor='hidden' mb='0'>
+                  Hidden?
               </FormLabel>
-              <Switch defaultChecked={task?.recurring} id='recurring' onChange={(e)=>{updateForm({recurring:!form.recurring})}}/>
+              <Switch defaultChecked={task?.hidden} id='hidden' onChange={(e)=>{updateForm({hidden:!form.hidden})}}/>
               </FormControl>
 
               <FormControl mt={'1em'} display='flex' alignItems='center'>
