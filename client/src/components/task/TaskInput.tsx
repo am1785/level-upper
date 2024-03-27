@@ -30,7 +30,7 @@ export type taskForm = {
   content?: string;
   skills: string[];
   exp: number;
-  recurring: boolean;
+  hidden: boolean;
   author: string;
   status: string;
   }
@@ -59,7 +59,7 @@ link : '',
 content : "",
 skills : [],
 exp : 1,
-recurring: false,
+hidden: false,
 author: "default",
 status: "ongoing"
 });
@@ -160,10 +160,10 @@ return (<>
 </FormControl>
 
 <FormControl mt={'1em'} display='flex' alignItems='center'>
-  <FormLabel htmlFor='recurring' mb='0'>
-    Recurring?
+  <FormLabel htmlFor='hidden' mb='0'>
+    Hidden?
   </FormLabel>
-  <Switch id='recurring' onChange={(e)=>{updateForm({recurring:!form.recurring})}}/>
+  <Switch id='hidden' onChange={(e)=>{updateForm({hidden:!form.hidden})}}/>
 </FormControl>
 
 <HStack justifyContent={'space-around'}>
