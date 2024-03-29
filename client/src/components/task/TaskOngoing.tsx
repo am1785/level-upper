@@ -115,7 +115,7 @@ const changeHideMutation = async (_id: string, update: any) => {
                   </AlertDialogHeader>
 
                   <AlertDialogBody>
-                    Are you sure? <strong>You can't undo this action afterwards.</strong> Hiding a task will allow you to find it in the backlog instead.
+                    Are you sure? <strong>You can't undo this action afterwards.</strong> Hidden tasks could be found in the backlog.
                   </AlertDialogBody>
 
                   <AlertDialogFooter>
