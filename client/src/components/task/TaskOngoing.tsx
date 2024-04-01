@@ -99,7 +99,7 @@ const changeHideMutation = async (_id: string, update: any) => {
         return (
           <>
             <HStack>
-            <Box fontSize={'xs'} textColor={'gray.500'} className='ongoingAddedWhen' sx={{position:'absolute', top:'-14px', right:'10px'}}>{day_diff > 0 ? `${day_diff} day ${hr_diff} hr`: hr_diff > 0 ? `${hr_diff} hr ${min_diff} min`: `${min_diff} min`} ago</Box>
+            <Box fontSize={'xs'} textColor={'gray.500'} className='ongoingAddedWhen' sx={{position:'absolute', top:'-14px', right:'10px'}}>{day_diff > 0 ? `${day_diff} d ${hr_diff} h`: hr_diff > 0 ? `${hr_diff} h ${min_diff} m`: `${min_diff} m`} ago</Box>
             <IconButton sx={{position:'absolute', top:'-12px', right:'-12px'}} size={'13px'} variant='solid' colorScheme='red' isRound={true} aria-label='delete task' fontSize='13px' icon={<MinusIcon />} onClick={onOpen} />
             </HStack>
             <AlertDialog
