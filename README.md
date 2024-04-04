@@ -1,8 +1,22 @@
 # Level-Upper
-A modern time management web application that helps users plan their daily tasks, track their progress toward specific goals, and level up!
+A modern time management web application that helps users plan their daily tasks, track their progress, and level up new skills!
 
-![image](https://github.com/am1785/level-upper/assets/25367083/6f2980e0-4990-4465-8b7d-e8c696a61cf3)
+## Tasks view
+<p align="center">
+  <img src="https://github.com/am1785/level-upper/assets/25367083/228c7676-8fbf-4cd1-bb46-b511537daa9d" />
+</p>
 
-![level-upper-backlog-table-demo-2](https://github.com/am1785/level-upper/assets/25367083/e0752b11-be38-4b8c-8654-4baaca446037)
+## Table view (dark mode)
+<p align="center">
+  <img src="https://github.com/am1785/level-upper/assets/25367083/7925ca58-94ad-43d1-bdea-f321ae52c252" />
+</p>
 
-![level-upper-view-demo](https://github.com/am1785/level-upper/assets/25367083/29374398-0f0f-441c-8dc1-d462e90c6e7f)
+## Blog view (accepts markdown)
+<p align="center">
+  <img src="https://github.com/am1785/level-upper/assets/25367083/198d9fee-2a5a-400b-bd94-80ea39a4673c" />
+</p>
+
+## Levels view
+<p align="center">
+  <img src="https://github.com/am1785/level-upper/assets/25367083/93c25598-9c9a-4bc2-b6e3-fb7f6e9ba77f" />
+</p>
