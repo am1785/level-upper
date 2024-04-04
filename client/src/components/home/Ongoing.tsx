@@ -23,7 +23,7 @@ export default function Ongoing(){
 
     // function to check if the task is ongoing (updated today / yesterday)
     const dayDiff = useCallback((d:Date) => {
-    if (currDate.getFullYear() === d.getFullYear() && currDate.getMonth() === d.getMonth()) {
+    if (currDate.getFullYear() === d.getFullYear() && currDate.getMonth() - d.getMonth() <= 1) {
       return currDate.getDate() - d.getDate()
     } else {
       return 30
@@ -92,7 +92,7 @@ export default function Ongoing(){
 
       data?.forEach((d:any) => {
               const createdDate = new Date(d.updatedAt); // checking update date instead
-              const diff = dayDiff(createdDate)
+              const diff = dayDiff(createdDate);
               if(diff === 0) {
                   ongoingTasks.push(d);
                   if(d.status === "complete") {
@@ -119,27 +119,18 @@ export default function Ongoing(){
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
+    // console.log(weeklyTasks);
+
     return (<>
     <main style={{minHeight: "100vh"}}>
         {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack> : status === "error" ? <Text>{error.message}</Text>:null}
         {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
 
-        {!!ongoingTasks && <Box fontSize={'xs'} mb={'5'}>
-                <HStack justify={'end'}>
-                  <Text>complete</Text>
-                  <CheckCircleIcon color={'green.400'}/>
-                  <Text>{ongoingComplete}</Text>
-                </HStack>
-                <HStack justify={'end'}>
-                  <Text>earned</Text>
-                  <StarIcon color={'yellow.300'}/>
-                  <Text>{ongoingExp}</Text>
-                </HStack>
-              </Box>}
-
-        {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=>(
-            <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
-        ))}
+        {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=> {
+            if(!t.hidden) {
+              return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} />
+            }
+        })}
 
         <Box mt={'1em'}>
         <IconButton onClick={onOpen} icon={<AddIcon/>} aria-label='addTask' colorScheme='blue' isRound={true}></IconButton>
@@ -176,9 +167,12 @@ export default function Ongoing(){
                   <Text>{weeklyExp}</Text>
                 </HStack>
               </Box>}
-              {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => ( // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
-                <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onExpand={()=> {console.log(t._id)}} />
-              ))}
+              {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => { // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
+                if(!t.hidden) {
+                  return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} />
+                  }
+                })
+              }
             </AccordionPanel>
           </AccordionItem>
         </Accordion>

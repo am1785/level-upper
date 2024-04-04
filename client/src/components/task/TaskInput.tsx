@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
     FormControl,
     Input,
@@ -18,6 +18,7 @@ import { AddIcon, CloseIcon, EditIcon } from '@chakra-ui/icons';
 import { OngoingTask } from './TaskOngoing';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
+import { Trie } from "../../data/trie";
 
 export type InputProps = {
     recentTasks: OngoingTask[]; // for auto complete capabilities
@@ -30,7 +31,7 @@ export type taskForm = {
   content?: string;
   skills: string[];
   exp: number;
-  recurring: boolean;
+  hidden: boolean;
   author: string;
   status: string;
   }
@@ -59,13 +60,21 @@ link : '',
 content : "",
 skills : [],
 exp : 1,
-recurring: false,
+hidden: false,
 author: "default",
 status: "ongoing"
 });
 
 const [currTag, setCurrTag] = useState('');
 const [tags, setTags] = useState<Set<string> | null>();
+const tagsInputRef = useRef<HTMLInputElement>(null);
+
+const [skillRecs, setSkillRecs] = useState<string[]>([]);
+const prefixTree = new Trie();
+const SKILLS_CACHE:string[] = localStorage.getItem("userSkills") === null ? [] : JSON.parse(localStorage['userSkills']);
+for(let skill of SKILLS_CACHE) {
+  prefixTree.insert(skill);
+}
 
 const toast = useToast();
 
@@ -85,6 +94,13 @@ function handleKeyDown (event: React.KeyboardEvent) {
     event.preventDefault();
     addTag(currTag);
   }
+}
+
+function handleSkillChange(e:React.ChangeEvent<HTMLInputElement>) {
+  const tagName:string = e.currentTarget.value;
+  setCurrTag(tagName);
+  const recommendations:string[] = tagName.length === 0 ? [] : prefixTree.findWordsStartingWith(tagName);
+  setSkillRecs(recommendations);
 }
 
 function addTag(t:string) { // using a set to ensure no duplicate tags exist
@@ -133,14 +149,16 @@ return (<>
   )): <Tag>add skill tags from below</Tag>}
   </HStack>
   <InputGroup>
-    <Input type='text' value={currTag} placeholder='skill tags' onChange={(e)=>setCurrTag(e.currentTarget.value)} onKeyDown={(e) => {handleKeyDown(e);}} />
+    <Input type='text' ref={tagsInputRef} value={currTag} placeholder='skill tags' onChange={(e)=> {handleSkillChange(e)}} onKeyDown={(e) => {handleKeyDown(e);}} />
     <InputRightElement width={'5em'}>
       <Button h='1.75rem' size='sm' onClick={() => {addTag(currTag)}}>
-      {/* <Button h='1.75rem' size='sm' onClick={(e) => setTag(e)}> */}
           + tag
       </Button>
     </InputRightElement>
   </InputGroup>
+  {skillRecs && skillRecs.length > 0 && skillRecs.map((rec:string, id:number) => (
+    <Button key={id} variant={"ghost"} size={'xs'} onClick={() => {setCurrTag(rec); tagsInputRef.current && tagsInputRef.current.focus()}}>{rec}</Button>
+  ))}
 </FormControl>
 
 <FormControl isRequired mt={'1em'}>
@@ -160,10 +178,10 @@ return (<>
 </FormControl>
 
 <FormControl mt={'1em'} display='flex' alignItems='center'>
-  <FormLabel htmlFor='recurring' mb='0'>
-    Recurring?
+  <FormLabel htmlFor='hidden' mb='0'>
+    Hidden?
   </FormLabel>
-  <Switch id='recurring' onChange={(e)=>{updateForm({recurring:!form.recurring})}}/>
+  <Switch id='hidden' onChange={(e)=>{updateForm({hidden:!form.hidden})}}/>
 </FormControl>
 
 <HStack justifyContent={'space-around'}>

@@ -5,10 +5,10 @@ const Task = require('../models/task');
 // const Skillset = require('../models/skillset');
 
 router.post('/tasks', async (req, res) => {
-    const {title, link, content, skills, status, exp, recurring, author} = req.body;
+    const {title, link, content, skills, status, exp, hidden, author} = req.body;
 
     try {
-        const task = await Task.create({title, link, content, skills, status, exp, recurring, author})
+        const task = await Task.create({title, link, content, skills, status, exp, hidden, author})
         res.status(200).json({ message: 'Task added successfully', task })
     } catch (err) {
         res.status(400).json({error: err.message})

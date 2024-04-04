@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react'
-import { Checkbox, Center, Box, Tag, HStack, Stack, Spacer, Button, IconButton, useDisclosure, ButtonGroup, useToast } from "@chakra-ui/react"
+import { Checkbox, Flex, Spacer, Box, Tag, HStack, Stack, Button, IconButton, useDisclosure, ButtonGroup, useToast } from "@chakra-ui/react"
 import { MinusIcon, ViewIcon } from "@chakra-ui/icons"
 import { Link, AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 import { useQueryClient, useMutation, UseMutationResult } from '@tanstack/react-query'
@@ -17,7 +17,7 @@ export type OngoingTask = {
     skills: string[];
     status: string; // ongoing | complete
     exp: number;
-    recurring: boolean;
+    hidden: boolean;
     author: string;
     task_collection: string[];
     createdAt: string;
@@ -29,30 +29,25 @@ export type OngoingTaskProps = {
     date: Date;
     collections: string[];
     onRemove: (id: string) => void;
-    onExpand: (id: string) => void;
 }
 
-const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, collections, onRemove, onExpand}) => {
+const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, collections, onRemove}) => {
 
 // TODO: memo edit modals and collection popovers for performance
 // const MEditModal = React.memo(TaskEditModal);
 // const MCollectionPopover = React.memo(TaskCollectionPopover);
 
-// Assuming types for _id and update
-type TaskId = string;
-type TaskUpdate = any; // Adjust this type according to your data structure
-
 const queryClient = useQueryClient();
-const { mutate }: UseMutationResult<void, unknown, { _id: TaskId; update: TaskUpdate }> = useMutation({
+const { mutate }: UseMutationResult<void, unknown, { _id: string; update: any }> = useMutation({
   mutationFn: ({ _id, update }) => taskApi.editTask(_id, update),
   mutationKey: ['editTask'],
 });
 
 const toast = useToast();
 
-const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
+const changeStatusMutation = async (_id: string, update: any) => {
   await mutate({ _id, update }, {
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       // Handle success if needed
       queryClient.invalidateQueries({queryKey: ['deleteTask']});
       queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
@@ -73,6 +68,27 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
   });
 };
 
+const changeHideMutation = async (_id: string, update: any) => {
+  await mutate({ _id, update }, {
+    onSuccess: () => {
+      // Handle success if needed
+      queryClient.invalidateQueries({queryKey: ['deleteTask']});
+      queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+      queryClient.invalidateQueries({queryKey: ['fetchSkills']});
+
+      if (task.status === "ongoing") {toast({
+        title: 'success',
+        status: 'success',
+        description: `task hidden`,
+        duration: 2250,
+        isClosable: true,
+        variant: "subtle",
+        });
+      }
+    },
+  });
+};
+
  function DeleteTaskDialog() {
         const { isOpen, onOpen, onClose } = useDisclosure()
         const cancelRef = React.useRef(null)
@@ -83,7 +99,7 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
         return (
           <>
             <HStack>
-            <Box fontSize={'xs'} textColor={'gray.500'} className='ongoingAddedWhen' sx={{position:'absolute', top:'-14px', right:'10px'}}>{day_diff > 0 ? `${day_diff} day ${hr_diff} hr`: hr_diff > 0 ? `${hr_diff} hr ${min_diff} min`: `${min_diff} min`} ago</Box>
+            <Box fontSize={'xs'} textColor={'gray.500'} className='ongoingAddedWhen' sx={{position:'absolute', top:'-14px', right:'10px'}}>{day_diff > 0 ? `${day_diff} d ${hr_diff} h`: hr_diff > 0 ? `${hr_diff} h ${min_diff} m`: `${min_diff} m`} ago</Box>
             <IconButton sx={{position:'absolute', top:'-12px', right:'-12px'}} size={'13px'} variant='solid' colorScheme='red' isRound={true} aria-label='delete task' fontSize='13px' icon={<MinusIcon />} onClick={onOpen} />
             </HStack>
             <AlertDialog
@@ -99,16 +115,22 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
                   </AlertDialogHeader>
 
                   <AlertDialogBody>
-                    Are you sure? You can't undo this action afterwards.
+                    Are you sure? <strong>You can't undo this action afterwards.</strong> Hidden tasks could be found in the backlog.
                   </AlertDialogBody>
 
                   <AlertDialogFooter>
-                    <Button ref={cancelRef} onClick={onClose}>
-                      Cancel
-                    </Button>
-                    <Button colorScheme='red' onClick={() => {onRemove(task._id); onClose();}} ml={2}>
-                      Delete
-                    </Button>
+                    <Flex direction={'row'} w={'100%'}>
+                      <Button ref={cancelRef} onClick={onClose}>
+                        Cancel
+                      </Button>
+                      <Spacer />
+                      <Button colorScheme='teal' mr={2} onClick={() => {changeHideMutation(task._id, {hidden: true}); onClose();}}>
+                        Hide
+                      </Button>
+                      <Button colorScheme='red' onClick={() => {onRemove(task._id); onClose();}}>
+                        Delete
+                      </Button>
+                    </Flex>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialogOverlay>
@@ -121,6 +143,10 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
         window.open(`/view/${_id}`, "_blank") //to open new page;
     }
 
+    function getLink(url:string) {
+      window.open(url, "_blank");
+    }
+
     return (
         <Box key={task._id} boxShadow='base' p='5' rounded='md' mt='3' mb='3' opacity={task.status === "complete" ? "70%" :"100%"} _dark={{border: "2px solid #718096"}}>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
@@ -130,7 +156,7 @@ const changeStatusMutation = async (_id: TaskId, update: TaskUpdate) => {
             <HStack>
               <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation(task._id, {author: "default", status: e.target.checked ? "complete" : "ongoing"})}> </Checkbox>
               {
-                task.link ? <Link href={task.link}><p className='ongoingTitle'>{task.title}</p></Link>
+                task.link ? <p className='ongoingTitle' onClick={() => getLink(task.link!)}>{task.title}</p>
                           : <p className='ongoingTitle'>{task.title}</p>
               }
             </HStack>

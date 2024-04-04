@@ -24,7 +24,7 @@ const taskSchema = new Schema({
         type: Number,
         required: true,
     },
-    recurring: {
+    hidden: {
         type: Boolean,
         default: false
     },

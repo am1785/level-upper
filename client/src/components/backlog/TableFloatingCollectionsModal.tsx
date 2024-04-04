@@ -23,14 +23,14 @@ const TableFloatingCollectionsModal:React.FC<TableFloatingCollectionsModalProps>
 
         const editTaskCollectionMutation = async (_ids: string[], collection: string, op: string) => {
         await mutate({ _ids, collection, op }, {
-            onSuccess: (data, variables, context) => {
-                queryClient.invalidateQueries({queryKey: ['bulkDeleteTasks']});
-                queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+            onSuccess: () => {
+                // queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+                const opDescription = op === "add_col_to_set" ? `added ${_ids.length} tasks to collection` : `removed ${_ids.length} tasks from collection`
                 queryClient.invalidateQueries({queryKey: ['fetchSkills']});
                 toast({
                     title: 'success',
                     status: 'success',
-                    description: `updated collections for ${_ids.length} tasks`,
+                    description: opDescription,
                     duration: 2000,
                     isClosable: true,
                     });
@@ -49,7 +49,7 @@ const TableFloatingCollectionsModal:React.FC<TableFloatingCollectionsModalProps>
 
     return(<>
         <IconButton onClick={onOpen} colorScheme="yellow" variant={"outline"} bg={"white"} _light={{color:"yellow.400"}} _dark={{bg: "gray.700"}} icon={<StarIcon />} aria-label="add to collection button" />
-          <Modal isOpen={isOpen} onClose={onClose} isCentered size={'sm'} scrollBehavior={'inside'}>
+          <Modal isOpen={isOpen} onClose={() => {queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); onClose();}} isCentered size={'sm'} scrollBehavior={'inside'}>
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>
