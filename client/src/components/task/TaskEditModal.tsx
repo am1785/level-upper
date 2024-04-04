@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react"
-import { OngoingTask } from "./TaskOngoing"
+import React, { useState, useEffect, useRef } from "react"
 import { Text, Skeleton, Button, FormControl, FormLabel, HStack, IconButton, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Switch, Tag, Textarea, useDisclosure, useToast } from "@chakra-ui/react"
 import { CloseIcon, EditIcon, ArrowUpDownIcon } from "@chakra-ui/icons"
 import { taskForm } from "./TaskInput"
-import { useQueryClient, UseMutationResult, useMutation, } from "@tanstack/react-query"
+import { UseMutationResult, useMutation, } from "@tanstack/react-query"
 import * as taskApi from '../../api/tasks'
+import { Trie } from "../../data/trie"
 
 export type TaskEditProps = {
     task_id: string,
@@ -23,7 +23,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
     const editTaskMutation = async (_id: string, update: any) => {
     await mutate({ _id, update }, {
-        onSuccess: (data, variables, context) => {
+        onSuccess: () => {
           toast({
             title: 'success',
             status: 'success',
@@ -62,12 +62,18 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
     const [Loading, setLoading] = useState(false);
 
+    const [skillRecs, setSkillRecs] = useState<string[]>([]);
+    const prefixTree = new Trie();
+    const SKILLS_CACHE:string[] = localStorage.getItem("userSkills") === null ? [] : JSON.parse(localStorage['userSkills']);
+    for(let skill of SKILLS_CACHE) {
+      prefixTree.insert(skill);
+    }
+
     useEffect(() => { // set loading state best practice: https://www.youtube.com/watch?v=V0VfR0eaz98
       async function fetchTaskData() {
         try {
           setLoading(true);
           const res = await taskApi.fetchView(task_id);
-          // console.log(res);
           if (res) {
             setTask(res);
             setTags(new Set(res.skills));
@@ -109,6 +115,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
     const [currTag, setCurrTag] = useState('');
     const [tags, setTags] = useState(new Set(task?.skills));
+    const tagsInputRef = useRef<HTMLInputElement>(null);
     const [contentSize, setContentSize] = useState(0);
 
     async function submitForm(event:any){
@@ -145,7 +152,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
       }
 
       function handleKeyDown (event: React.KeyboardEvent) {
-        if(event.key === 'Enter'){
+        if (event.key === 'Enter') {
           event.preventDefault();
           addTag(currTag);
         }
@@ -175,12 +182,16 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
         setTags(newTags);
       }
 
+      function handleSkillChange(e:React.ChangeEvent<HTMLInputElement>) {
+        const tagName:string = e.currentTarget.value;
+        setCurrTag(tagName);
+        const recommendations:string[] = tagName.length === 0 ? [] : prefixTree.findWordsStartingWith(tagName);
+        setSkillRecs(recommendations);
+      }
+
       function toggleExpand(){
         setExpanded((prev) => !prev) // functional way of updating value
       }
-
-      // console.log(`task: ${JSON.stringify(task)}`);
-      // console.log(`form: ${JSON.stringify(form)}`);
 
     return (
         <>
@@ -213,14 +224,17 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
               )): <Tag>add skill tags from below</Tag>}
               </HStack>
               <InputGroup>
-                  <Input type='text' value={currTag} placeholder='skill tags' onChange={(e)=>setCurrTag(e.currentTarget.value)} onKeyDown={(e) => {handleKeyDown(e);}} />
+                  <Input type='text' ref={tagsInputRef} value={currTag} placeholder='skill tags' onChange={(e)=> {handleSkillChange(e)}} onKeyDown={(e) => {handleKeyDown(e);}} />
                   <InputRightElement width={'5em'}>
                   <Button h='1.75rem' size='sm' onClick={() => {addTag(currTag)}}>
-                  {/* <Button h='1.75rem' size='sm' onClick={(e) => setTag(e)}> */}
                       + tag
                   </Button>
                   </InputRightElement>
               </InputGroup>
+              {skillRecs && skillRecs.length > 0 && skillRecs.map((rec:string, id:number) => (
+                    <Button key={id} variant={"ghost"} size={'xs'} onClick={() => {setCurrTag(rec); tagsInputRef.current && tagsInputRef.current.focus()}}>{rec}</Button>
+                  )
+              )}
               </FormControl>
 
               <FormControl isRequired mt={'1em'}>

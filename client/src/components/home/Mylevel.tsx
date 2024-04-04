@@ -36,8 +36,15 @@ export default function Mylevel(){
         return <span>Error: {error.message}</span>
       }
 
-      else { // or status === 'success'
-        console.log(data);
+      else { // or status === 'success', cache skills data into localStorage for future use
+        if(collection === "") {
+          // only update cache when fetching default collection
+          let skillCache = [];
+          for(let skill of data) {
+            skillCache.push(skill._id);
+          }
+          localStorage['userSkills'] = JSON.stringify(skillCache);
+        }
       }
 
     const handleCollectionFilter = (value:any) => {
