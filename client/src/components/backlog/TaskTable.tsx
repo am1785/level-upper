@@ -9,15 +9,7 @@ import {
     Th,
     Td,
     TableContainer,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogOverlay,
     HStack,
-    IconButton,
-    useDisclosure,
     Skeleton,
     Stack,
     ButtonGroup,
@@ -30,10 +22,8 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { VisibilityState, useReactTable, getCoreRowModel, flexRender, getFilteredRowModel, ColumnDef, getPaginationRowModel, getSortedRowModel } from '@tanstack/react-table';
-import { ArrowUpDownIcon, SearchIcon, ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
-import TaskEditModal from "../task/TaskEditModal";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import * as taskApi from '../../api/tasks';
+import { ArrowUpDownIcon, SearchIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as backlogApi from '../../api/backlog';
 import TableSkillTag from "./TableSkillTag";
 import TableFloatingActions from "./TableFloatingActions";

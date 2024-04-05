@@ -1,5 +1,6 @@
 import { Box, Stack, Card, Text, CardHeader, CardBody, Badge } from "@chakra-ui/react"
 import { skill } from "../home/Mylevel";
+import { CheckCircleIcon, StarIcon } from "@chakra-ui/icons";
 
 export type LevelCardViewProps = {
     data: skill[]
@@ -21,8 +22,8 @@ export default function LevelCardView(prop:LevelCardViewProps){
                 <Card key={id} variant={id % 2 === 0 ? 'outline' : 'filled'}>
                     <CardHeader fontSize={'md'} fontWeight={'600'} _dark={{"color": "yellow.300"}}>{s._id}</CardHeader>
                     <CardBody mt={'-2em'}>
-                    <Text fontSize={'sm'}>tasks <Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.count}</Badge></Text>
-                    <Text fontSize={'sm'}>exp earned <Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.exp_earned}</Badge></Text>
+                    <Text fontSize={'sm'}><CheckCircleIcon color={'green.400'} fontSize={'sm'} m={'.25em'}/> <Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.count}</Badge></Text>
+                    <Text fontSize={'sm'}><StarIcon color={'yellow.400'} fontSize={'sm'} m={'.25em'}/><Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.exp_earned}</Badge></Text>
                     </CardBody>
                 </Card>
         ))}

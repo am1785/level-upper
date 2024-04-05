@@ -40,7 +40,7 @@ export default function Mylevel(){
         if(collection === "") {
           // only update cache when fetching default collection
           let skillCache = [];
-          for(let skill of data) {
+          for(let skill of data[0]["groupbySkill"]) {
             skillCache.push(skill._id);
           }
           localStorage['userSkills'] = JSON.stringify(skillCache);
@@ -80,11 +80,11 @@ export default function Mylevel(){
                 <option key={id} value={c}>{c}</option>
               ))}
               </Select>
-              <LevelGraphView data={data}/>
+              <LevelGraphView skillData={data[0]["groupbySkill"]} taskSizeData={data[0]["groupbySize"]}/>
             </VStack>
           </TabPanel>
           <TabPanel>
-            <LevelCardView data={data} />
+            <LevelCardView data={data[0]["groupbySkill"]} />
           </TabPanel>
         </TabPanels>
       </Tabs>

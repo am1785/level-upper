@@ -91,8 +91,9 @@ export default function Ongoing(){
       // }
 
       data?.forEach((d:any) => {
-              const createdDate = new Date(d.updatedAt); // checking update date instead
-              const diff = dayDiff(createdDate);
+              const updatedDate = new Date(d.updatedAt); // checking update date instead
+              const diff = dayDiff(updatedDate);
+              // console.log(diff);
               if(diff === 0) {
                   ongoingTasks.push(d);
                   if(d.status === "complete") {
@@ -100,7 +101,7 @@ export default function Ongoing(){
                     ongoingExp += d.exp;
                     ongoingComplete += 1;
                     weeklyComplete += 1}
-              } else if(diff <= 7) {
+              } else if(diff <= 7 && diff >= -24) {
                 weeklyTasks.push(d);
                 if(d.status === "complete") {
                   weeklyExp += d.exp;
