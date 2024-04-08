@@ -138,7 +138,7 @@ return (<>
 
 <FormControl mt={'1em'}>
   <FormLabel>link</FormLabel>
-  <Input type='text' placeholder='any links' onChange={(e) => {updateForm({link:e.currentTarget.value})}}/>
+  <Input type='url' placeholder='any links' onChange={(e) => {updateForm({link:e.currentTarget.value})}}/>
 </FormControl>
 
 <FormControl mt={'1em'}>

@@ -20,7 +20,7 @@ export default function LevelCardView(prop:LevelCardViewProps){
     <Stack direction={'row'} wrap={'wrap'} spacing={'3'} mt={'1em'} justifyContent={'space-evenly'}>
         {data.map( (s:skill, id:number) => ( // () instead of {} so that something is returned explicitly
                 <Card key={id} variant={id % 2 === 0 ? 'outline' : 'filled'}>
-                    <CardHeader fontSize={'md'} fontWeight={'600'} _dark={{"color": "yellow.300"}}>{s._id}</CardHeader>
+                    <CardHeader fontSize={'md'} fontWeight={'600'} _dark={{"color": "white"}}>{s._id}</CardHeader>
                     <CardBody mt={'-2em'}>
                     <Text fontSize={'sm'}><CheckCircleIcon color={'green.400'} fontSize={'sm'} m={'.25em'}/> <Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.count}</Badge></Text>
                     <Text fontSize={'sm'}><StarIcon color={'yellow.400'} fontSize={'sm'} m={'.25em'}/><Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.exp_earned}</Badge></Text>

@@ -29,9 +29,10 @@ export type OngoingTaskProps = {
     date: Date;
     collections: string[];
     onRemove: (id: string) => void;
+    onClickLink: () => void;
 }
 
-const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, collections, onRemove}) => {
+const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, collections, onRemove, onClickLink}) => {
 
 // TODO: memo edit modals and collection popovers for performance
 // const MEditModal = React.memo(TaskEditModal);
@@ -143,10 +144,6 @@ const changeHideMutation = async (_id: string, update: any) => {
         window.open(`/view/${_id}`, "_blank") //to open new page;
     }
 
-    function getLink(url:string) {
-      window.open(url, "_blank");
-    }
-
     return (
         <Box key={task._id} boxShadow='base' p='5' rounded='md' mt='3' mb='3' opacity={task.status === "complete" ? "70%" :"100%"} _dark={{border: "2px solid #718096"}}>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
@@ -156,7 +153,7 @@ const changeHideMutation = async (_id: string, update: any) => {
             <HStack>
               <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation(task._id, {author: "default", status: e.target.checked ? "complete" : "ongoing"})}> </Checkbox>
               {
-                task.link ? <p className='ongoingTitle' onClick={() => getLink(task.link!)}>{task.title}</p>
+                task.link ? <p className='ongoingTitle' onClick={onClickLink}>{task.title}</p>
                           : <p className='ongoingTitle'>{task.title}</p>
               }
             </HStack>

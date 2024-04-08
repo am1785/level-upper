@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack, IconButton } from "@chakra-ui/react"
+import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack, IconButton, ModalFooter } from "@chakra-ui/react"
 import { StarIcon, AddIcon, CheckCircleIcon } from "@chakra-ui/icons"
 import TaskOngoing, { OngoingTask } from '../task/TaskOngoing';
 import TaskInput from '../task/TaskInput';
@@ -62,7 +62,7 @@ export default function Ongoing(){
         queryKey: ['fetchOngoingTasks', { user }],
       })
 
-    const { status:collectionStatus, data:collectionData, error:collectionError } = useQuery({
+    const { status:collectionStatus, data:collectionData } = useQuery({
         queryFn: () => taskApi.fetchCollections(user),
         queryKey: ['fetchCollections', { user }],
     })
@@ -119,17 +119,43 @@ export default function Ongoing(){
     }
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen:isLinkOpen, onOpen:onLinkOpen, onClose:onLinkClose} = useDisclosure();
+    const [link, setLink] = useState<string>("");
 
+    const LinkAlertModal: React.FC<{href:string}> = ({href})=> {
+      function getLink(url:string) {
+        window.open(url, "_blank");
+      }
+      return(
+      <Modal isOpen={isLinkOpen} onClose={onLinkClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Redirect to external link</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            You are about to leave Levelupper for an external link at: <a href={href}>{href}</a>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button variant='black' mr={3} onClick={onLinkClose}>
+              Close
+            </Button>
+            <Button colorScheme='blue' onClick={() => {getLink(href); onLinkClose()}}>Go</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      )
+    }
     // console.log(weeklyTasks);
 
     return (<>
     <main style={{minHeight: "100vh"}}>
-        {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack> : status === "error" ? <Text>{error.message}</Text>:null}
+        {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack> : status === "error" ? <Text>{error.message}</Text>: <LinkAlertModal href={link} />}
         {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
 
         {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=> {
             if(!t.hidden) {
-              return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} />
+              return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
             }
         })}
 
@@ -170,7 +196,7 @@ export default function Ongoing(){
               </Box>}
               {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => { // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
                 if(!t.hidden) {
-                  return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} />
+                  return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
                   }
                 })
               }
