@@ -25,7 +25,7 @@ router.get('/tasks/:author', async (req, res) => {
             tasks = await Task.find({author: req.params.author, updatedAt: {
                 $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // get tasks within 7 days
                 $lt: new Date()
-            }}, '-content').limit(150).sort([['_id', -1]]);
+            }, hidden: false}, '-content').limit(150).sort([['_id', -1]]);
         }
         res.status(200).json(tasks);
     } catch (err) {

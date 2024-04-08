@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack, IconButton, ModalFooter } from "@chakra-ui/react"
+import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack, IconButton, ModalFooter, Link } from "@chakra-ui/react"
 import { StarIcon, AddIcon, CheckCircleIcon } from "@chakra-ui/icons"
 import TaskOngoing, { OngoingTask } from '../task/TaskOngoing';
 import TaskInput from '../task/TaskInput';
@@ -133,11 +133,11 @@ export default function Ongoing(){
           <ModalHeader>Redirect to external link</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            You are about to leave Levelupper for an external link at: <a href={href}>{href}</a>
+            You are about to leave Levelupper for an external link at: <Link color={'blue.500'} href={href}>{href}</Link>
           </ModalBody>
 
           <ModalFooter>
-            <Button variant='black' mr={3} onClick={onLinkClose}>
+            <Button mr={3} onClick={onLinkClose}>
               Close
             </Button>
             <Button colorScheme='blue' onClick={() => {getLink(href); onLinkClose()}}>Go</Button>
@@ -154,9 +154,7 @@ export default function Ongoing(){
         {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
 
         {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=> {
-            if(!t.hidden) {
-              return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
-            }
+            return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
         })}
 
         <Box mt={'1em'}>
@@ -195,9 +193,7 @@ export default function Ongoing(){
                 </HStack>
               </Box>}
               {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => { // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
-                if(!t.hidden) {
-                  return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
-                  }
+                return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
                 })
               }
             </AccordionPanel>

@@ -250,8 +250,8 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
               <FormControl mt={'1em'}>
               <FormLabel>content</FormLabel>
-              <Textarea maxLength={4000} h={expanded ? '30em' : '15em'} defaultValue={task?.content} placeholder='plain text or markdown' onChange={(e)=> {updateForm({content:e.currentTarget.value}); setContentSize(e.currentTarget.textLength)}} />
-              <Text fontSize={"xs"} mt={1}>{4000 - contentSize} characters remain</Text>
+              <Textarea maxLength={10000} h={expanded ? '30em' : '15em'} defaultValue={task?.content} placeholder='plain text or markdown' onChange={(e)=> {updateForm({content:e.currentTarget.value}); setContentSize(e.currentTarget.textLength)}} />
+              <Text fontSize={"xs"} mt={1}>{10000 - contentSize} characters remain</Text>
               </FormControl>
               <HStack justifyContent='end' mt={'.5em'}>
                 <Button onClick={toggleExpand} size={'sm'} _active={{transform: 'scale(1.2)'}} colorScheme={expanded ? "blue" : "gray"}><ArrowUpDownIcon /></Button>
