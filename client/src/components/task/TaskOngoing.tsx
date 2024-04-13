@@ -114,7 +114,7 @@ const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, qu
             <HStack wrap='wrap' mt={'.5em'}>
                 {task.skills.map((tg, id) => (
                 <Tag key={id}>{tg}</Tag>
-                ))} <Spacer /> <Tag colorScheme={EXP_MAP.get(task.exp)['colorScheme']}>{task.exp}</Tag>
+                ))} <Spacer /> <Tag colorScheme={EXP_MAP.get(task.exp)!['colorScheme']}>{task.exp}</Tag>
             </HStack>
         </Stack>
         <Stack direction={'row'} mt={'1em'} gap={'1'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
