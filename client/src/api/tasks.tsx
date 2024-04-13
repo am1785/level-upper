@@ -15,6 +15,7 @@ export const fetchView = async (_id:string) => {
   const data = await response.json();
   return data;
 };
+
 export const fetchCollections = async (author:string) => {
   const response = await fetch(BASE_URL + '/collections/' + author);
   const data = await response.json();

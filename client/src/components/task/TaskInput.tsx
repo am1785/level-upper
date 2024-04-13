@@ -10,11 +10,10 @@ import {
     InputRightElement,
     InputGroup,
     useToast,
-    Heading,
     Textarea,
     Switch,
   } from '@chakra-ui/react'
-import { AddIcon, CloseIcon, EditIcon } from '@chakra-ui/icons';
+import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import { OngoingTask } from './TaskOngoing';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
@@ -47,7 +46,7 @@ const { mutate } = useMutation({
 
 const addTaskMutation = async () =>
   await mutate(form, {
-    onSuccess(data, variables, context) {
+    onSuccess() {
       queryClient.invalidateQueries({queryKey: ['addTask']});
       queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
       onCancel();
@@ -98,7 +97,7 @@ function handleKeyDown (event: React.KeyboardEvent) {
 
 function handleSkillChange(e:React.ChangeEvent<HTMLInputElement>) {
   const tagName:string = e.currentTarget.value;
-  setCurrTag(tagName);
+  setCurrTag(tagName.toLowerCase());
   const recommendations:string[] = tagName.length === 0 ? [] : prefixTree.findWordsStartingWith(tagName);
   setSkillRecs(recommendations);
 }
@@ -138,7 +137,7 @@ return (<>
 
 <FormControl mt={'1em'}>
   <FormLabel>link</FormLabel>
-  <Input type='text' placeholder='any links' onChange={(e) => {updateForm({link:e.currentTarget.value})}}/>
+  <Input type='url' placeholder='any links' onChange={(e) => {updateForm({link:e.currentTarget.value})}}/>
 </FormControl>
 
 <FormControl mt={'1em'}>
@@ -174,7 +173,7 @@ return (<>
 
 <FormControl mt={'1em'}>
   <FormLabel>content</FormLabel>
-  <Textarea maxLength={4000} placeholder='plain text or markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
+  <Textarea maxLength={10000} placeholder='plain text or markdown' onChange={(e)=>updateForm({content:e.currentTarget.value})} />
 </FormControl>
 
 <FormControl mt={'1em'} display='flex' alignItems='center'>

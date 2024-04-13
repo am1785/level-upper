@@ -1,6 +1,6 @@
 import React from "react";
 import { Center, Fade, useDisclosure, HStack, IconButton } from '@chakra-ui/react'
-import { StarIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
+import { ViewIcon } from "@chakra-ui/icons";
 import TaskEditModal from "../task/TaskEditModal";
 import TableFloatingDeleteBtn from "./TableFloatingDeleteBtn";
 import TableFloatingCollectionsModal from "./TableFloatingCollectionsModal";

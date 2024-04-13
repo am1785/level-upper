@@ -1,13 +1,13 @@
-import React, {useCallback} from 'react'
+import React from 'react'
 import { Checkbox, Flex, Spacer, Box, Tag, HStack, Stack, Button, IconButton, useDisclosure, ButtonGroup, useToast } from "@chakra-ui/react"
 import { MinusIcon, ViewIcon } from "@chakra-ui/icons"
-import { Link, AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
-import { useQueryClient, useMutation, UseMutationResult } from '@tanstack/react-query'
-import * as taskApi from '../../api/tasks';
+import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
+import { useQueryClient} from '@tanstack/react-query'
 import TaskEditModal from './TaskEditModal'
 import { EXP_MAP } from '../backlog/TaskTable';
 import TaskCollectionPopover from './TaskCollectionPopover'
-import LevelupIcon from '../../assets/img/icon.png'
+import { useChangeTaskStatusMutation } from '../../hooks/useTasksMutations'
+import { useChangeTaskHiddenMutation } from '../../hooks/useTasksMutations'
 
 export type OngoingTask = {
     _id: string;
@@ -29,65 +29,20 @@ export type OngoingTaskProps = {
     date: Date;
     collections: string[];
     onRemove: (id: string) => void;
+    onClickLink: () => void;
 }
 
-const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, collections, onRemove}) => {
+const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, collections, onRemove, onClickLink}) => {
 
 // TODO: memo edit modals and collection popovers for performance
 // const MEditModal = React.memo(TaskEditModal);
 // const MCollectionPopover = React.memo(TaskCollectionPopover);
 
 const queryClient = useQueryClient();
-const { mutate }: UseMutationResult<void, unknown, { _id: string; update: any }> = useMutation({
-  mutationFn: ({ _id, update }) => taskApi.editTask(_id, update),
-  mutationKey: ['editTask'],
-});
-
 const toast = useToast();
 
-const changeStatusMutation = async (_id: string, update: any) => {
-  await mutate({ _id, update }, {
-    onSuccess: () => {
-      // Handle success if needed
-      queryClient.invalidateQueries({queryKey: ['deleteTask']});
-      queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
-      queryClient.invalidateQueries({queryKey: ['fetchSkills']});
-
-      if (task.status === "ongoing") {toast({
-        title: 'level up!',
-        status: 'info',
-        description: `earned ${task.exp} exp!`,
-        duration: 3000,
-        isClosable: true,
-        variant: "subtle",
-        icon: <img src={LevelupIcon} style={{height:"1.25em", marginTop: "0.15em"}}/>
-        });
-      }
-    },
-    // Add other options as needed
-  });
-};
-
-const changeHideMutation = async (_id: string, update: any) => {
-  await mutate({ _id, update }, {
-    onSuccess: () => {
-      // Handle success if needed
-      queryClient.invalidateQueries({queryKey: ['deleteTask']});
-      queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
-      queryClient.invalidateQueries({queryKey: ['fetchSkills']});
-
-      if (task.status === "ongoing") {toast({
-        title: 'success',
-        status: 'success',
-        description: `task hidden`,
-        duration: 2250,
-        isClosable: true,
-        variant: "subtle",
-        });
-      }
-    },
-  });
-};
+const {mutate: changeStatusMutation} = useChangeTaskStatusMutation(toast, task, queryClient);
+const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, queryClient);
 
  function DeleteTaskDialog() {
         const { isOpen, onOpen, onClose } = useDisclosure()
@@ -124,7 +79,7 @@ const changeHideMutation = async (_id: string, update: any) => {
                         Cancel
                       </Button>
                       <Spacer />
-                      <Button colorScheme='teal' mr={2} onClick={() => {changeHideMutation(task._id, {hidden: true}); onClose();}}>
+                      <Button colorScheme='teal' mr={2} onClick={() => {changeHideMutation({_id: task._id, update: {hidden: true}}); onClose();}}>
                         Hide
                       </Button>
                       <Button colorScheme='red' onClick={() => {onRemove(task._id); onClose();}}>
@@ -143,10 +98,6 @@ const changeHideMutation = async (_id: string, update: any) => {
         window.open(`/view/${_id}`, "_blank") //to open new page;
     }
 
-    function getLink(url:string) {
-      window.open(url, "_blank");
-    }
-
     return (
         <Box key={task._id} boxShadow='base' p='5' rounded='md' mt='3' mb='3' opacity={task.status === "complete" ? "70%" :"100%"} _dark={{border: "2px solid #718096"}}>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
@@ -154,16 +105,16 @@ const changeHideMutation = async (_id: string, update: any) => {
         </Stack>
         <Stack>
             <HStack>
-              <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation(task._id, {author: "default", status: e.target.checked ? "complete" : "ongoing"})}> </Checkbox>
+              <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation({_id: task._id, update: {author: "default", status: e.target.checked ? "complete" : "ongoing"}})}> </Checkbox>
               {
-                task.link ? <p className='ongoingTitle' onClick={() => getLink(task.link!)}>{task.title}</p>
+                task.link ? <p className='ongoingTitle' onClick={onClickLink}>{task.title}</p>
                           : <p className='ongoingTitle'>{task.title}</p>
               }
             </HStack>
             <HStack wrap='wrap' mt={'.5em'}>
                 {task.skills.map((tg, id) => (
                 <Tag key={id}>{tg}</Tag>
-                ))} <Spacer /> <Tag colorScheme={EXP_MAP.get(task.exp)['colorScheme']}>{task.exp}</Tag>
+                ))} <Spacer /> <Tag colorScheme={EXP_MAP.get(task.exp)!['colorScheme']}>{task.exp}</Tag>
             </HStack>
         </Stack>
         <Stack direction={'row'} mt={'1em'} gap={'1'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>

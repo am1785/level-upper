@@ -1,9 +1,10 @@
 import React, { FormEvent } from "react";
-import { StarIcon } from "@chakra-ui/icons"
+import { StarIcon, PlusSquareIcon } from "@chakra-ui/icons"
 import { Text, IconButton, Checkbox, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, List, ListItem, Skeleton, Portal, Input, HStack, useToast } from "@chakra-ui/react";
 import { useMutation, UseMutationResult } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
 import { OngoingTask } from "./TaskOngoing";
+import { color } from "framer-motion";
 
 export type TaskCollectionPopoverProps = {
     task: OngoingTask;
@@ -73,7 +74,7 @@ return (<>
 
     <PopoverTrigger>
     {/* <Button size={'xs'} mt={'1.25em'} bgColor={"whiteAlpha.100"}><StarIcon color={task.task_collections ? 'yellow.300' : 'gray.200'}/></Button> */}
-    <IconButton p={'2px'} size={'s'} aria-label="favorite" bgColor={'whiteAlpha.100'} icon={<StarIcon stroke={"gray"} strokeWidth={2} color={task.task_collection.length > 0 ? 'yellow.300' : 'white'}/>}></IconButton>
+    <IconButton p={'2px'} size={'s'} aria-label="favorite" bgColor={'whiteAlpha.100'} icon={<PlusSquareIcon stroke={"white"} strokeWidth={2} color={task.task_collection.length > 0 ? 'yellow.400' : 'gray.500'} _dark={{color: task.task_collection.length > 0 ? 'yellow.200' : 'white'}}/>}></IconButton>
     </PopoverTrigger>
 
     <Portal>

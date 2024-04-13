@@ -9,15 +9,7 @@ import {
     Th,
     Td,
     TableContainer,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogOverlay,
     HStack,
-    IconButton,
-    useDisclosure,
     Skeleton,
     Stack,
     ButtonGroup,
@@ -30,20 +22,19 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { VisibilityState, useReactTable, getCoreRowModel, flexRender, getFilteredRowModel, ColumnDef, getPaginationRowModel, getSortedRowModel } from '@tanstack/react-table';
-import { ArrowUpDownIcon, SearchIcon, ChevronDownIcon, MinusIcon, ViewIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
-import TaskEditModal from "../task/TaskEditModal";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import * as taskApi from '../../api/tasks';
-import * as backlogApi from '../../api/backlog';
+import { ArrowUpDownIcon, SearchIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
+import { useQueryClient } from '@tanstack/react-query';
 import TableSkillTag from "./TableSkillTag";
 import TableFloatingActions from "./TableFloatingActions";
 
+import { useAllTasksData } from "../../hooks/useTasksData";
+
 export const EXP_MAP = new Map([
-    [1, Object({size: 'xs', variant:'solid', colorScheme: 'gray'})],
-    [2, Object({size: 's', variant:'solid', colorScheme: 'blue'})],
-    [4, Object({size: 'm', variant:'solid', colorScheme: 'teal'})],
-    [8, Object({size: 'l', variant:'solid', colorScheme: 'orange'})],
-    [12, Object({size: 'xl', variant:'solid', colorScheme: 'purple'})],
+    [1, {size: 'xs', variant:'solid', colorScheme: 'gray'} as const],
+    [2, {size: 's', variant:'solid', colorScheme: 'blue'} as const],
+    [4, {size: 'm', variant:'solid', colorScheme: 'teal'} as const],
+    [8, {size: 'l', variant:'solid', colorScheme: 'orange'} as const],
+    [12, {size: 'xl', variant:'solid', colorScheme: 'purple'} as const],
 ])
 
 const TaskTable: React.FC= () => {
@@ -52,10 +43,7 @@ const TaskTable: React.FC= () => {
     const [selected, setSelected] = React.useState<string[]>([]);
     const [prevSelectedLen, setPrevSelectedLen] = React.useState<number>(0);
 
-    const { status, data, error } = useQuery({
-        queryFn: () => backlogApi.fetchAllTasks(USER),
-        queryKey: ['fetchOngoingTasks', { USER }],
-      });
+    const { status, data, error } = useAllTasksData(USER);
 
     let COLLECTIONS: string[] = [];
 
@@ -120,7 +108,7 @@ const TaskTable: React.FC= () => {
           size: 0,
           cell: (props:any) =>
           <Text textAlign={'center'}>
-            {data && data[props.row.id] && <Tag colorScheme={EXP_MAP.get(data[props.row.id]['exp'])['colorScheme']}>{EXP_MAP.get(data[props.row.id]['exp'])['size']}</Tag>}
+            {data && data[props.row.id] && <Tag colorScheme={EXP_MAP.get(data[props.row.id]['exp'])!['colorScheme']}>{EXP_MAP.get(data[props.row.id]['exp'])!['size']}</Tag>}
           </Text>
         },
         {

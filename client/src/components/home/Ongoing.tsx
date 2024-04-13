@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack, IconButton } from "@chakra-ui/react"
+import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack, IconButton, ModalFooter, Link } from "@chakra-ui/react"
 import { StarIcon, AddIcon, CheckCircleIcon } from "@chakra-ui/icons"
 import TaskOngoing, { OngoingTask } from '../task/TaskOngoing';
 import TaskInput from '../task/TaskInput';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import * as taskApi from '../../api/tasks';
+import { useOngoingTasksData } from '../../hooks/useTasksData';
+import { useCollectionsData } from '../../hooks/useCollectionsData';
+import { useRemoveTaskMutation } from '../../hooks/useRemoveTaskMutation';
 
 // const MTaskOngoing = React.memo(TaskOngoing);
 
@@ -41,31 +42,9 @@ export default function Ongoing(){
 
     }, []); // empty dependency array means this effect runs once on mount and cleans up on unmount
 
-    const queryClient = useQueryClient();
-
-    const { mutate } = useMutation({
-        mutationFn: (_id:string) => taskApi.deleteTask(_id),
-        mutationKey: ['deleteTask'],
-      });
-
-      const removeTaskMutation = async (_id:string) =>
-        await mutate(_id, {
-          onSuccess(data, variables, context) {
-            queryClient.invalidateQueries({queryKey: ['deleteTask']});
-            queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
-            queryClient.invalidateQueries({queryKey: ['fetchSkills']});
-          },
-        })
-
-    const { status, data, error } = useQuery({
-        queryFn: () => taskApi.fetchTasks(user),
-        queryKey: ['fetchOngoingTasks', { user }],
-      })
-
-    const { status:collectionStatus, data:collectionData, error:collectionError } = useQuery({
-        queryFn: () => taskApi.fetchCollections(user),
-        queryKey: ['fetchCollections', { user }],
-    })
+    const { status, data, error } = useOngoingTasksData(user);
+    const { status:collectionStatus, data:collectionData } = useCollectionsData(user);
+    const { mutate:removeTaskMutate } = useRemoveTaskMutation();
 
       // if (status === 'pending') { <= this entire conditional is prone to rendered more hooks than pervious due to the early return
       //   return <span>Loading...</span>
@@ -91,8 +70,9 @@ export default function Ongoing(){
       // }
 
       data?.forEach((d:any) => {
-              const createdDate = new Date(d.updatedAt); // checking update date instead
-              const diff = dayDiff(createdDate);
+              const updatedDate = new Date(d.updatedAt); // checking update date instead
+              const diff = dayDiff(updatedDate);
+              // console.log(diff);
               if(diff === 0) {
                   ongoingTasks.push(d);
                   if(d.status === "complete") {
@@ -100,7 +80,7 @@ export default function Ongoing(){
                     ongoingExp += d.exp;
                     ongoingComplete += 1;
                     weeklyComplete += 1}
-              } else if(diff <= 7) {
+              } else if(diff <= 7 && diff >= -24) {
                 weeklyTasks.push(d);
                 if(d.status === "complete") {
                   weeklyExp += d.exp;
@@ -112,24 +92,43 @@ export default function Ongoing(){
             }
       )
 
-    const removeTask = (_id:string) => {
-        // console.log(`removing task _id: ${_id}`);
-        removeTaskMutation(_id);
-    }
-
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen:isLinkOpen, onOpen:onLinkOpen, onClose:onLinkClose} = useDisclosure();
+    const [link, setLink] = useState<string>("");
 
+    const LinkAlertModal: React.FC<{href:string}> = ({href})=> {
+      function getLink(url:string) {
+        window.open(url, "_blank");
+      }
+      return(
+      <Modal isOpen={isLinkOpen} onClose={onLinkClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Redirect to external link</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            You are about to leave Levelupper for an external link at: <Link color={'blue.500'} href={href}>{href}</Link>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button mr={3} onClick={onLinkClose}>
+              Close
+            </Button>
+            <Button colorScheme='blue' onClick={() => {getLink(href); onLinkClose()}}>Go</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      )
+    }
     // console.log(weeklyTasks);
 
     return (<>
     <main style={{minHeight: "100vh"}}>
-        {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack> : status === "error" ? <Text>{error.message}</Text>:null}
+        {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack> : status === "error" ? <Text>{error.message}</Text>: <LinkAlertModal href={link} />}
         {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
 
         {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=> {
-            if(!t.hidden) {
-              return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} />
-            }
+            return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTaskMutate(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
         })}
 
         <Box mt={'1em'}>
@@ -168,9 +167,7 @@ export default function Ongoing(){
                 </HStack>
               </Box>}
               {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => { // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
-                if(!t.hidden) {
-                  return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} />
-                  }
+                return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTaskMutate(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
                 })
               }
             </AccordionPanel>
