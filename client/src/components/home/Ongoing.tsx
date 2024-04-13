@@ -3,8 +3,9 @@ import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, A
 import { StarIcon, AddIcon, CheckCircleIcon } from "@chakra-ui/icons"
 import TaskOngoing, { OngoingTask } from '../task/TaskOngoing';
 import TaskInput from '../task/TaskInput';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import * as taskApi from '../../api/tasks';
+import { useOngoingTasksData } from '../../hooks/useTasksData';
+import { useCollectionsData } from '../../hooks/useCollectionsData';
+import { useRemoveTaskMutation } from '../../hooks/useRemoveTaskMutation';
 
 // const MTaskOngoing = React.memo(TaskOngoing);
 
@@ -41,31 +42,9 @@ export default function Ongoing(){
 
     }, []); // empty dependency array means this effect runs once on mount and cleans up on unmount
 
-    const queryClient = useQueryClient();
-
-    const { mutate } = useMutation({
-        mutationFn: (_id:string) => taskApi.deleteTask(_id),
-        mutationKey: ['deleteTask'],
-      });
-
-      const removeTaskMutation = async (_id:string) =>
-        await mutate(_id, {
-          onSuccess(data, variables, context) {
-            queryClient.invalidateQueries({queryKey: ['deleteTask']});
-            queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
-            queryClient.invalidateQueries({queryKey: ['fetchSkills']});
-          },
-        })
-
-    const { status, data, error } = useQuery({
-        queryFn: () => taskApi.fetchTasks(user),
-        queryKey: ['fetchOngoingTasks', { user }],
-      })
-
-    const { status:collectionStatus, data:collectionData } = useQuery({
-        queryFn: () => taskApi.fetchCollections(user),
-        queryKey: ['fetchCollections', { user }],
-    })
+    const { status, data, error } = useOngoingTasksData(user);
+    const { status:collectionStatus, data:collectionData } = useCollectionsData(user);
+    const { mutate:removeTaskMutate } = useRemoveTaskMutation();
 
       // if (status === 'pending') { <= this entire conditional is prone to rendered more hooks than pervious due to the early return
       //   return <span>Loading...</span>
@@ -113,11 +92,6 @@ export default function Ongoing(){
             }
       )
 
-    const removeTask = (_id:string) => {
-        // console.log(`removing task _id: ${_id}`);
-        removeTaskMutation(_id);
-    }
-
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen:isLinkOpen, onOpen:onLinkOpen, onClose:onLinkClose} = useDisclosure();
     const [link, setLink] = useState<string>("");
@@ -154,7 +128,7 @@ export default function Ongoing(){
         {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
 
         {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=> {
-            return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
+            return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTaskMutate(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
         })}
 
         <Box mt={'1em'}>
@@ -193,7 +167,7 @@ export default function Ongoing(){
                 </HStack>
               </Box>}
               {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => { // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
-                return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTask(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
+                return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTaskMutate(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
                 })
               }
             </AccordionPanel>

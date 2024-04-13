@@ -10,11 +10,10 @@ import {
     InputRightElement,
     InputGroup,
     useToast,
-    Heading,
     Textarea,
     Switch,
   } from '@chakra-ui/react'
-import { AddIcon, CloseIcon, EditIcon } from '@chakra-ui/icons';
+import { AddIcon, CloseIcon } from '@chakra-ui/icons';
 import { OngoingTask } from './TaskOngoing';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
@@ -47,7 +46,7 @@ const { mutate } = useMutation({
 
 const addTaskMutation = async () =>
   await mutate(form, {
-    onSuccess(data, variables, context) {
+    onSuccess() {
       queryClient.invalidateQueries({queryKey: ['addTask']});
       queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
       onCancel();
@@ -98,7 +97,7 @@ function handleKeyDown (event: React.KeyboardEvent) {
 
 function handleSkillChange(e:React.ChangeEvent<HTMLInputElement>) {
   const tagName:string = e.currentTarget.value;
-  setCurrTag(tagName);
+  setCurrTag(tagName.toLowerCase());
   const recommendations:string[] = tagName.length === 0 ? [] : prefixTree.findWordsStartingWith(tagName);
   setSkillRecs(recommendations);
 }

@@ -23,10 +23,11 @@ import {
 import React from "react";
 import { VisibilityState, useReactTable, getCoreRowModel, flexRender, getFilteredRowModel, ColumnDef, getPaginationRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { ArrowUpDownIcon, SearchIcon, CheckCircleIcon, SpinnerIcon} from '@chakra-ui/icons';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import * as backlogApi from '../../api/backlog';
+import { useQueryClient } from '@tanstack/react-query';
 import TableSkillTag from "./TableSkillTag";
 import TableFloatingActions from "./TableFloatingActions";
+
+import { useAllTasksData } from "../../hooks/useTasksData";
 
 export const EXP_MAP = new Map([
     [1, Object({size: 'xs', variant:'solid', colorScheme: 'gray'})],
@@ -42,10 +43,7 @@ const TaskTable: React.FC= () => {
     const [selected, setSelected] = React.useState<string[]>([]);
     const [prevSelectedLen, setPrevSelectedLen] = React.useState<number>(0);
 
-    const { status, data, error } = useQuery({
-        queryFn: () => backlogApi.fetchAllTasks(USER),
-        queryKey: ['fetchOngoingTasks', { USER }],
-      });
+    const { status, data, error } = useAllTasksData(USER);
 
     let COLLECTIONS: string[] = [];
 

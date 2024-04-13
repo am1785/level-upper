@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react"
-import { Text, Button, FormControl, FormLabel, HStack, IconButton, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Switch, Tag, Textarea, useDisclosure, useToast, Checkbox, VStack } from "@chakra-ui/react"
-import { StarIcon, PlusSquareIcon } from "@chakra-ui/icons"
-import { useQueryClient, UseMutationResult, useMutation, } from "@tanstack/react-query"
-import * as backlogApi from "../../api/backlog";
+import React from "react";
+import { IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure, useToast, Checkbox} from "@chakra-ui/react";
+import { PlusSquareIcon } from "@chakra-ui/icons";
+import { useQueryClient, useMutation, UseMutationResult } from "@tanstack/react-query";
+import * as backlogApi from '../../api/backlog';
 
 export type TableFloatingCollectionsModalProps = {
     task_ids: string[],

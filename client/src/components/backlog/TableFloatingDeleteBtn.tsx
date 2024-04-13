@@ -21,7 +21,7 @@ const TableFloatingDeleteBtn:React.FC<TableFloatingDeleteBtnProps> = ({task_ids,
 
       const bulkRemoveTaskMutation = async (_ids:string[]) =>
         await mutate(_ids, {
-          onSuccess(data, variables, context) {
+          onSuccess() {
             queryClient.invalidateQueries({queryKey: ['bulkDeleteTasks']});
             queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
             queryClient.invalidateQueries({queryKey: ['fetchSkills']});

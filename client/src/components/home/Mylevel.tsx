@@ -1,10 +1,12 @@
 import React from "react";
-import { Tabs, Tab, TabList, TabPanels, TabPanel, Icon, Box, Select, VStack } from "@chakra-ui/react"
-import * as skillsApi from '../../api/skills';
-import * as taskApi from '../../api/tasks';
+import { Tabs, Tab, TabList, TabPanels, TabPanel, Icon, Select, VStack } from "@chakra-ui/react"
+
 import { useQuery } from '@tanstack/react-query';
 import LevelCardView from '../level/LevelCardView';
 import LevelGraphView from "../level/LevelGraphView";
+
+import { useCollectionsData } from "../../hooks/useCollectionsData";
+import { useSkillsData } from "../../hooks/useSkillsData";
 
 export type skill = {
     _id:string, // name of skill
@@ -16,17 +18,10 @@ export default function Mylevel(){
 
     // TODO: IMPLEMENT user authentication
     const user = 'default';
-    const [collection, setCollection] = React.useState("");
+    const [collection, setCollection] = React.useState<string>("");
 
-    const { status, data, error } = useQuery({
-        queryFn: () => skillsApi.fetchSkills(user, collection),
-        queryKey: ['fetchSkills', { user, collection }],
-      });
-
-    const { status:collectionStatus, data:collectionData, error:collectionError } = useQuery({
-        queryFn: () => taskApi.fetchCollections(user),
-        queryKey: ['fetchCollections', { user }],
-    })
+    const { status, data, error } = useSkillsData(user, collection)
+    const {  data:collectionData } = useCollectionsData(user);
 
       if (status === 'pending') {
         return <span>Loading...</span>

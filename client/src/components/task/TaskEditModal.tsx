@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from "react"
 import { Text, Skeleton, Button, FormControl, FormLabel, HStack, IconButton, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Stack, Switch, Tag, Textarea, useDisclosure, useToast } from "@chakra-ui/react"
 import { CloseIcon, EditIcon, ArrowUpDownIcon } from "@chakra-ui/icons"
 import { taskForm } from "./TaskInput"
-import { UseMutationResult, useMutation, } from "@tanstack/react-query"
+// import { UseMutationResult, useMutation, } from "@tanstack/react-query"
 import * as taskApi from '../../api/tasks'
 import { Trie } from "../../data/trie"
+import { useEditTaskMutation } from "../../hooks/useTasksMutations"
+
 
 export type TaskEditProps = {
     task_id: string,
@@ -13,36 +15,9 @@ export type TaskEditProps = {
 }
 
 const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) => {
+  const toast = useToast();
+  const {mutate:editTaskMutation} = useEditTaskMutation(toast, onSuccess);
 
-    const { mutate }: UseMutationResult<void, unknown, { _id: string; update: any }> = useMutation({
-    mutationFn: ({ _id, update }) => taskApi.editTask(_id, update),
-    mutationKey: ['editTask'],
-    });
-
-    const toast = useToast();
-
-    const editTaskMutation = async (_id: string, update: any) => {
-    await mutate({ _id, update }, {
-        onSuccess: () => {
-          toast({
-            title: 'success',
-            status: 'success',
-            duration: 1250,
-            isClosable: true,
-            });
-        onSuccess();
-        },
-        onError: () => {
-          toast({
-              title: 'error',
-              status: 'error',
-              duration: 1250,
-              isClosable: true,
-              });
-        }
-        // Add other options as needed
-    });
-    };
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [task, setTask] = useState({
@@ -133,7 +108,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
             })
             // (editTaskMutation(task._id, form); resetForm()) : resetForm();
         if(edited) {
-          editTaskMutation(task._id, form);
+          editTaskMutation({_id:task._id, update: form});
           resetForm();
         } else {
           resetForm();
@@ -184,7 +159,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
       function handleSkillChange(e:React.ChangeEvent<HTMLInputElement>) {
         const tagName:string = e.currentTarget.value;
-        setCurrTag(tagName);
+        setCurrTag(tagName.toLowerCase());
         const recommendations:string[] = tagName.length === 0 ? [] : prefixTree.findWordsStartingWith(tagName);
         setSkillRecs(recommendations);
       }

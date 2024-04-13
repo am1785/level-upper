@@ -1,9 +1,8 @@
 import React from "react";
 import { Box, Heading, Stack, StackDivider, Text, Card, CardHeader, CardBody, CardFooter, Tag, Link } from '@chakra-ui/react'
 import Markdown from 'react-markdown';
-import { useQuery } from '@tanstack/react-query';
-import * as taskApi from '../../api/tasks';
 import { useParams } from "react-router-dom";
+import { useOneTaskData } from "../../hooks/useTasksData";
 
 //@ts-ignore
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
@@ -11,13 +10,11 @@ import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import {atomDark} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 const TaskView: React.FC = () => {
-    // TODO: USER AUTH
-    const user = "default";
+    // TODO: USER AUTH, might not be needed, task views can be public facing
+    // const user = "default";
+
     const {task_id} = useParams();
-    const { status, data, error } = useQuery({
-        queryFn: () => taskApi.fetchView(task_id as string),
-        queryKey: ['fetchOngoingTask', { task_id }],
-    });
+    const { status, data } = useOneTaskData(task_id ? task_id : "");
 
 
     return(<>
