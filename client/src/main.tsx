@@ -13,6 +13,7 @@ import { createMultiStyleConfigHelpers, defineStyle, extendTheme } from '@chakra
 import Backlog from './components/home/Backlog.tsx'
 import Mylevel from './components/home/Mylevel.tsx'
 import TaskView from './components/backlog/TaskView.tsx'
+import Footer from './components/home/Footer.tsx'
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="/mylevel" element = {<Mylevel />} />
               <Route path="/view/:task_id" element = {<TaskView />} />
           </Routes>
+          <Footer />
         </BrowserRouter>
       </ChakraProvider>
       </QueryClientProvider>

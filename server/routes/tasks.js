@@ -5,20 +5,24 @@ const Task = require('../models/task');
 // const Skillset = require('../models/skillset');
 
 router.post('/tasks', async (req, res) => {
-    const {title, link, content, skills, status, exp, hidden, author} = req.body;
+    const {title, link, content, skills, status, exp, hidden, author, recurring} = req.body;
 
+    if(recurring && recurring.length > 0) {
+        res.status(200).json({message: 'Task added successfully'});
+    } else {
     try {
         const task = await Task.create({title, link, content, skills, status, exp, hidden, author})
         res.status(200).json({ message: 'Task added successfully', task })
     } catch (err) {
         res.status(400).json({error: err.message})
+        }
     }
 });
 
 // get all recent tasks from an author / user, without content
 router.get('/tasks/:author', async (req, res) => {
     try {
-        let tasks = []
+        let tasks = [];
         if(req.query.all) {
             tasks = await Task.find({author: req.params.author}, '-content').sort([['_id', -1]]);
         } else {
