@@ -33,6 +33,7 @@ export type taskForm = {
   hidden: boolean;
   author: string;
   status: string;
+  recurring: string;
   }
 
 const TaskInput: React.FC<InputProps> = ({recentTasks, onCancel}) => {
@@ -61,7 +62,8 @@ skills : [],
 exp : 1,
 hidden: false,
 author: "default",
-status: "ongoing"
+status: "ongoing",
+recurring: ""
 });
 
 const [currTag, setCurrTag] = useState('');
@@ -122,8 +124,6 @@ function addTag(t:string) { // using a set to ensure no duplicate tags exist
 function removeTag(tag:string) {
   const newTags = tags;
   newTags?.delete(tag);
-  // console.log(`deleted tag ${tag}`)
-  // console.log(`current set: ${ newTags ? new Array(...newTags).join(' ') : 'none'}`)
   updateForm({skills:Array.from(newTags as Set<string>)});
   setTags(newTags);
 }
@@ -138,6 +138,11 @@ return (<>
 <FormControl mt={'1em'}>
   <FormLabel>link</FormLabel>
   <Input type='url' placeholder='any links' onChange={(e) => {updateForm({link:e.currentTarget.value})}}/>
+</FormControl>
+
+<FormControl mt={'0em'} className='recurring'>
+  <FormLabel>recurring</FormLabel>
+  <Input tabIndex={-1} type='text' placeholder='task' onChange={(e) => {updateForm({recurring:e.currentTarget.value})}}/>
 </FormControl>
 
 <FormControl mt={'1em'}>
