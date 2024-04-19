@@ -49,7 +49,7 @@ export default function Mylevel(){
 
     return (<>
     <main style={{minHeight: "100vh"}}>
-      <Tabs isFitted variant='enclosed'>
+      <Tabs isFitted variant='enclosed' isLazy>
         <TabList mb='1em'>
           <Tab>
             <Icon viewBox="0 0 576 512">
