@@ -69,6 +69,7 @@ recurring: ""
 const [currTag, setCurrTag] = useState('');
 const [tags, setTags] = useState<Set<string> | null>();
 const tagsInputRef = useRef<HTMLInputElement>(null);
+const recsButtonRef = useRef<HTMLButtonElement>(null);
 
 const [skillRecs, setSkillRecs] = useState<string[]>([]);
 const prefixTree = new Trie();
@@ -94,6 +95,9 @@ function handleKeyDown (event: React.KeyboardEvent) {
   if(event.key === 'Enter'){
     event.preventDefault();
     addTag(currTag);
+  } else if (event.key === 'ArrowDown') {
+    event.preventDefault(); // prevent page from scrolling down
+    recsButtonRef.current?.focus();
   }
 }
 
@@ -161,7 +165,7 @@ return (<>
     </InputRightElement>
   </InputGroup>
   {skillRecs && skillRecs.length > 0 && skillRecs.map((rec:string, id:number) => (
-    <Button key={id} variant={"ghost"} size={'xs'} onClick={() => {setCurrTag(rec); tagsInputRef.current && tagsInputRef.current.focus()}}>{rec}</Button>
+    <Button key={id} ref={id === 0 ? recsButtonRef : null} variant={"ghost"} size={'xs'} onClick={() => {addTag(rec); setCurrTag(''); tagsInputRef.current && tagsInputRef.current.focus()}}>{rec}</Button>
   ))}
 </FormControl>
 

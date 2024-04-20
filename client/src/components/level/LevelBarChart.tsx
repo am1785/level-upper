@@ -87,7 +87,7 @@ const LevelBarChart:React.FC<LevelBarChartProps> = ({ chartData, variant}) => {
             },
             y: {
                 grid: {
-                    display: false 
+                    display: false
                     },
                 stacked: false
             }

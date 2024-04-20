@@ -32,7 +32,8 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
       author: "default",
       task_collection: [""],
       createdAt: "",
-      updatedAt: ""
+      updatedAt: "",
+      recurring: ""
     })
 
     const [Loading, setLoading] = useState(false);
@@ -60,7 +61,8 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
               exp : res.exp,
               hidden: res.hidden,
               author: res.author,
-              status: res.status
+              status: res.status,
+              recurring: res.recurring
             });
           }
         } catch(err) {
@@ -83,7 +85,8 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
         exp : task?.exp,
         hidden: task?.hidden,
         author: task?.author,
-        status: task?.status
+        status: task?.status,
+        recurring: task?.recurring
         });
 
     const [expanded, setExpanded] = useState(false);
@@ -91,6 +94,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
     const [currTag, setCurrTag] = useState('');
     const [tags, setTags] = useState(new Set(task?.skills));
     const tagsInputRef = useRef<HTMLInputElement>(null);
+    const recsButtonRef = useRef<HTMLButtonElement>(null);
     const [contentSize, setContentSize] = useState(0);
 
     async function submitForm(event:any){
@@ -130,6 +134,9 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
         if (event.key === 'Enter') {
           event.preventDefault();
           addTag(currTag);
+        } else if (event.key === 'ArrowDown') {
+          event.preventDefault(); // prevent page from scrolling down
+          recsButtonRef.current?.focus();
         }
       }
 
@@ -207,7 +214,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
                   </InputRightElement>
               </InputGroup>
               {skillRecs && skillRecs.length > 0 && skillRecs.map((rec:string, id:number) => (
-                    <Button key={id} variant={"ghost"} size={'xs'} onClick={() => {setCurrTag(rec); tagsInputRef.current && tagsInputRef.current.focus()}}>{rec}</Button>
+                    <Button key={id} ref={id === 0 ? recsButtonRef : null} variant={"ghost"} size={'xs'} onClick={() => {addTag(rec); setCurrTag(''); tagsInputRef.current && tagsInputRef.current.focus()}}>{rec}</Button>
                   )
               )}
               </FormControl>
