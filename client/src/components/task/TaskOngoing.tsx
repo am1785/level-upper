@@ -1,5 +1,5 @@
 import React from 'react'
-import { Checkbox, Flex, Spacer, Box, Tag, HStack, Stack, Button, IconButton, useDisclosure, ButtonGroup, useToast } from "@chakra-ui/react"
+import { Checkbox, Flex, Spacer, Box, Tag, HStack, Stack, Button, IconButton, useDisclosure, SlideFade, useToast } from "@chakra-ui/react"
 import { MinusIcon, ViewIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 import { useQueryClient} from '@tanstack/react-query'
@@ -99,6 +99,7 @@ const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, qu
     }
 
     return (
+      <SlideFade in={true} delay={.7} offsetY={'20px'}>
         <Box key={task._id} boxShadow='base' p='5' rounded='md' mt='3' mb='3' opacity={task.status === "complete" ? "70%" :"100%"} _dark={{border: "2px solid #718096"}}>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
             <DeleteTaskDialog />
@@ -127,6 +128,7 @@ const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, qu
             <IconButton icon={<ViewIcon />} p={'2px'} size={'s'} bgColor={'whiteAlpha.100'} aria-label="viewTask" onClick={() => getView(task._id)} />
         </Stack>
     </Box>
+    </SlideFade>
     )
 }
 

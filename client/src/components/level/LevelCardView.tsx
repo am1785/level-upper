@@ -1,12 +1,14 @@
 import { Box, Stack, Card, Text, CardHeader, CardBody, Badge, SlideFade } from "@chakra-ui/react"
 import { skill } from "../home/Mylevel";
 import { CheckCircleIcon, StarIcon } from "@chakra-ui/icons";
+import { EXP_MAP } from "../backlog/TaskTable";
 
 export type LevelCardViewProps = {
     data: skill[];
 }
 
 export default function LevelCardView(prop:LevelCardViewProps){
+
     const data = prop.data;
       // A compare function to sort data by the exp_earned field descendingly
     function compareExp(a:skill, b:skill) {
@@ -17,18 +19,21 @@ export default function LevelCardView(prop:LevelCardViewProps){
 
     return (<>
     {!data || data.length === 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
-    <Stack direction={'row'} wrap={'wrap'} spacing={'3'} mt={'1em'} justifyContent={'space-evenly'}>
-        {data.map( (s:skill, id:number) => ( // () instead of {} so that something is returned explicitly
-                <SlideFade key={id} in={true} offsetY='20px' delay={.40 - (1 / (id+3))}>
-                    <Card variant={id % 2 === 0 ? 'outline' : 'filled'}>
+    <Stack direction={'row'} wrap={'wrap'} spacing={'3'} justifyContent={'space-evenly'}>
+        {data.map( (s:skill, id:number) => { // () instead of {} so that something is returned explicitly
+                const CARD_COLOR = s.exp_earned <= 19 ? "#EDF2F7" : s.exp_earned >= 20 && s.exp_earned <= 39 ? "#90cdf4" : s.exp_earned >= 40 && s.exp_earned <= 79 ? "#81E6D9": s.exp_earned >= 80 && s.exp_earned <= 159 ? "#D6BCFA" : "#ED64A6";
+                return <SlideFade key={id} in={true} offsetY='20px' delay={.40 - (1 / (id+3))}>
+                    <Card variant={"outline"}
+                    borderColor={CARD_COLOR}
+                    borderWidth={2} boxShadow={s.exp_earned >= 40 ? "0px 0px 8px 1px " + CARD_COLOR: "sm"}>
                         <CardHeader fontSize={'md'} fontWeight={'600'} _dark={{"color": "white"}}>{s._id}</CardHeader>
                         <CardBody mt={'-2em'}>
-                        <Text fontSize={'sm'}><CheckCircleIcon color={'green.400'} fontSize={'sm'} m={'.25em'}/> <Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.count}</Badge></Text>
-                        <Text fontSize={'sm'}><StarIcon color={'yellow.400'} fontSize={'sm'} m={'.25em'}/><Badge backgroundColor={id % 2 === 0 ? '': 'white'} _dark={{"color":"black"}}>{s.exp_earned}</Badge></Text>
+                        <Text fontSize={'sm'}><CheckCircleIcon color={'green.400'} fontSize={'sm'} m={'.25em'}/> <Badge>{s.count}</Badge></Text>
+                        <Text fontSize={'sm'}><StarIcon color={'yellow.400'} fontSize={'sm'} m={'.25em'}/><Badge>{s.exp_earned}</Badge></Text>
                         </CardBody>
                     </Card>
                 </SlideFade>
-        ))}
+})}
     </Stack>
     </>)
 
