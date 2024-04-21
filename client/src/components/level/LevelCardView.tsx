@@ -21,7 +21,7 @@ export default function LevelCardView(prop:LevelCardViewProps){
     {!data || data.length === 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
     <Stack direction={'row'} wrap={'wrap'} spacing={'3'} justifyContent={'space-evenly'}>
         {data.map( (s:skill, id:number) => { // () instead of {} so that something is returned explicitly
-                const CARD_COLOR = s.exp_earned <= 19 ? "#EDF2F7" : s.exp_earned >= 20 && s.exp_earned <= 39 ? "#90cdf4" : s.exp_earned >= 40 && s.exp_earned <= 79 ? "#81E6D9": s.exp_earned >= 80 && s.exp_earned <= 159 ? "#D6BCFA" : "#ED64A6";
+                const CARD_COLOR = s.exp_earned <= 19 ? "#EDF2F7" : s.exp_earned >= 20 && s.exp_earned <= 39 ? "#90cdf4" : s.exp_earned >= 40 && s.exp_earned <= 79 ? "#81E6D9": s.exp_earned >= 80 && s.exp_earned <= 159 ? "#F6AD55" : "#D6BCFA";
                 return <SlideFade key={id} in={true} offsetY='20px' delay={.40 - (1 / (id+3))}>
                     <Card variant={"outline"}
                     borderColor={CARD_COLOR}

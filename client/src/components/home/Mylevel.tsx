@@ -70,7 +70,7 @@ export default function Mylevel(){
         <TabPanels>
           <TabPanel display={'flex'} justifyContent={'center'}>
             <VStack>
-              <Select defaultValue={collection} placeholder='collection' size={'md'} mb={'1em'} onChange={(e) => handleCollectionFilter(e.currentTarget.value)}>
+              <Select defaultValue={collection} placeholder='all' size={'md'} mb={'1em'} onChange={(e) => handleCollectionFilter(e.currentTarget.value)}>
               {collectionData?.map((c:any, id:number) => (
                 <option key={id} value={c}>{c}</option>
               ))}
