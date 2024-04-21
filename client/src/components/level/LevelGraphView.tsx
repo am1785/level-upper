@@ -1,4 +1,5 @@
-import { Text, Card, CardBody, CardHeader, HStack, Heading, Stack, StackDivider, VStack, useColorMode } from "@chakra-ui/react"
+import { useState } from "react";
+import { Button, Box, Text, Card, CardBody, CardHeader, HStack, Heading, Stack, StackDivider, VStack, useColorMode } from "@chakra-ui/react"
 import { CheckCircleIcon, StarIcon } from "@chakra-ui/icons"
 import { skill } from "../home/Mylevel";
 import LevelRadarChart from "./LevelRadarChart";
@@ -9,6 +10,11 @@ export type LevelGraphViewProps = {
     taskSizeData: any[];
 }
 
+type radialData = [
+  radialLables: string[],
+  radialData: number[]
+]
+
 const LevelGraphView:React.FC<LevelGraphViewProps> = ({skillData, taskSizeData}) => {
     // sort data descendingly by exp earned
     const { colorMode, toggleColorMode } = useColorMode();
@@ -17,20 +23,23 @@ const LevelGraphView:React.FC<LevelGraphViewProps> = ({skillData, taskSizeData})
         return b.exp_earned - a.exp_earned;
     }
     skillData.sort(compareExp, );
+    const fullSkillData = skillData;
 
     // take the top 10 skills from data
     skillData.length > 10 ? skillData = skillData.slice(0, 10) : skillData = skillData;
 
     // transform data to fit Chart.js radar chart data format
-    const radialChartLables = skillData.map(d => d._id);
-    const radialChartData = skillData.map(d => d.exp_earned);
+    // let radialChartLables = skillData.map(d => d._id);
+    // let radialChartData = skillData.map(d => d.exp_earned);
+
+    const [radialData, setRadialData] = useState<radialData>([skillData.map(d => d._id), skillData.map(d => d.exp_earned)]);
 
     const radialChartDataset = {
-      labels: radialChartLables,
+      labels: radialData[0],
       datasets: [
         {
           label: 'exp',
-          data: radialChartData,
+          data: radialData[1],
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgba(255, 99, 132, 1)',
           pointBackgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -74,6 +83,20 @@ const LevelGraphView:React.FC<LevelGraphViewProps> = ({skillData, taskSizeData})
     const totalCompleted =  taskSizeData.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0);
     const totalExpEarned = taskSizeData.reduce((a, c) => a + c.count * c._id, 0);
 
+    const handleSkillRadialToggle = (skillName:string) => {
+      if (radialData[0].includes(skillName)) {
+        const idx = radialData[0].findIndex((label) => label === skillName);
+        const newLables = radialData[0].filter((r, id) => id !== idx);
+        const newData = radialData[1].filter((d, id) => id !== idx);
+        setRadialData([newLables,newData]);
+      } else {
+        const idx = fullSkillData.findIndex((s) => s._id === skillName);
+        const newLables = [...radialData[0], skillName];
+        const newData = [...radialData[1], fullSkillData[idx].exp_earned];
+        setRadialData([newLables, newData]);
+      }
+    }
+
     return (<>
     <VStack justifyContent={'center'} rowGap={'2em'}>
         <Card w={"100%"}>
@@ -114,6 +137,11 @@ const LevelGraphView:React.FC<LevelGraphViewProps> = ({skillData, taskSizeData})
             </CardHeader>
             {colorMode === "dark" ? <LevelRadarChart chartData={radialChartDataset} variant="dark" />
                                   : <LevelRadarChart chartData={radialChartDataset} variant="light"/>}
+            <HStack wrap={"wrap"} w={"320px"} justifyContent={'center'}>
+            {fullSkillData && fullSkillData.length > 0 && fullSkillData.map((d:skill, id:number) => (
+              <Button key={id} size={"xs"} isActive={radialData[0].includes(d._id)} _active={{bg:"pink.300"}} onClick={() => handleSkillRadialToggle(d._id)}>{d._id}</Button>
+            ))}
+            </HStack>
           </CardBody>
         </Card>
     </VStack>
