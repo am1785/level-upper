@@ -20,7 +20,7 @@ const TaskView: React.FC = () => {
     const queryClient = useQueryClient();
 
     return(<>
-        {status === "success" && <Card>
+        {status === "success" && data.title && data.title.length > 0 ? <Card>
         <CardHeader>
             <Heading size='md'>{data.title}</Heading>
         </CardHeader>
@@ -67,15 +67,15 @@ const TaskView: React.FC = () => {
         </CardBody>
         <CardFooter justifyContent={'end'}>
             <Stack divider={<StackDivider />} spacing='4' direction={"row"}>
-                <Box>
+                {data.title && data.title.length > 0 && <Box>
                     <TaskEditModal task_id={data?._id} className="backlog" onSuccess={()=>{queryClient.invalidateQueries({queryKey: ['fetchOngoingTask']})}} />
-                </Box>
+                </Box>}
                 <Box alignContent={'center'}>
                     <Text fontSize={'xs'}>updated {new Date(data.updatedAt).toLocaleDateString()} {new Date(data.updatedAt).toLocaleTimeString()}</Text>
                 </Box>
             </Stack>
         </CardFooter>
-        </Card>}
+        </Card> : <Card mt={1}>Entry Not Found</Card>}
     </>)
 }
 
