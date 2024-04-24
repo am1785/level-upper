@@ -99,7 +99,7 @@ const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, qu
     }
 
     return (
-      <SlideFade in={true} delay={.7} offsetY={'20px'}>
+      <SlideFade in={true} delay={.5} offsetY={'20px'}>
         <Box key={task._id} boxShadow='base' p='5' rounded='md' mt='3' mb='3' opacity={task.status === "complete" ? "70%" :"100%"} _dark={{border: "2px solid #718096"}}>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
             <DeleteTaskDialog />

@@ -1,13 +1,15 @@
-import React from "react";
+import React, {useState} from "react";
 import { Box, Heading, Stack, StackDivider, Text, Card, CardHeader, CardBody, CardFooter, Tag, Link } from '@chakra-ui/react'
 import Markdown from 'react-markdown';
 import { useParams } from "react-router-dom";
 import { useOneTaskData } from "../../hooks/useTasksData";
+import TaskEditModal from "../task/TaskEditModal";
 
 //@ts-ignore
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 //@ts-ignore
-import {atomDark} from 'react-syntax-highlighter/dist/esm/styles/prism'
+import {atomDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useQueryClient } from "@tanstack/react-query";
 
 const TaskView: React.FC = () => {
     // TODO: USER AUTH, might not be needed, task views can be public facing
@@ -15,7 +17,7 @@ const TaskView: React.FC = () => {
 
     const {task_id} = useParams();
     const { status, data } = useOneTaskData(task_id ? task_id : "");
-
+    const queryClient = useQueryClient();
 
     return(<>
         {status === "success" && <Card>
@@ -64,8 +66,11 @@ const TaskView: React.FC = () => {
             </Stack>
         </CardBody>
         <CardFooter justifyContent={'end'}>
-            <Stack divider={<StackDivider />} spacing='4'>
+            <Stack divider={<StackDivider />} spacing='4' direction={"row"}>
                 <Box>
+                    <TaskEditModal task_id={data?._id} className="backlog" onSuccess={()=>{queryClient.invalidateQueries({queryKey: ['fetchOngoingTask']})}} />
+                </Box>
+                <Box alignContent={'center'}>
                     <Text fontSize={'xs'}>updated {new Date(data.updatedAt).toLocaleDateString()} {new Date(data.updatedAt).toLocaleTimeString()}</Text>
                 </Box>
             </Stack>
