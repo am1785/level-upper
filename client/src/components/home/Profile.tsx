@@ -46,7 +46,7 @@ const Profile:React.FC = () => {
                         English
                         </Radio>
                         <Radio value='2' size={'sm'}>
-                        Chinese
+                        中文
                         </Radio>
                     </Stack>
                     </RadioGroup>

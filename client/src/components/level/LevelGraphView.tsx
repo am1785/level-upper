@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Button, Box, Text, Card, CardBody, CardHeader, HStack, Heading, Stack, StackDivider, VStack, useColorMode } from "@chakra-ui/react"
+import { useState, useMemo } from "react";
+import { Button, Text, Card, CardBody, CardHeader, HStack, Heading, Stack, StackDivider, VStack, useColorMode } from "@chakra-ui/react"
 import { CheckCircleIcon, StarIcon } from "@chakra-ui/icons"
 import { skill } from "../home/Mylevel";
 import LevelRadarChart from "./LevelRadarChart";
