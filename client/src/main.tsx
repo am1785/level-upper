@@ -13,7 +13,10 @@ import { createMultiStyleConfigHelpers, defineStyle, extendTheme } from '@chakra
 import Backlog from './components/home/Backlog.tsx'
 import Mylevel from './components/home/Mylevel.tsx'
 import TaskView from './components/backlog/TaskView.tsx'
+import Profile from './components/home/Profile.tsx'
 import Footer from './components/home/Footer.tsx'
+import Register from './components/home/Register.tsx'
+import Login from './components/home/Login.tsx'
 
 const queryClient = new QueryClient();
 
@@ -49,6 +52,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="/" element = {<Ongoing />} />
               <Route path="/backlog" element = {<Backlog />} />
               <Route path="/mylevel" element = {<Mylevel />} />
+              <Route path='/profile' element = {<Profile />} />
+              <Route path='/register' element = {<Register />} />
+              <Route path='/login' element = {<Login />} />
               <Route path="/view/:task_id" element = {<TaskView />} />
           </Routes>
           <Footer />

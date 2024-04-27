@@ -94,6 +94,10 @@ button:focus-visible {
   margin-left: 1.5em;
 }
 
+.markdownView code {
+  font-size: small;
+}
+
 #root {
   min-height: 950px;
 }

@@ -83,7 +83,7 @@ const TaskTable: React.FC= () => {
           size: 0,
           enableSorting: false,
           cell: (props:any) =>
-            <Box textAlign={'center'}>
+            <Box>
               <Checkbox isChecked={selected.includes(String(props.getValue()))} onChange={() => handleSelect(String(props.getValue()))}></Checkbox>
             </Box>
         },
@@ -236,7 +236,7 @@ const TaskTable: React.FC= () => {
                             width: header.getSize() !== 0 ? header.getSize() : undefined, // to style individual columns in 2024
                         }}>
                             {header.column.columnDef.header as React.ReactNode}
-                            {header.id === '_id' && <Checkbox ml={1} onChange={(e) => handleSelectAll(e.currentTarget.checked)}/>}
+                            {header.id === '_id' && <Checkbox onChange={(e) => handleSelectAll(e.currentTarget.checked)}></Checkbox>}
                             {
                               header.column.getCanSort() && <ArrowUpDownIcon
                                 fontSize={"10px"} mx={1} onClick={header.column.getToggleSortingHandler()}/>

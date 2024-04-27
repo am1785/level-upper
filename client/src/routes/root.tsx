@@ -1,7 +1,7 @@
-import { Image, Flex, Badge, useColorMode, IconButton } from "@chakra-ui/react"
+import { Image, Flex, Badge, useColorMode, IconButton, Icon } from "@chakra-ui/react"
 import { MoonIcon } from "@chakra-ui/icons";
-import { Tabs, TabList, Tab, TabIndicator } from '@chakra-ui/react'
-import { NavLink as ReactRouterLink, useLocation } from 'react-router-dom'
+import { Tabs, TabList, Tab } from '@chakra-ui/react'
+import { NavLink as ReactRouterLink } from 'react-router-dom'
 import { Link as ChakraLink, useMediaQuery } from '@chakra-ui/react'
 
 import logo from '../assets/img/logo.png'
@@ -9,11 +9,8 @@ import logoShortened from '../assets/img/icon.png'
 import logoShortenedDark from '../assets/img/icon-dark.png'
 import logoDark from '../assets/img/logo-dark.png'
 import '../App.css'
-import { color } from "framer-motion";
 
 export default function Root() {
-    const location = useLocation();
-    const {pathname} = location;
     const { colorMode, toggleColorMode } = useColorMode();
 
     const [isDesktop] = useMediaQuery('(min-width: 768px)');
@@ -38,10 +35,6 @@ export default function Root() {
                   >
                     tasks
                   </ChakraLink>
-                    {/* <ReactRouterLink to={"/"} end
-                    className={({ isActive }) =>`nav-link ${isActive && 'active'}`}>
-                      ongoing
-                    </ReactRouterLink> */}
                 </Tab>
                 <Tab border="0px"  p={isDesktop ? "1em" : ".5em"}>
                   <ChakraLink
@@ -52,9 +45,6 @@ export default function Root() {
                   >
                     log
                   </ChakraLink>
-                  {/* <ReactRouterLink to={"/backlog"} className={({ isActive }) =>`nav-link ${isActive && 'active'}`}>
-                    backlog
-                  </ReactRouterLink> */}
                 </Tab>
                 <Tab border="0px" p={isDesktop ? "1em" : ".5em"}>
                   <ChakraLink
@@ -65,16 +55,22 @@ export default function Root() {
                   >
                     level
                   </ChakraLink>
-                  {/* <ReactRouterLink to={"/mylevel"} className={({ isActive }) =>`nav-link ${isActive && 'active'}`}>
-                    level
-                  </ReactRouterLink> */}
                 </Tab>
               </Flex>
             </TabList>
           </Tabs>
         </nav>
-          <IconButton aria-label="color mode toggle" colorScheme="none" color={"gray.400"} icon={<MoonIcon />} onClick={toggleColorMode} _dark={{color: 'yellow.300'}}/>
+        <Flex>
+          <ChakraLink as={ReactRouterLink} to="/profile">
+            <IconButton aria-label="profile" colorScheme="none" color={"gray.400"} _dark={{color:"white"}} icon={<Icon viewBox="0 0 576 512">
+              <path
+                fill="currentColor"
+                d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/>
+              </Icon>}></IconButton>
+            </ChakraLink>
+          <IconButton aria-label="color mode" colorScheme="none" color={"gray.400"} icon={<MoonIcon />} onClick={toggleColorMode} _dark={{color: 'yellow.300'}}/>
         </Flex>
+      </Flex>
       </>
     );
   }
