@@ -12,6 +12,7 @@ const dbo = require("./db/conn");
 app.use(require("./routes/tasks"));
 app.use(require("./routes/skills"));
 app.use(require("./routes/backlog"));
+app.use(require("./routes/auth"));
 
 // start the Express server
 app.listen(PORT, async () => {
