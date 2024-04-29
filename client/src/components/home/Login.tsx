@@ -1,20 +1,32 @@
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Text, Button, FormControl, Heading, Input, InputGroup, InputRightElement, VStack, SlideFade } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink as ReactRouterLink } from 'react-router-dom'
 import { Link as ChakraLink } from '@chakra-ui/react'
+import { useLoginMutation } from "../../hooks/useAuthMutation";
 
 const Login:React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
-    const [show, setShow] = useState(false)
+    const [show, setShow] = useState(false);
+
+    const {data, mutate:loginUserMutation, status} = useLoginMutation();
 
     const handleClick = () => setShow((prev) => !prev);
 
-    const handleSubmit = () => {
-        console.log(`registering: ${email}, ${password}`);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if(email && email.length > 0 && password && password.length > 0) {
+            loginUserMutation({email, password});
+        }
     }
+
+    useEffect(() => {
+        console.log(data);
+    }, [data, status])
+
     return (
     <main>
         <SlideFade in={true} delay={.5}>
@@ -23,7 +35,7 @@ const Login:React.FC = () => {
                     login
                 </Heading>
                 <Text fontSize={'sm'}>keep leveling up today!</Text>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={(e) => handleSubmit(e)}>
                     <VStack>
                         <FormControl isRequired w={"300px"}>
                             <Input size='md' borderColor={"gray.500"} isRequired type='email' placeholder='email address*' onChange={(e) => (setEmail(e.currentTarget.value))} />

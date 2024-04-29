@@ -1,6 +1,6 @@
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useToast, Text, Button, FormControl, Heading, Input, InputGroup, InputRightElement, VStack, SlideFade } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink as ReactRouterLink } from 'react-router-dom'
 import { Link as ChakraLink } from '@chakra-ui/react'
 import { useRegisterMutation } from "../../hooks/useAuthMutation";
@@ -28,7 +28,7 @@ const Register:React.FC = () => {
           }) : password.length < 5 ?
         toast({
             title: 'warning',
-            description: "password must have at least 5 characters",
+            description: "password too short (>=5)",
             status: 'warning',
             duration: 2000,
             isClosable: true,
@@ -36,7 +36,16 @@ const Register:React.FC = () => {
     }
 
     // redirect based on register response
-    status === "success" && data && data.msg && data.msg === "success" ? window.location.href = "http://localhost:5173" : null;
+    // status === "success" && data && data.msg && data.msg === "success" ? window.location.href = "http://localhost:5173" : null;
+
+    // handle after effect of post data only when data changes
+    useEffect(() => {
+        status === "success" && data && data.msg && toast({title: 'info',
+            description: data.msg,
+            status: 'info',
+            duration: 2000,
+            isClosable: true})
+    }, [data])
 
     return (
     <main>
@@ -67,7 +76,7 @@ const Register:React.FC = () => {
                 </VStack>
                 <Button size={'md'} w={'300px'} type='submit' colorScheme='blue' sx={{marginTop: '1em'}}>continue</Button>
             </form>
-            {data && <Text fontSize={'xs'} mt={-3}>{data.msg}</Text>}
+
             <Text mt={-1}>already have an account? <ChakraLink
                     ml={2}
                     as={ReactRouterLink}

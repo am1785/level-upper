@@ -17,3 +17,15 @@ export const useRegisterMutation = () => {
         }
       });
 }
+
+export const useLoginMutation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({email, password}:userRegisterMutationFn) => authApi.loginUser(email, password),
+        mutationKey: ['loginUser'],
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['loginUser']});
+        }
+      });
+}
