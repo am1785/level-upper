@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 
 // passport set up
-// const flash = require('express-flash');
 const session = require('express-session');
 const passport = require('passport');
 const initializePassport = require('./config/passport');
@@ -13,15 +12,20 @@ require("dotenv").config({path: "./app_config.env"})
 const PORT = process.env.PORT || 5001;
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+
 app.use(express.json());
 const dbo = require("./db/conn");
 
-// app.use(flash());
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  // cookie: { maxAge : 24 * 60 * 60 * 1000 } // a day
+  cookie: { maxAge : 20 * 1000, secure: false } // 2 min
 }))
 
 app.use(passport.initialize());

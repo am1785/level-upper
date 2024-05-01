@@ -20,6 +20,8 @@ router.post('/tasks', async (req, res) => {
 
 // get all recent tasks from an author / user, without content
 router.get('/tasks/:author', async (req, res) => {
+    console.log(`fetch task is auth: ${req.isAuthenticated()}`);
+
     try {
         let tasks = [];
         if(req.query.all) {

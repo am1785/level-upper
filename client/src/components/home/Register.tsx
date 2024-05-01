@@ -74,7 +74,7 @@ const Register:React.FC = () => {
                         <Input size='md' borderColor={"gray.500"} isRequired type={show ? 'text' : 'password'} placeholder='confirm password' onChange={(e) => (setConfirmPassword(e.currentTarget.value))} />
                     </FormControl>}
                 </VStack>
-                <Button size={'md'} w={'300px'} type='submit' colorScheme='blue' sx={{marginTop: '1em'}}>continue</Button>
+                <Button isDisabled= {status === "pending"} size={'md'} w={'300px'} type='submit' colorScheme='blue' sx={{marginTop: '1em'}}>continue</Button>
             </form>
 
             <Text mt={-1}>already have an account? <ChakraLink

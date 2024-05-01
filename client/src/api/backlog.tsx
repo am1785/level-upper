@@ -7,7 +7,7 @@ const BASE_FETCH_URL = 'http://192.168.1.8:5001/tasks';
 // const BASE_FETCH_URL = 'https://l3n3cjbp-5001.use.devtunnels.ms/tasks'
 
 export const fetchAllTasks = async (author:string) => {
-  const response = await fetch(BASE_FETCH_URL + '/' + author + '?all=1');
+  const response = await fetch(BASE_FETCH_URL + '/' + author + '?all=1', {credentials: 'include'});
   const data = await response.json();
   return data;
 };
@@ -15,6 +15,7 @@ export const fetchAllTasks = async (author:string) => {
 export const deleteTasks = async (_ids:string[]) => {
   const response = await fetch(BASE_URL, {
     method: 'DELETE',
+    credentials: 'include',
     headers: {
       "Content-Type": "application/json",
     },
@@ -27,6 +28,7 @@ export const deleteTasks = async (_ids:string[]) => {
 export const editTaskCollections = async (_ids:string[], collection:string, operation:string) => {
   const response = await fetch(BASE_URL, {
     method: 'PUT',
+    credentials: 'include',
     headers: {
       "Content-Type": "application/json",
     },

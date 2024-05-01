@@ -35,8 +35,22 @@ function initialize(passport) {
     }
 
     passport.use(new LocalStrategy( {usernameField: 'userEmail', passwordField: 'userPassword'}, authenticateUser));
-    passport.serializeUser((user, done) => {});
-    passport.deserializeUser((user, done) => {});
+    passport.serializeUser((user, done) => {
+        console.log('serializing');
+        done(null, {id: user._id, username: user.email});
+    });
+
+    passport.deserializeUser( async (user, done) => {
+        // User.findById(user.id, (err, user) => {
+        //     // console.log(done(err, user));
+        //     console.log("deserializing");
+        //     return done(null, user);
+        // })
+        console.log('deserialing');
+        // console.log(user);
+        // const u = await User.findOne({_id: user.id});
+        return done(null, user);
+    });
 }
 
 

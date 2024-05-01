@@ -1,9 +1,10 @@
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Text, Button, FormControl, Heading, Input, InputGroup, InputRightElement, VStack, SlideFade } from "@chakra-ui/react";
+import { useToast, Text, Button, FormControl, Heading, Input, InputGroup, InputRightElement, VStack, SlideFade } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { NavLink as ReactRouterLink } from 'react-router-dom'
+import { NavLink as ReactRouterLink} from 'react-router-dom'
 import { Link as ChakraLink } from '@chakra-ui/react'
 import { useLoginMutation } from "../../hooks/useAuthMutation";
+
 
 const Login:React.FC = () => {
     const [email, setEmail] = useState<string>("");
@@ -12,20 +13,33 @@ const Login:React.FC = () => {
     const [show, setShow] = useState(false);
 
     const {data, mutate:loginUserMutation, status} = useLoginMutation();
+    // const [submitState, setSubmitState] = useState(false);
+
+    const toast = useToast();
 
     const handleClick = () => setShow((prev) => !prev);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
+        // setSubmitState((prev) => !prev);
         if(email && email.length > 0 && password && password.length > 0) {
             loginUserMutation({email, password});
         }
     }
 
     useEffect(() => {
-        console.log(data);
-    }, [data, status])
+        if(status === "success" && data && data.msg) {
+            toast({
+                title: 'info',
+                description: data.msg,
+                status: 'info',
+                duration: 2000,
+                isClosable: true,
+              })
+        }
+    }, [data])
+    
+    console.log(document.cookie);
 
     return (
     <main>
@@ -51,7 +65,7 @@ const Login:React.FC = () => {
                             </InputGroup>
                         </FormControl>
                     </VStack>
-                    <Button size={'md'} w={'300px'} type='submit' colorScheme='blue' sx={{marginTop: '1em'}}>continue</Button>
+                    <Button isDisabled= {status === "pending"} size={'md'} w={'300px'} type='submit' colorScheme='blue' sx={{marginTop: '1em'}}>continue</Button>
                 </form>
                 <Text mt={-1}>don't have an account? <ChakraLink
                     ml={2}

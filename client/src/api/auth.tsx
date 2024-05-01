@@ -8,8 +8,11 @@ const BASE_URL = 'http://192.168.1.8:5001/auth';
 export const registerUser = async (email:string, password:string) => {
   const response = await fetch(BASE_URL + "/register", {
     method: 'POST',
+    credentials: 'include',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
+      // 'Accept': 'application/json',
+      // 'Access-Control-Allow-Origin': 'http://192.168.1.8:5173/'
     },
     body: JSON.stringify({ userEmail: email, userPassword: password })
   });
@@ -20,8 +23,11 @@ export const registerUser = async (email:string, password:string) => {
 export const loginUser = async (email:string, password:string) => {
   const response = await fetch(BASE_URL + "/login", {
     method: 'POST',
+    credentials: 'include',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
+      // 'Accept': 'application/json',
+      // 'Access-Control-Allow-Origin': 'http://192.168.1.8:5173/'
     },
     body: JSON.stringify({ userEmail: email, userPassword: password })
   });
