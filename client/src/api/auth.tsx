@@ -34,3 +34,15 @@ export const loginUser = async (email:string, password:string) => {
   const data = await response.json();
   return data;
 };
+
+export const fetchCurrentUserData = async () => {
+  const response = await fetch(BASE_URL + "/login/success", {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json();
+  return data;
+};

@@ -1,14 +1,15 @@
 const express = require('express')
 const router = express.Router()
-
+const checkAuth = require('../routes/auth').checkAuth;
 const Task = require('../models/task');
 
 // get all skills data from an author / user, filtered by collection
-router.get('/skills/:author', async (req, res) => {
+router.get('/skills/:author', checkAuth, async (req, res) => {
     let pipeline =   [
       {
         $match: {
           author: req.params.author,
+          // author: req.user.username,
           status: 'complete'
         }
       },

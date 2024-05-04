@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
+const checkAuth = require('../routes/auth').checkAuth;
 const Task = require('../models/task');
 
-router.delete('/backlog', async (req, res) => {
+router.delete('/backlog', checkAuth, async (req, res) => {
+    // delete many tasks from the backlog
     try {
         const taskIds = req.body.task_ids;
 
@@ -23,7 +24,8 @@ router.delete('/backlog', async (req, res) => {
     }
 });
 
-router.put('/backlog', async (req, res) => {
+router.put('/backlog', checkAuth, async (req, res) => {
+    // update collections for many tasks
     try {
         const taskIds = req.body.task_ids;
         const taskCollection = req.body.task_collection;

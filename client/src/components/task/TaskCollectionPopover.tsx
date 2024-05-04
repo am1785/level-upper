@@ -74,7 +74,7 @@ return (<>
 
     <PopoverTrigger>
     {/* <Button size={'xs'} mt={'1.25em'} bgColor={"whiteAlpha.100"}><StarIcon color={task.task_collections ? 'yellow.300' : 'gray.200'}/></Button> */}
-    <IconButton p={'2px'} size={'s'} aria-label="favorite" bgColor={'whiteAlpha.100'} icon={<PlusSquareIcon stroke={"white"} strokeWidth={2} color={task.task_collection.length > 0 ? 'yellow.400' : 'gray.500'} _dark={{color: task.task_collection.length > 0 ? 'yellow.200' : 'white'}}/>}></IconButton>
+    <IconButton p={'2px'} size={'sm'} aria-label="favorite" bgColor={'whiteAlpha.100'} icon={<PlusSquareIcon stroke={"white"} strokeWidth={2} color={task.task_collection.length > 0 ? 'yellow.400' : 'gray.500'} _dark={{color: task.task_collection.length > 0 ? 'yellow.200' : 'white'}}/>}></IconButton>
     </PopoverTrigger>
 
     <Portal>

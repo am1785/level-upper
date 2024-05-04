@@ -28,6 +28,7 @@ import TableSkillTag from "./TableSkillTag";
 import TableFloatingActions from "./TableFloatingActions";
 
 import { useAllTasksData } from "../../hooks/useTasksData";
+import { userData } from "../home/Ongoing";
 
 export const EXP_MAP = new Map([
     [1, {size: 'xs', variant:'solid', colorScheme: 'gray'} as const],
@@ -37,13 +38,17 @@ export const EXP_MAP = new Map([
     [12, {size: 'xl', variant:'solid', colorScheme: 'purple'} as const],
 ])
 
-const TaskTable: React.FC= () => {
+type TaskTableProps = {
+  userData: userData
+}
+
+const TaskTable: React.FC<TaskTableProps> = ({userData}) => {
     const queryClient = useQueryClient();
-    const USER = 'default'; // TODO: get current user based on auth
+
     const [selected, setSelected] = React.useState<string[]>([]);
     const [prevSelectedLen, setPrevSelectedLen] = React.useState<number>(0);
 
-    const { status, data, error } = useAllTasksData(USER);
+    const { status, data, error } = useAllTasksData(userData.id);
 
     let COLLECTIONS: string[] = [];
 

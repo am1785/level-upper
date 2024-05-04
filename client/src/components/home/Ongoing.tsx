@@ -8,11 +8,23 @@ import { useCollectionsData } from '../../hooks/useCollectionsData';
 import { useRemoveTaskMutation } from '../../hooks/useRemoveTaskMutation';
 
 // const MTaskOngoing = React.memo(TaskOngoing);
+export type userData = {
+  id: string,
+  username: string,
+  nickname: string,
+  language: string,
+  points: number,
+  inventory: any,
+  createdAt: Date
+}
 
-export default function Ongoing(){
+export type OngoingProps = {
+  userData: userData
+}
+
+const Ongoing:React.FC<OngoingProps> = ({userData}) => {
 
     const [currDate, setCurrDate] = useState(new Date());
-    let recentTasks: OngoingTask[] = [];
     let ongoingTasks: OngoingTask[] = [];
     let weeklyTasks: OngoingTask[] = [];
     let ongoingExp = 0;
@@ -20,7 +32,7 @@ export default function Ongoing(){
     let weeklyExp = 0;
     let weeklyComplete = 0;
 
-    const user = 'default'; // TODO: get current user based on auth
+    const user = userData.id;
 
     // function to check if the task is ongoing (updated today / yesterday)
     const dayDiff = useCallback((d:Date) => {
@@ -139,7 +151,7 @@ export default function Ongoing(){
               <ModalHeader>Add Task</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <TaskInput recentTasks = {recentTasks} onCancel={onClose} />
+                <TaskInput userData={userData} onCancel={onClose} />
               </ModalBody>
             </ModalContent>
           </Modal>
@@ -176,3 +188,5 @@ export default function Ongoing(){
     </main>
     </>)
 }
+
+export default Ongoing;

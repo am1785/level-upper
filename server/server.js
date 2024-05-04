@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5001;
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173", "http://192.168.1.8:5173"],
   credentials: true
 }));
 
@@ -24,8 +24,9 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  // cookie: { maxAge : 24 * 60 * 60 * 1000 } // a day
-  cookie: { maxAge : 20 * 1000, secure: false } // 2 min
+  cookie: { maxAge: 24 * 60 * 60 * 1000, sameSite: "none", httpOnly: true }, // a day
+  rolling: true, // resetting cookie expiration to maxage on every response
+  // cookie: { maxAge : 15 * 1000, secure: false } // 15 sec
 }))
 
 app.use(passport.initialize());
@@ -34,7 +35,7 @@ app.use(passport.session());
 app.use(require("./routes/tasks"));
 app.use(require("./routes/skills"));
 app.use(require("./routes/backlog"));
-app.use(require("./routes/auth"));
+app.use(require("./routes/auth").router);
 
 // start the Express server
 app.listen(PORT, async () => {

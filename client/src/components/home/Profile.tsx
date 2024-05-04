@@ -1,8 +1,14 @@
-import { DeleteIcon, EditIcon, ExternalLinkIcon } from "@chakra-ui/icons";
-import { SlideFade, Box, Stack, Input, FormControl, FormLabel, Text, Checkbox, Switch, Card, CardHeader, Heading, CardBody, StackDivider, Button, IconButton, Icon, Radio, RadioGroup } from "@chakra-ui/react";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { SlideFade, Box, Stack, Input, Text,  Card, Heading, CardBody, StackDivider,  IconButton, Icon, Radio, RadioGroup } from "@chakra-ui/react";
+import { userData } from "./Ongoing";
 
-const Profile:React.FC = () => {
-    const user = "default"; // TODO user auth
+export type ProfileProps = {
+    userData: userData
+}
+
+const Profile:React.FC<ProfileProps> = ({userData}) => {
+    const user = userData.username; // TODO user auth
+
     const currHour = new Date().getHours();
 
     // TODO: email, password (change pass modal), language, joined since, delete account, log out

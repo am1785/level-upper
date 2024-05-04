@@ -1,9 +1,10 @@
 import React from "react";
-import { Center, Fade, useDisclosure, HStack, IconButton } from '@chakra-ui/react'
+import { Link as ChakraLink, Center, Fade, useDisclosure, HStack, IconButton } from '@chakra-ui/react'
 import { ViewIcon } from "@chakra-ui/icons";
 import TaskEditModal from "../task/TaskEditModal";
 import TableFloatingDeleteBtn from "./TableFloatingDeleteBtn";
 import TableFloatingCollectionsModal from "./TableFloatingCollectionsModal";
+import { NavLink as ReactRouterLink } from 'react-router-dom';
 
 export type TableFloatingActionsProps = {
     actionIds: string[],
@@ -45,8 +46,9 @@ const TableFloatingActions: React.FC<TableFloatingActionsProps> = ({actionIds, p
           _dark={{bg: "gray.900"}}
         >
           <HStack gap={2}>
-            {actionIds.length === 1 && <IconButton colorScheme="teal" variant={"outline"} bg={"white"} _dark={{bg: "gray.700"}} icon={<ViewIcon />} aria-label="View button" 
-            onClick={() => getView(actionIds[0])}/> }
+            {actionIds.length === 1 && <ChakraLink as={ReactRouterLink} to={"/view/" + actionIds[0]}>
+            <IconButton colorScheme="teal" variant={"outline"} bg={"white"} _dark={{bg: "gray.700"}} icon={<ViewIcon />} aria-label="View button" />
+            </ChakraLink>}
             <TableFloatingCollectionsModal task_ids={actionIds} collections={taskCollections} />
             {actionIds.length === 1 && <TaskEditModal task_id={actionIds[0]} className="logEdit" onSuccess={onEditSuccess}/> }
             <TableFloatingDeleteBtn task_ids={actionIds} onSuccess={onDeleteSuccess}/>

@@ -177,7 +177,7 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
     return (
         <>
-        {className === 'ongoingEdit' ? <IconButton p={'2px'} bgColor={'whiteAlpha.100'} size={'s'} aria-label='edit task' onClick={onOpen} icon={<EditIcon />}></IconButton> :
+        {className === 'ongoingEdit' ? <IconButton p={'2px'} bgColor={'whiteAlpha.100'} size={'sm'} aria-label='edit task' onClick={onOpen} icon={<EditIcon />}></IconButton> :
         <IconButton onClick={onOpen} colorScheme="gray" variant={"outline"} bg={"white"} _dark={{bg: "gray.700"}} icon={<EditIcon />} aria-label="Edit button" />}
           <Modal isOpen={isOpen} onClose={onClose} isCentered size={'lg'} scrollBehavior={'inside'}>
             <ModalOverlay />
@@ -232,8 +232,8 @@ const TaskEditModal:React.FC<TaskEditProps> = ({task_id, className, onSuccess}) 
 
               <FormControl mt={'1em'}>
               <FormLabel>content</FormLabel>
-              <Textarea maxLength={10000} h={expanded ? '30em' : '15em'} defaultValue={task?.content} placeholder='plain text or markdown' onChange={(e)=> {updateForm({content:e.currentTarget.value}); setContentSize(e.currentTarget.textLength)}} />
-              <Text fontSize={"xs"} mt={1}>{10000 - contentSize} characters remain</Text>
+              <Textarea maxLength={20000} h={expanded ? '30em' : '15em'} defaultValue={task?.content} placeholder='plain text or markdown' onChange={(e)=> {updateForm({content:e.currentTarget.value}); setContentSize(e.currentTarget.textLength)}} />
+              <Text fontSize={"xs"} mt={1}>{20000 - contentSize} characters remain</Text>
               </FormControl>
               <HStack justifyContent='end' mt={'.5em'}>
                 <Button onClick={toggleExpand} size={'sm'} _active={{transform: 'scale(1.2)'}} colorScheme={expanded ? "blue" : "gray"}><ArrowUpDownIcon /></Button>

@@ -21,56 +21,83 @@ const User = require('../models/user');
 //     // console.log(`is auth: ${req.isAuthenticated()}`);
 //     // return res.json({msg: 'success', user: req.user});
 
-//     req.logIn(req.user, function (err) { // <-- Log user in
-//         // return res.json({msg: 'success', user: req.user._id});
-//         return res.redirect('/auth/login/success');
-//      });
+    // req.logIn(req.user, function (err) { // <-- Log user in
+    //     // return res.json({msg: 'success', user: req.user._id});
+    //     return res.redirect('/auth/login/success');
+    //  });
 // });
 
-router.post('/auth/login',
+router.post('/auth/login', checkUnAuthenticated,
     passport.authenticate('local', {
         successRedirect: "/auth/login/success",
         failureRedirect: "/auth/login/fail"
     })
 );
 
-router.get('/auth/login/fail', (req, res) => {
-    return res.status(401).json({msg: "login failed"});
+router.get('/auth/login/fail', checkUnAuthenticated, (req, res) => {
+    return res.status(403).json({msg: "login failed"});
 });
 
-router.get('/auth/login/success', (req, res) => {
+router.get('/auth/login/success', checkAuthenticated, (req, res) => {
     return res.status(200).json({msg: 'success', user: req.user});
 });
 
-// router.post('/auth/login', (req, res, next) => {
-//     passport.authenticate('local', (err, user, info) => {
-//       if (err) {
-//         return next(err);
-//       }
+router.get('/auth/register/success', checkAuthenticated, (req, res) => {
+    return res.status(200).json({msg: "success", _id: req.user});
+});
 
-//       if (!user) {
-//         // Authentication failed
-//         return res.status(401).json(info);
-//       }
+router.get('/auth/register/fail', checkUnAuthenticated, (req, res) => {
+    return res.status(403).json({msg: "register failed"});
+});
 
-//       // Authentication succeeded
-//     return res.json({message: "success", id: user._id});
-//     })(req, res, next);
-// });
-
-
-router.post('/auth/register', async (req, res) => {
-    console.log(`is auth: ${req.isAuthenticated()}`);
+router.post('/auth/register', checkUnAuthenticated, async (req, res) => {
     const {userEmail, userPassword} = req.body;
-
     try {
         const hashedPassword = await bcrypt.hash(userPassword, 10);
-        const user = await User.create({email: userEmail.toLowerCase().trim(), password: hashedPassword, points: 0, language: "English", })
-        req.logIn(user);
-        res.status(200).json({msg: "success", _id: user._id});
+        const user = await User.create({email: userEmail.toLowerCase().trim(), password: hashedPassword, points: 0, language: "English", nickname: ""})
+        req.logIn(user, function (err) { // <-- Log user in
+            if(!err) {
+                res.redirect('/auth/register/success');
+            } else {
+                // console.log(err);
+                res.redirect('/auth/register/fail');
+            }
+         });
     } catch (err) {
         res.status(400).json({msg: "email exists"});
     }
 });
 
-module.exports = router;
+function checkAuthenticated(req, res, next) {
+/**
+ * Check if request object is authenticated via passport session
+ * @returns {void} callback to the next function if req IS authenticated
+ */
+    if (req.isAuthenticated()) {
+        console.log(`current user: ${JSON.stringify(req.user.username)}`);
+        console.log(`accessing path: ${JSON.stringify(req.path)}`);
+        return next();
+    }
+    // console.log('not logged in');
+    return res.status(403).json({msg: "unauthenticated"});
+}
+
+function checkUnAuthenticated(req, res, next) {
+/**
+ * Check if request object is NOT authenticated via passport session
+ * @returns {void} callback to the next function if req is NOT authenticated
+ */
+    if (!req.isAuthenticated()) {
+        return next();
+    }
+    // console.log('already logged in');
+    return res.status(403).json({msg: "already authenticated"});
+}
+
+// module.exports = router;
+
+module.exports = {
+    router: router,
+    checkAuth: checkAuthenticated,
+    checkNotAuth: checkUnAuthenticated
+};

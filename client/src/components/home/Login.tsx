@@ -5,7 +5,6 @@ import { NavLink as ReactRouterLink} from 'react-router-dom'
 import { Link as ChakraLink } from '@chakra-ui/react'
 import { useLoginMutation } from "../../hooks/useAuthMutation";
 
-
 const Login:React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -38,8 +37,6 @@ const Login:React.FC = () => {
               })
         }
     }, [data])
-    
-    console.log(document.cookie);
 
     return (
     <main>
