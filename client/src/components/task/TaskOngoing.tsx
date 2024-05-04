@@ -107,7 +107,7 @@ const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, qu
         </Stack>
         <Stack>
             <HStack>
-              <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation({_id: task._id, update: {author: "default", status: e.target.checked ? "complete" : "ongoing"}})}> </Checkbox>
+              <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation({_id: task._id, update: {status: e.target.checked ? "complete" : "ongoing"}})}> </Checkbox>
               {
                 task.link ? <p className='ongoingTitle' onClick={onClickLink}>{task.title}</p>
                           : <p className='ongoingTitle'>{task.title}</p>

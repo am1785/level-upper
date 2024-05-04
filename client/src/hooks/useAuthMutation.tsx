@@ -1,5 +1,6 @@
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import * as authApi from '../api/auth';
+import { Navigate } from 'react-router-dom';
 
 type userRegisterMutationFn = {
     email:string;
@@ -27,6 +28,20 @@ export const useLoginMutation = () => {
         mutationKey: ['loginUser'],
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['loginUser']});
+            queryClient.invalidateQueries({queryKey: ['fetchUserData']});
+        }
+      });
+}
+
+export const useLogoutMutation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => authApi.logoutUser(),
+        mutationKey: ['logoutUser'],
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['loginUser']});
+            queryClient.invalidateQueries({queryKey: ['logoutUser']});
             queryClient.invalidateQueries({queryKey: ['fetchUserData']});
         }
       });

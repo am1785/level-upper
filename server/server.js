@@ -35,6 +35,7 @@ app.use(passport.session());
 app.use(require("./routes/tasks"));
 app.use(require("./routes/skills"));
 app.use(require("./routes/backlog"));
+app.use(require("./routes/users"));
 app.use(require("./routes/auth").router);
 
 // start the Express server

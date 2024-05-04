@@ -34,6 +34,13 @@ router.post('/auth/login', checkUnAuthenticated,
     })
 );
 
+router.post('/auth/logout', checkAuthenticated, (req, res, next) => {
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        return res.status(200).json({msg: "successfully logged out"});
+    });
+});
+
 router.get('/auth/login/fail', checkUnAuthenticated, (req, res) => {
     return res.status(403).json({msg: "login failed"});
 });

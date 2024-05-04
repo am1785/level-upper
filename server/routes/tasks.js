@@ -3,6 +3,7 @@ const router = express.Router();
 const checkAuth = require('../routes/auth').checkAuth;
 const Task = require('../models/task');
 
+// create a task
 router.post('/tasks', checkAuth, async (req, res) => {
     const {title, link, content, skills, status, exp, hidden, author, recurring} = req.body;
 
