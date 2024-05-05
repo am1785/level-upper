@@ -7,7 +7,7 @@ import { useEditUserMutation } from "../../hooks/useUsersMutation";
 import { useOneUserData } from "../../hooks/useUsersData";
 import { useResetPasswordMutation } from "../../hooks/useAuthMutation";
 
-import DeleteAccountAlert from "../profile/deleteAccountAlert";
+import DeleteAccountAlert from "../profile/DeleteAccountAlert";
 
 export type ProfileProps = {
     userData: userData
