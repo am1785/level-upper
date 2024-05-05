@@ -1,6 +1,5 @@
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import * as authApi from '../api/auth';
-import { Navigate } from 'react-router-dom';
 
 type userRegisterMutationFn = {
     email:string;
@@ -42,6 +41,18 @@ export const useLogoutMutation = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['loginUser']});
             queryClient.invalidateQueries({queryKey: ['logoutUser']});
+            queryClient.invalidateQueries({queryKey: ['fetchUserData']});
+        }
+      });
+}
+
+export const useResetPasswordMutation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({email, password}:userRegisterMutationFn) => authApi.resetUserPassword(email, password),
+        mutationKey: ['resetUserPassword'],
+        onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['fetchUserData']});
         }
       });

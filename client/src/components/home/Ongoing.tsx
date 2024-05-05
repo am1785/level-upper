@@ -15,7 +15,8 @@ export type userData = {
   language: string,
   points: number,
   inventory: any,
-  createdAt: Date
+  createdAt: Date,
+  role: number
 }
 
 export type OngoingProps = {

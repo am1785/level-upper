@@ -20,6 +20,19 @@ export const registerUser = async (email:string, password:string) => {
   return data;
 };
 
+export const resetUserPassword = async (email:string, password:string) => {
+  const response = await fetch(BASE_URL + "/resetpassword", {
+    method: 'PUT',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userEmail: email, userPassword: password })
+  });
+  const data = await response.json();
+  return data;
+};
+
 export const loginUser = async (email:string, password:string) => {
   const response = await fetch(BASE_URL + "/login", {
     method: 'POST',
