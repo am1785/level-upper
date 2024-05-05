@@ -18,3 +18,15 @@ export const editUserData = async (userId:string, updateData:object) => {
     const data = await response.json();
     return data;
   };
+
+  export const deleteUser = async (userId:string) => {
+    const response = await fetch(BASE_URL + '/' + userId, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data;
+  };
