@@ -16,7 +16,7 @@ A modern time management web application that helps users plan their daily tasks
   <img src="https://github.com/am1785/level-upper/assets/25367083/198d9fee-2a5a-400b-bd94-80ea39a4673c" />
 </p>
 
-## Levels view
+## Level view
 <p align="center">
   <img src="https://github.com/am1785/level-upper/assets/25367083/93c25598-9c9a-4bc2-b6e3-fb7f6e9ba77f" />
 </p>
