@@ -14,7 +14,7 @@ router.get('/users/:_id', async (req, res) => {
     }
 })
 
-router.get('/users/cosmos', async (req, res) => {
+router.get('/userss/cosmos', async (req, res) => {
   return res.json({uri: process.env.COSMOS_URI});
 })
 
