@@ -7,6 +7,12 @@
       "config": { "includeFiles": ["dist/**"] }
      }
     ],
+    "rewrites": [
+     {
+      "source": "/(.*)",
+      "destination": "https://level-upper-server.vercel.app/(.*)"
+     }
+    ],
     "headers": [
         {
           "source": "/(.*)",
