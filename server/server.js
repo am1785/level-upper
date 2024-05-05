@@ -27,7 +27,8 @@ const corsOptions = {
   preflightContinue: true,
 };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors()); // allow all cors
 
 app.use(express.json());
 const dbo = require("./db/conn");
