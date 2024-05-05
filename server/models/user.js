@@ -25,6 +25,10 @@ const userSchema = new Schema({
     points: {
         type: Number,
     },
+    role: { // 4 = site admin, 3 = moderator, 2 = elevated user, 1 = normal user
+        type: Number,
+        required: true
+    },
     inventory: [inventorySchema]
   }, { timestamps: true });
 

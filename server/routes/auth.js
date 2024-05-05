@@ -61,7 +61,7 @@ router.post('/auth/register', checkUnAuthenticated, async (req, res) => {
     const {userEmail, userPassword} = req.body;
     try {
         const hashedPassword = await bcrypt.hash(userPassword, 10);
-        const user = await User.create({email: userEmail.toLowerCase().trim(), password: hashedPassword, points: 0, language: "English", nickname: ""})
+        const user = await User.create({email: userEmail.toLowerCase().trim(), password: hashedPassword, points: 0, language: "English", nickname: "", role: 1})
         req.logIn(user, function (err) { // <-- Log user in
             if(!err) {
                 res.redirect('/auth/register/success');
@@ -75,14 +75,25 @@ router.post('/auth/register', checkUnAuthenticated, async (req, res) => {
     }
 });
 
+router.put('/auth/resetpassword', checkAuthenticated, async (req, res) => {
+    const {userEmail, userPassword} = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(userPassword, 10);
+        const user = await User.findOneAndUpdate({email: userEmail}, {password: hashedPassword});
+        res.status(200).json({msg: "success"});
+    } catch (err) {
+        res.status(400).json({msg: "reset failed"});
+    }
+});
+
 function checkAuthenticated(req, res, next) {
 /**
  * Check if request object is authenticated via passport session
  * @returns {void} callback to the next function if req IS authenticated
  */
     if (req.isAuthenticated()) {
-        console.log(`current user: ${JSON.stringify(req.user.username)}`);
-        console.log(`accessing path: ${JSON.stringify(req.path)}`);
+        // console.log(`current user: ${JSON.stringify(req.user.username)}`);
+        // console.log(`accessing path: ${JSON.stringify(req.path)}`);
         return next();
     }
     // console.log('not logged in');

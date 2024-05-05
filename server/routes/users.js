@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const checkAuth = require('../routes/auth').checkAuth;
 const User = require('../models/user');
+const Task = require('../models/task');
 
 // get all data for a single user based on _id, without password
 router.get('/users/:_id', checkAuth, async (req, res) => {
@@ -13,6 +14,7 @@ router.get('/users/:_id', checkAuth, async (req, res) => {
     }
 })
 
+// update an existing user by id
 router.put('/users/:_id', checkAuth, async (req, res) => {
     const userId = req.params._id;
     if (req.user.id !== userId) {
@@ -34,4 +36,29 @@ router.put('/users/:_id', checkAuth, async (req, res) => {
     }
   });
 
+// delete an existing user and all associated data by id, and log out
+router.delete('/users/:_id', checkAuth, async (req, res) => {
+  const userId = req.params._id;
+  if (req.user.id === userId || req.user.role >= 3) {
+    try {
+      const deletedTasks = await Task.deleteMany({author: userId});
+      const deletedUser = await User.findByIdAndDelete(userId);
+
+      if (!deletedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      req.logout(function(err) {
+        if (err) { return next(err); }
+        return res.status(200).json({msg: "user deleted"});
+    });
+
+    } catch (error) {
+      console.error('Error deleting user:', error.message);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  else {return res.status(403).json({ error: 'unauthorized' })};
+});
   module.exports = router;
