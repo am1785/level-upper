@@ -24,11 +24,10 @@ const corsOptions = {
     }
   },
   credentials: true,
+  preflightContinue: true,
 };
 
 app.use(cors(corsOptions));
-// CORS preflight handler
-app.options('*', cors(corsOptions));
 
 app.use(express.json());
 const dbo = require("./db/conn");
