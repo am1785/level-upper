@@ -1,10 +1,10 @@
-const express = require('express')
-const router = express.Router()
-
+const express = require('express');
+const router = express.Router();
+const checkAuth = require('../routes/auth').checkAuth;
 const Task = require('../models/task');
-// const Skillset = require('../models/skillset');
 
-router.post('/tasks', async (req, res) => {
+// create a task
+router.post('/tasks', checkAuth, async (req, res) => {
     const {title, link, content, skills, status, exp, hidden, author, recurring} = req.body;
 
     if(recurring && recurring.length > 0) {
@@ -20,7 +20,7 @@ router.post('/tasks', async (req, res) => {
 });
 
 // get all recent tasks from an author / user, without content
-router.get('/tasks/:author', async (req, res) => {
+router.get('/tasks/:author', checkAuth, async (req, res) => {
     try {
         let tasks = [];
         if(req.query.all) {
@@ -38,7 +38,7 @@ router.get('/tasks/:author', async (req, res) => {
 })
 
 // get all distinct collections from a user
-router.get('/tasks/collections/:author', async (req, res) => {
+router.get('/tasks/collections/:author', checkAuth, async (req, res) => {
     try {
         const collections = await Task.distinct("task_collection", {author: req.params.author});
         res.status(200).json(collections);
@@ -58,38 +58,12 @@ router.get('/tasks/view/:_id', async (req, res) => {
 })
 
 // edit an existing task
-router.put('/tasks/:_id', async (req, res) => {
+router.put('/tasks/:_id', checkAuth, async (req, res) => {
     const taskId = req.params._id;
     const updatedTaskData = req.body;
 
     try {
-      const updatedTask = await Task.findByIdAndUpdate(taskId, updatedTaskData, { new: true });
-
-      // logic for updating user skill set when a status change is detected, not needed due to aggregate function approach
-    //   if (updatedTask.status !== updatedTaskData.status) {
-    //     if (updatedTask.status === "complete") {
-    //         try {
-    //             Skillset.findOne({user: updatedTask.author}, function (err, result) {
-    //                 if(!result) {
-    //                     Skillset.create({user:updatedTask.author, total_exp: 0, skills: []});
-    //                 }
-    //             });
-    //             Skillset.update(
-    //                 { user: updatedTask.author },
-    //                 { $inc: { total_exp: updatedTask.exp } },
-    //                 { $push: { skills: updatedTask.skills } }
-    //             );
-    //         } catch (err) {
-    //             console.log(err);
-    //         }
-    //     } else {
-    //         try {
-
-    //         } catch(err) {
-    //             console.log(err);
-    //         }
-    //     }
-    //   }
+      const updatedTask = await Task.findOneAndUpdate({_id: taskId, author: req.user.id}, updatedTaskData, { new: true });
 
       if (!updatedTask) {
         return res.status(404).json({ error: 'Task not found' });
@@ -102,7 +76,7 @@ router.put('/tasks/:_id', async (req, res) => {
     }
   });
 
-router.delete('/tasks/:_id', async (req, res) => {
+router.delete('/tasks/:_id', checkAuth, async (req, res) => {
     try {
         const taskId = req.params._id;
 

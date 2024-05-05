@@ -1,5 +1,5 @@
 import React from 'react'
-import { Checkbox, Flex, Spacer, Box, Tag, HStack, Stack, Button, IconButton, useDisclosure, SlideFade, useToast } from "@chakra-ui/react"
+import { Link as ChakraLink, Checkbox, Flex, Spacer, Box, Tag, HStack, Stack, Button, IconButton, useDisclosure, SlideFade, useToast } from "@chakra-ui/react"
 import { MinusIcon, ViewIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 import { useQueryClient} from '@tanstack/react-query'
@@ -8,6 +8,7 @@ import { EXP_MAP } from '../backlog/TaskTable';
 import TaskCollectionPopover from './TaskCollectionPopover'
 import { useChangeTaskStatusMutation } from '../../hooks/useTasksMutations'
 import { useChangeTaskHiddenMutation } from '../../hooks/useTasksMutations'
+import { NavLink as ReactRouterLink } from 'react-router-dom';
 
 export type OngoingTask = {
     _id: string;
@@ -94,19 +95,19 @@ const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, qu
         )
       }
 
-    function getView(_id:string) {
-        window.open(`/view/${_id}`, "_blank") //to open new page;
-    }
+    // function getView(_id:string) {
+    //     window.open(`/view/${_id}`, "_blank") //to open new page;
+    // }
 
     return (
-      <SlideFade in={true} delay={.7} offsetY={'20px'}>
+      <SlideFade in={true} delay={.5} offsetY={'20px'}>
         <Box key={task._id} boxShadow='base' p='5' rounded='md' mt='3' mb='3' opacity={task.status === "complete" ? "70%" :"100%"} _dark={{border: "2px solid #718096"}}>
         <Stack direction='row-reverse' sx={{position: 'relative'}}>
             <DeleteTaskDialog />
         </Stack>
         <Stack>
             <HStack>
-              <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation({_id: task._id, update: {author: "default", status: e.target.checked ? "complete" : "ongoing"}})}> </Checkbox>
+              <Checkbox isChecked={task.status === 'complete'} size={'xl'} onChange={(e) => changeStatusMutation({_id: task._id, update: {status: e.target.checked ? "complete" : "ongoing"}})}> </Checkbox>
               {
                 task.link ? <p className='ongoingTitle' onClick={onClickLink}>{task.title}</p>
                           : <p className='ongoingTitle'>{task.title}</p>
@@ -118,14 +119,16 @@ const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, qu
                 ))} <Spacer /> <Tag colorScheme={EXP_MAP.get(task.exp)!['colorScheme']}>{task.exp}</Tag>
             </HStack>
         </Stack>
-        <Stack direction={'row'} mt={'1em'} gap={'1'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
+        <Stack direction={'row'} mt={'1em'} gap={'0'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
             <TaskCollectionPopover onSuccess={()=> {
               queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchCollections']});
 
               }} task={task} collections={collections}/>
             <TaskEditModal onSuccess={() => { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
             queryClient.invalidateQueries({queryKey: ['fetchSkills']});}} task_id={task._id} className='ongoingEdit'/>
-            <IconButton icon={<ViewIcon />} p={'2px'} size={'s'} bgColor={'whiteAlpha.100'} aria-label="viewTask" onClick={() => getView(task._id)} />
+            <ChakraLink as={ReactRouterLink} to={"/view/" + task._id}>
+            <IconButton icon={<ViewIcon />} p={'2px'} size={'sm'}  bgColor={'whiteAlpha.100'} aria-label="viewTask" />
+            </ChakraLink>
         </Stack>
     </Box>
     </SlideFade>

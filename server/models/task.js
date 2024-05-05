@@ -16,10 +16,9 @@ const taskSchema = new Schema({
     },
     skills: [{type: String}],
     status: {
-        // type: Number, enum: [-1, 0, 1],
         type: String,
         required: true,
-    }, // ongoing = 0, backlog = -1, completed = 1
+    }, // "ongoing" || "completed"
     exp: {
         type: Number,
         required: true,

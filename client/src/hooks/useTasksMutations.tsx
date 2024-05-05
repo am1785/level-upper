@@ -14,11 +14,6 @@ type changeTaskStatusMutationFn = {
     update:any;
 };
 
-type changeTaskHiddenMutationFn = {
-    _id:string;
-    update:any;
-};
-
 export const useEditTaskMutation = (toast:typeof Toast, onSuccess:any) => { return useMutation({
 
     mutationFn: ( {_id, update}: editTaskMutationFn ) => taskApi.editTask(_id, update),

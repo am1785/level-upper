@@ -1,12 +1,19 @@
-import { Flex } from "@chakra-ui/react"
+
+import { Flex } from '@chakra-ui/react';
 import TaskTable from '../backlog/TaskTable';
+import { userData } from './Ongoing';
 
-export default function Backlog(){
-
-    return (
-        <Flex justify={'center'}>
-            <TaskTable />
-        </Flex>
-    )
-
+type BacklogProps = {
+userData: userData
 }
+
+const Backlog: React.FC<BacklogProps> = ({userData}) => {
+    // const { status:userDataStatus, data: userData, error:userDataError } = useAuthData();
+    return (<>
+    <Flex justify={'center'}>
+        <TaskTable userData={userData}/>
+    </Flex>
+    </>)
+}
+
+export default Backlog;

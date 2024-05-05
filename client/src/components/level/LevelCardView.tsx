@@ -1,4 +1,4 @@
-import { Box, Stack, Card, Text, CardHeader, CardBody, Badge, SlideFade } from "@chakra-ui/react"
+import { Box, Stack, Card, Text, CardHeader, CardBody, Badge, SlideFade, VStack } from "@chakra-ui/react"
 import { skill } from "../home/Mylevel";
 import { CheckCircleIcon, StarIcon } from "@chakra-ui/icons";
 import { EXP_MAP } from "../backlog/TaskTable";
@@ -18,10 +18,19 @@ export default function LevelCardView(prop:LevelCardViewProps){
     data.sort(compareExp, );
 
     return (<>
-    {!data || data.length === 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
+    {!data || data.length === 0 && <SlideFade in={true} offsetY='20px' delay={1}>
+        <VStack justifyContent={'center'}>
+        <Card variant={"outline"} borderWidth={1} w={200}>
+            <CardHeader fontSize={'md'} fontWeight={'600'} _dark={{"color": "white"}}>add a skill</CardHeader>
+            <CardBody mt={'-2em'}>
+            <Text fontSize={'sm'}>level up today <CheckCircleIcon color={'green.400'} fontSize={'sm'} m={'.25em'}/></Text>
+            </CardBody>
+        </Card>
+        </VStack>
+    </SlideFade>}
     <Stack direction={'row'} wrap={'wrap'} spacing={'3'} justifyContent={'space-evenly'}>
         {data.map( (s:skill, id:number) => { // () instead of {} so that something is returned explicitly
-                const CARD_COLOR = s.exp_earned <= 19 ? "#EDF2F7" : s.exp_earned >= 20 && s.exp_earned <= 39 ? "#90cdf4" : s.exp_earned >= 40 && s.exp_earned <= 79 ? "#81E6D9": s.exp_earned >= 80 && s.exp_earned <= 159 ? "#D6BCFA" : "#ED64A6";
+                const CARD_COLOR = s.exp_earned <= 19 ? "#EDF2F7" : s.exp_earned >= 20 && s.exp_earned <= 39 ? "#90cdf4" : s.exp_earned >= 40 && s.exp_earned <= 79 ? "#81E6D9": s.exp_earned >= 80 && s.exp_earned <= 159 ? "#F6AD55" : "#D6BCFA";
                 return <SlideFade key={id} in={true} offsetY='20px' delay={.40 - (1 / (id+3))}>
                     <Card variant={"outline"}
                     borderColor={CARD_COLOR}

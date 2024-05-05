@@ -28,6 +28,7 @@ import TableSkillTag from "./TableSkillTag";
 import TableFloatingActions from "./TableFloatingActions";
 
 import { useAllTasksData } from "../../hooks/useTasksData";
+import { userData } from "../home/Ongoing";
 
 export const EXP_MAP = new Map([
     [1, {size: 'xs', variant:'solid', colorScheme: 'gray'} as const],
@@ -37,13 +38,17 @@ export const EXP_MAP = new Map([
     [12, {size: 'xl', variant:'solid', colorScheme: 'purple'} as const],
 ])
 
-const TaskTable: React.FC= () => {
+type TaskTableProps = {
+  userData: userData
+}
+
+const TaskTable: React.FC<TaskTableProps> = ({userData}) => {
     const queryClient = useQueryClient();
-    const USER = 'default'; // TODO: get current user based on auth
+
     const [selected, setSelected] = React.useState<string[]>([]);
     const [prevSelectedLen, setPrevSelectedLen] = React.useState<number>(0);
 
-    const { status, data, error } = useAllTasksData(USER);
+    const { status, data, error } = useAllTasksData(userData.id);
 
     let COLLECTIONS: string[] = [];
 
@@ -53,22 +58,17 @@ const TaskTable: React.FC= () => {
           COLLECTIONS.indexOf(c) === -1 && COLLECTIONS.push(c);
         })
       })
-      // console.log(COLLECTIONS);
     }
 
     function handleSelect(_id: string) {
       setPrevSelectedLen(selected.length);
 
       if (selected.find((id) => id === _id)) {
-        // console.log("contains!");
         setSelected((prev) => prev.filter(id => id !== _id));
       } else {
-        // console.log("doesn't contain!");
         setSelected((prev) => [...prev, _id]);
       }
     }
-
-    // console.log(selected);
 
     const [columnFilters, setColumnFilters] = React.useState([
       {
@@ -88,7 +88,7 @@ const TaskTable: React.FC= () => {
           size: 0,
           enableSorting: false,
           cell: (props:any) =>
-            <Box textAlign={'center'}>
+            <Box>
               <Checkbox isChecked={selected.includes(String(props.getValue()))} onChange={() => handleSelect(String(props.getValue()))}></Checkbox>
             </Box>
         },
@@ -149,9 +149,6 @@ const TaskTable: React.FC= () => {
     },
     ], [data, columnFilters, selected]);
 
-    // console.log(columnFilters);
-    // console.log(columnFilters.some((c) => c.value === "react.js"));
-
     const toggleSkillFilter = (skill:string) => {
       columnFilters?.find((c) => c.value === skill) ?
       setColumnFilters(columnFilters.filter((c) => c.value !== skill)) :
@@ -182,9 +179,6 @@ const TaskTable: React.FC= () => {
     }
 
     const handleCollectionFilter = (c:string) => {
-      // the default selection option returns an empty string, which is not truthy
-      // console.log(c);
-      // console.log(!c && 1);
 
       if(!c) {
         setColumnFilters((prev) => prev.filter((f) => f.id !== "task_collection"));
@@ -207,8 +201,17 @@ const TaskTable: React.FC= () => {
       return
     }
 
-    // console.log(table.getHeaderGroups());
-    // console.log(data);
+    const handleSelectAll = (isChecked: boolean) => {
+      setPrevSelectedLen(selected.length);
+      if(isChecked) {
+        // @ts-ignore
+        const targetIds = table.getFilteredRowModel().flatRows?.map((o) => o.original._id);
+        setSelected(targetIds);
+      } else {
+        setSelected([]);
+      }
+    }
+
     return (<>
     {status === "pending" ? <Stack><Skeleton height='20px' /><Skeleton height='20px' /></Stack>
     : status === "error" ? <Text>{error.message}</Text>
@@ -238,6 +241,7 @@ const TaskTable: React.FC= () => {
                             width: header.getSize() !== 0 ? header.getSize() : undefined, // to style individual columns in 2024
                         }}>
                             {header.column.columnDef.header as React.ReactNode}
+                            {header.id === '_id' && <Checkbox onChange={(e) => handleSelectAll(e.currentTarget.checked)}></Checkbox>}
                             {
                               header.column.getCanSort() && <ArrowUpDownIcon
                                 fontSize={"10px"} mx={1} onClick={header.column.getToggleSortingHandler()}/>

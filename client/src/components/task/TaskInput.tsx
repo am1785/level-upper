@@ -14,13 +14,13 @@ import {
     Switch,
   } from '@chakra-ui/react'
 import { AddIcon, CloseIcon } from '@chakra-ui/icons';
-import { OngoingTask } from './TaskOngoing';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as taskApi from '../../api/tasks';
 import { Trie } from "../../data/trie";
+import { userData } from '../home/Ongoing';
 
 export type InputProps = {
-    recentTasks: OngoingTask[]; // for auto complete capabilities
+    userData: userData; // for auto complete capabilities
     onCancel: () => void;
 }
 
@@ -36,7 +36,7 @@ export type taskForm = {
   recurring: string;
   }
 
-const TaskInput: React.FC<InputProps> = ({recentTasks, onCancel}) => {
+const TaskInput: React.FC<InputProps> = ({userData, onCancel}) => {
 
 const queryClient = useQueryClient();
 
@@ -61,7 +61,7 @@ content : "",
 skills : [],
 exp : 1,
 hidden: false,
-author: "default",
+author: userData.id,
 status: "ongoing",
 recurring: ""
 });

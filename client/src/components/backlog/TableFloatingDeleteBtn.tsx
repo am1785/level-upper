@@ -40,11 +40,11 @@ const TableFloatingDeleteBtn:React.FC<TableFloatingDeleteBtnProps> = ({task_ids,
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                Delete Tasks
+                Delete {task_ids.length} Tasks
               </AlertDialogHeader>
 
               <AlertDialogBody>
-                Are you sure? You can't undo this action afterwards.
+                Are you sure? You <strong>cannot</strong> undo this action afterwards.
               </AlertDialogBody>
 
               <AlertDialogFooter>
