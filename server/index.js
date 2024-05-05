@@ -39,6 +39,7 @@ app.use(session({
   cookie: { maxAge: 24 * 60 * 60 * 1000, sameSite: "none", httpOnly: true, secure: true }, // a day
   rolling: true, // resetting cookie expiration to maxage on every response
   // cookie: { maxAge : 15 * 1000, secure: false } // 15 sec
+  proxy: true
 }))
 
 app.use(passport.initialize());
