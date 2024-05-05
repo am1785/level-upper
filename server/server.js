@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5001;
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://192.168.1.8:5173"],
+  origin: ["https://level-upper.vercel.app"],
   credentials: true
 }));
 
@@ -24,7 +24,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000, sameSite: "none", httpOnly: true }, // a day
+  cookie: { maxAge: 24 * 60 * 60 * 1000, sameSite: "none", httpOnly: true, secure: true }, // a day
   rolling: true, // resetting cookie expiration to maxage on every response
   // cookie: { maxAge : 15 * 1000, secure: false } // 15 sec
 }))
