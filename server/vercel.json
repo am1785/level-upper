@@ -8,10 +8,7 @@
      }
     ],
     "rewrites": [
-     {
-      "source": "/(.*)",
-      "destination": "https://level-upper-server.vercel.app/(.*)"
-     }
+        { "source": "/(.*)", "destination": "/api" }
     ],
     "headers": [
         {
