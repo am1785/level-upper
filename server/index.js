@@ -17,7 +17,7 @@ const app = express();
 const whitelist = ['https://level-upper.vercel.app'];
 const corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.some(url => origin.startsWith(url)) || !origin) {
+    if (!origin || whitelist.some(url => origin.startsWith(url))) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
