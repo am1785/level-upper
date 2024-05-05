@@ -14,7 +14,7 @@ const app = express();
 
 // use callback function to dynamically capture all CORS routes
 
-const whitelist = ['https://level-upper.vercel.app', 'https://level-upper'];
+const whitelist = ['https://level-upper.vercel.app', 'https://level-upper-server.vercel.app/auth/login/success'];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.some(url => origin.startsWith(url)) || !origin) {
@@ -27,8 +27,7 @@ const corsOptions = {
   preflightContinue: true,
 };
 
-// app.use(cors(corsOptions));
-app.use(cors()); // allow all cors
+app.use(cors(corsOptions));
 
 app.use(express.json());
 const dbo = require("./db/conn");
