@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5001;
 const app = express();
 
 app.use(cors({
-  origin: "https://level-upper.vercel.app/*",
+  origin: "https://level-upper.vercel.app",
   credentials: true,
 }));
 
