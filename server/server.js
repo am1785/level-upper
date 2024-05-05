@@ -12,10 +12,21 @@ require("dotenv").config({path: "./app_config.env"})
 const PORT = process.env.PORT || 5001;
 const app = express();
 
-app.use(cors({
-  origin: "https://level-upper.vercel.app",
+// use callback function to dynamically capture all CORS routes
+
+const whitelist = ['https://level-upper.vercel.app'];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 const dbo = require("./db/conn");
