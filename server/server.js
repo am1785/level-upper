@@ -4,11 +4,11 @@ const cors = require("cors");
 // passport set up
 const session = require('express-session');
 const passport = require('passport');
-const initializePassport = require('../config/passport');
+const initializePassport = require('./config/passport');
 initializePassport(passport);
 
 // app set up
-require("dotenv").config({path: "./app_config.env"})
+// require("dotenv").config({path: "./app_config.env"})
 const PORT = process.env.PORT || 5001;
 const app = express();
 
@@ -30,7 +30,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-const dbo = require("../db/conn");
+const dbo = require("./db/conn");
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -44,11 +44,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(require("../routes/tasks"));
-app.use(require("../routes/skills"));
-app.use(require("../routes/backlog"));
-app.use(require("../routes/users"));
-app.use(require("../routes/auth").router);
+app.use(require("./routes/tasks"));
+app.use(require("./routes/skills"));
+app.use(require("./routes/backlog"));
+app.use(require("./routes/users"));
+app.use(require("./routes/auth").router);
 
 // start the Express server
 app.listen(PORT, async () => {
@@ -58,4 +58,4 @@ app.listen(PORT, async () => {
   console.log(`Server is running on port: ${PORT}`);
 });
 
-module.exports = app;
+// module.exports = app;
