@@ -12,11 +12,6 @@ require("dotenv").config({path: "./app_config.env"})
 const PORT = process.env.PORT || 5001;
 const app = express();
 
-app.use(cors({
-  origin: ["https://level-upper.vercel.app"],
-  credentials: true
-}));
-
 app.use(express.json());
 const dbo = require("./db/conn");
 
@@ -37,6 +32,11 @@ app.use(require("./routes/skills"));
 app.use(require("./routes/backlog"));
 app.use(require("./routes/users"));
 app.use(require("./routes/auth").router);
+
+app.use(cors({
+  origin: ["https://level-upper.vercel.app"],
+  credentials: true,
+}));
 
 // start the Express server
 app.listen(PORT, async () => {
