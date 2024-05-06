@@ -1,5 +1,6 @@
 // api routes for react-query
-const BASE_URL = 'https://level-upper-server.vercel.app/auth';
+const BASE_URL = 'http://192.168.1.8:5001/auth';
+// const BASE_URL = 'https://level-upper-server.vercel.app/auth';
 
 // for showcasing via port forward
 // const BASE_URL = 'https://l3n3cjbp-5001.use.devtunnels.ms/backlog';
