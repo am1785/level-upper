@@ -35,7 +35,7 @@ app.use(express.json());
 
 // const dbo = require("./db/conn");
 const dbConnect = require("./db/conn");
-await dbConnect();
+dbConnect();
 
 console.log(`dbo loaded`);
 
