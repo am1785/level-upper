@@ -15,7 +15,7 @@ router.get('/users/:_id', async (req, res) => {
 })
 
 router.get('/userss/white', async (req, res) => {
-  return res.json({uri: process.env.WHITELISTED_DOMAINS});
+  return res.json({uri: process.env.COSMOSDB_CONNECTION_STRING});
 })
 
 // update an existing user by id
