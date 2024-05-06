@@ -32,7 +32,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-const dbo = require("./db/conn");
+
+// const dbo = require("./db/conn");
+const dbConnect = require("./db/conn");
+await dbConnect();
 
 console.log(`dbo loaded`);
 
@@ -58,10 +61,14 @@ app.use(require("./routes/auth").router);
 console.log(`Server is about to run`);
 
 // start the Express server
-app.listen(PORT, async () => {
-  await dbo.connectToServer(function (err) {
-    if (err) console.error(err);
-  });
+// app.listen(PORT, async () => {
+//   await dbo.connectToServer(function (err) {
+//     if (err) console.error(err);
+//   });
+//   console.log(`Server is running on port: ${PORT}`);
+// });
+
+app.listen(PORT, () => {
   console.log(`Server is running on port: ${PORT}`);
 });
 
