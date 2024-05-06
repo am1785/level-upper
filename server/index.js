@@ -10,6 +10,7 @@ initializePassport(passport);
 // app set up
 // require("dotenv").config({path: "./app_config.env"})
 const PORT = process.env.PORT || 5001;
+
 const app = express();
 
 // use callback function to dynamically capture all CORS routes
@@ -60,4 +61,4 @@ app.listen(PORT, async () => {
   console.log(`Server is running on port: ${PORT}`);
 });
 
-// module.exports = app;
+module.exports = app; // for vercel's serverless environment
