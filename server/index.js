@@ -67,8 +67,8 @@ console.log(`Server is about to run`);
 //   console.log(`Server is running on port: ${PORT}`);
 // });
 
-app.get('/test/dbname', async (req, res) => {
-  res.status(200).json({dbname: process.env.COSMOSDB_DATABASE_NAME});
+app.get('/test/container', async (req, res) => {
+  res.status(200).json({dbname: process.env.COSMOSDB_CONTAINER_NAME});
 });
 
 
