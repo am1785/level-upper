@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 // const { MongoClient, ObjectId } = require('mongodb');
-const Db = process.env.COSMOS_URI;
+const Db = process.env.COSMOSDB_CONNECTION_STRING;
 // const client = new MongoClient(Db);
 
 var _db;

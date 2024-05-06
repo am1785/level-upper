@@ -14,8 +14,8 @@ router.get('/users/:_id', async (req, res) => {
     }
 })
 
-router.get('/userss/cosmos', async (req, res) => {
-  return res.json({uri: process.env.COSMOS_URI});
+router.get('/userss/white', async (req, res) => {
+  return res.json({uri: process.env.WHITELISTED_DOMAINS});
 })
 
 // update an existing user by id
