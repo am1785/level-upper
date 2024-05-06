@@ -8,7 +8,7 @@ const initializePassport = require('./config/passport');
 initializePassport(passport);
 
 // app set up
-// require("dotenv").config({path: "./app_config.env"})
+require("dotenv").config({path: "./app_config.env"})
 const PORT = process.env.PORT || 5001;
 
 const app = express();
@@ -36,17 +36,15 @@ app.use(express.json());
 // const dbo = require("./db/conn");
 const dbConnect = require("./db/conn");
 
-console.log(`dbo loaded`);
-
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000, sameSite: "none", httpOnly: true, secure: true }, // a day
+  cookie: { maxAge: 24 * 60 * 60 * 1000, sameSite: "none", httpOnly: true, secure: false }, // a day
   rolling: true, // resetting cookie expiration to maxage on every response
   // cookie: { maxAge : 15 * 1000, secure: false } // 15 sec
   proxy: true
-}))
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -67,14 +65,9 @@ console.log(`Server is about to run`);
 //   console.log(`Server is running on port: ${PORT}`);
 // });
 
-app.get('/test/container', async (req, res) => {
-  res.status(200).json({dbname: process.env.COSMOSDB_CONTAINER_NAME});
-});
-
-
 app.listen(PORT, async () => {
   await dbConnect();
   console.log(`Server is running on port: ${PORT}`);
 });
 
-module.exports = app; // for vercel's serverless environment
+// module.exports = app; // for vercel's serverless environment

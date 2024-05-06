@@ -44,8 +44,9 @@ async function dbConnect() {
       bufferCommands: false,
     };
     cached.promise = mongoose.connect(Db, opts).then((mongoose) => {
+      console.log('connected to cosmosDB');
       return mongoose;
-    });
+    }).catch((err) => {console.error(err); return callback(err)});
   }
   try {
     cached.conn = await cached.promise;
