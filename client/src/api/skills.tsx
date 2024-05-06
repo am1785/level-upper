@@ -1,5 +1,7 @@
 // api routes for react-query
-const BASE_URL = 'https://level-upper-server.vercel.app/skills';
+const BASE_URL = 'http://192.168.1.8:5001/skills';
+
+// const BASE_URL = 'https://level-upper-server.vercel.app/skills';
 
 // for showcase vscode
 // const BASE_URL = 'https://l3n3cjbp-5001.use.devtunnels.ms/skills';

@@ -1,4 +1,6 @@
-const BASE_URL = 'https://level-upper-server.vercel.app/users';
+const BASE_URL = 'http://192.168.1.8:5001/users';
+
+// const BASE_URL = 'https://level-upper-server.vercel.app/users';
 
 export const fetchUser = async (_id:string) => {
     const response = await fetch(BASE_URL + '/' + _id, {credentials: 'include'});
