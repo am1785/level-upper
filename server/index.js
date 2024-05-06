@@ -34,6 +34,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 const dbo = require("./db/conn");
 
+console.log(`dbo loaded`);
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -52,6 +54,8 @@ app.use(require("./routes/skills"));
 app.use(require("./routes/backlog"));
 app.use(require("./routes/users"));
 app.use(require("./routes/auth").router);
+
+console.log(`Server is about to run`);
 
 // start the Express server
 app.listen(PORT, async () => {
