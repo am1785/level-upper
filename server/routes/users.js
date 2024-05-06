@@ -5,7 +5,7 @@ const User = require('../models/user');
 const Task = require('../models/task');
 
 // get all data for a single user based on _id, without password
-router.get('/users/:_id', checkAuth, async (req, res) => {
+router.get('/users/:_id', async (req, res) => {
     try {
         const user = await User.findOne({_id: req.params._id}, '-password')
         res.status(200).json(user);
