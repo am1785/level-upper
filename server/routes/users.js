@@ -14,10 +14,6 @@ router.get('/users/:_id', async (req, res) => {
     }
 })
 
-router.get('/userss/white', async (req, res) => {
-  return res.json({uri: process.env.COSMOSDB_CONNECTION_STRING});
-})
-
 // update an existing user by id
 router.put('/users/:_id', checkAuth, async (req, res) => {
     const userId = req.params._id;
