@@ -35,7 +35,6 @@ app.use(express.json());
 
 // const dbo = require("./db/conn");
 const dbConnect = require("./db/conn");
-await dbConnect();
 
 console.log(`dbo loaded`);
 
@@ -68,7 +67,8 @@ console.log(`Server is about to run`);
 //   console.log(`Server is running on port: ${PORT}`);
 // });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await dbConnect();
   console.log(`Server is running on port: ${PORT}`);
 });
 
