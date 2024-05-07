@@ -13,19 +13,6 @@ const PORT = process.env.PORT || 5001;
 
 const app = express();
 
-// configure app for cross-domain
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
-  if ('OPTIONS' == req.method) {
-       res.send(200);
-   } else {
-       next();
-   }
-  });
-
 // use callback function to dynamically capture all CORS routes
 
 // const whitelist = ['https://level-upper.vercel.app'];
@@ -53,7 +40,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 24 * 60 * 60 * 1000, sameSite: "none", httpOnly: true, secure: false }, // a day
+  cookie: { maxAge: 24 * 60 * 60 * 1000, sameSite: "none", httpOnly: true, secure: true }, // a day
   rolling: true, // resetting cookie expiration to maxage on every response
   // cookie: { maxAge : 15 * 1000, secure: false } // 15 sec
   proxy: true
