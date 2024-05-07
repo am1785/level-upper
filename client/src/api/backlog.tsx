@@ -1,6 +1,6 @@
 // api routes for react-query
-const BASE_URL = 'https://level-upper-server.vercel.app/backlog';
-const BASE_FETCH_URL = 'https://level-upper-server.vercel.app/tasks';
+const BASE_URL = 'https://level-upper.onrender.com/backlog';
+const BASE_FETCH_URL = 'https://level-upper.onrender.com/tasks';
 
 // for showcasing via port forward
 // const BASE_URL = 'https://l3n3cjbp-5001.use.devtunnels.ms/backlog';

@@ -1,4 +1,4 @@
-const BASE_URL = 'https://level-upper-server.vercel.app/users';
+const BASE_URL = 'https://level-upper.onrender.com/users';
 
 export const fetchUser = async (_id:string) => {
     const response = await fetch(BASE_URL + '/' + _id, {credentials: 'include'});
