@@ -157,6 +157,7 @@ const TaskTable: React.FC<TaskTableProps> = ({userData}) => {
 
     const table = useReactTable({
         data,
+        initialState: { pagination: {pageSize: 20} },
         columns,
         state: {
           columnFilters,
