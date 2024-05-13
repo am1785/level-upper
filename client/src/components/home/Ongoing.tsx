@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack, IconButton, ModalFooter, Link } from "@chakra-ui/react"
+import { Skeleton, useDisclosure, Text, Button, Box, Accordion, AccordionIcon, AccordionItem, AccordionButton, AccordionPanel, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, HStack, VStack, IconButton, ModalFooter, Link, filter } from "@chakra-ui/react"
 import { StarIcon, AddIcon, CheckCircleIcon } from "@chakra-ui/icons"
 import TaskOngoing, { OngoingTask } from '../task/TaskOngoing';
 import TaskInput from '../task/TaskInput';
@@ -28,8 +28,8 @@ const Ongoing:React.FC<OngoingProps> = ({userData}) => {
     const [currDate, setCurrDate] = useState(new Date());
     let ongoingTasks: OngoingTask[] = [];
     let weeklyTasks: OngoingTask[] = [];
-    let ongoingExp = 0;
-    let ongoingComplete = 0;
+    // let ongoingExp = 0;
+    // let ongoingComplete = 0;
     let weeklyExp = 0;
     let weeklyComplete = 0;
 
@@ -82,28 +82,84 @@ const Ongoing:React.FC<OngoingProps> = ({userData}) => {
       //   });
       // }
 
-      data?.forEach((d:any) => {
-              const updatedDate = new Date(d.updatedAt); // checking update date instead
-              const diff = dayDiff(updatedDate);
-              // console.log(diff);
-              if(diff === 0) {
-                  ongoingTasks.push(d);
-                  if(d.status === "complete") {
-                    weeklyExp += d.exp;
-                    ongoingExp += d.exp;
-                    ongoingComplete += 1;
-                    weeklyComplete += 1}
-              } else if(diff <= 7 && diff >= -24) {
-                weeklyTasks.push(d);
+    const cachedTopTasks: string | null = localStorage.getItem("topTasksCache");
+    const cachedBotTasks: string | null = localStorage.getItem("botTasksCache");
+    const [cachedTopTaskList, setCachedTopTaskList] = useState<any[]>(cachedTopTasks !== null ? JSON.parse(cachedTopTasks) : []);
+    const [cachedBotTaskList, setCachedBotTaskList] = useState<any[]>(cachedBotTasks !== null ? JSON.parse(cachedBotTasks) : []);
+
+    const handleSendTop = (_id: string): void => {
+      // filter already cached task list items, also remove outdated cache items that are not fetched by data
+      let newCacheList = cachedTopTaskList.filter((t) => t._id !== _id && data.findIndex((d:any) => d._id === t._id) !== -1);
+      // reappend cache item to top
+      setCachedTopTaskList([{_id:_id, time: new Date().getTime()}, ...newCacheList]);
+      // save filtered cache items to local storage
+      localStorage.setItem("topTasksCache", JSON.stringify([{_id:_id, time: new Date().getTime()}, ...newCacheList]));
+      // remove cache from bot tasks if exists
+      setCachedBotTaskList(prev => prev.filter((t) => t._id !== _id));
+      localStorage.setItem("botTasksCache", JSON.stringify(cachedBotTaskList.filter((t) => t._id !== _id)));
+    }
+
+    const handleSendBot = (_id: string): void => {
+      let newCacheList = cachedBotTaskList.filter((t) => t._id !== _id && data.findIndex((d:any) => d._id === t._id) !== -1);
+      setCachedBotTaskList([{_id:_id, time: new Date().getTime()}, ...newCacheList]);
+      localStorage.setItem("botTasksCache", JSON.stringify([{_id:_id, time: new Date().getTime()}, ...newCacheList]));
+      setCachedTopTaskList(prev => prev.filter((t) => t._id !== _id));
+      localStorage.setItem("topTasksCache", JSON.stringify(cachedTopTaskList.filter((t) => t._id !== _id)));
+    }
+
+    // process cached top tasks first
+    let filtered_data;
+    if(data) {
+      cachedTopTaskList?.forEach((t) => {
+        const d = data.find((task:any) => task._id === t._id);
+        if(d) {
+          ongoingTasks.push(d);
+          if(d.status === "complete") {
+            weeklyExp += d.exp;
+            // ongoingExp += d.exp;
+            // ongoingComplete += 1;
+            weeklyComplete += 1}
+      }
+    })
+
+      // process cachedBottomList
+      cachedBotTaskList?.forEach((t) => {
+        const d = data.find((task:any) => task._id === t._id);
+        if(d) {
+          weeklyTasks.push(d);
+          if(d.status === "complete") {
+            weeklyExp += d.exp;
+            // ongoingExp += d.exp;
+            // ongoingComplete += 1;
+            weeklyComplete += 1}
+      }
+    })
+    // remove already processed top and bot tasks from data
+    filtered_data = data.filter((d:any) => cachedTopTaskList.findIndex((t) => t._id === d._id) === -1 &&
+    cachedBotTaskList.findIndex((t) => t._id === d._id) === -1);
+    }
+
+    filtered_data?.forEach((d:any) => {
+            const updatedDate = new Date(d.updatedAt); // checking update date instead
+            const diff = dayDiff(updatedDate);
+            // console.log(diff);
+            if(diff === 0) {
+                ongoingTasks.push(d);
                 if(d.status === "complete") {
                   weeklyExp += d.exp;
-                  weeklyComplete += 1
-                }
-              } else {
-                // console.log(`not ongoing task: ${d.title}`);
+                  // ongoingExp += d.exp;
+                  // ongoingComplete += 1;
+                  weeklyComplete += 1}
+            } else if(diff <= 7 && diff >= -24) {
+              weeklyTasks.push(d);
+              if(d.status === "complete") {
+                weeklyExp += d.exp;
+                weeklyComplete += 1
               }
+            } else {
+              // console.log(`not ongoing task: ${d.title}`);
             }
-      )
+        })
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen:isLinkOpen, onOpen:onLinkOpen, onClose:onLinkClose} = useDisclosure();
@@ -141,7 +197,8 @@ const Ongoing:React.FC<OngoingProps> = ({userData}) => {
         {!ongoingTasks || ongoingTasks.length == 0 && <Box boxShadow='md' p='5' rounded='md' mt='3' mb='3'>add some tasks to level up today!</Box>}
 
         {ongoingTasks && ongoingTasks.length > 0 && collectionStatus === 'success' && ongoingTasks.map((t:any)=> {
-            return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTaskMutate(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
+            return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTaskMutate(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}
+                    onSendTop={() => handleSendTop(t._id)} onSendBot={() => handleSendBot(t._id)} />
         })}
 
         <Box mt={'1em'}>
@@ -180,7 +237,8 @@ const Ongoing:React.FC<OngoingProps> = ({userData}) => {
                 </HStack>
               </Box>}
               {!!weeklyTasks.length && collectionStatus === 'success' && weeklyTasks.map((t: OngoingTask) => { // !! idea comes fromhttps://www.youtube.com/watch?v=iTi15aHk778
-                return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTaskMutate(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}/>
+                return <TaskOngoing key={t._id} task={t} date={currDate} collections={collectionData} onRemove={() => {removeTaskMutate(t._id)}} onClickLink={() => {t.link && setLink(t.link); onLinkOpen()}}
+                        onSendTop={() => handleSendTop(t._id)} onSendBot={() => handleSendBot(t._id)} />
                 })
               }
             </AccordionPanel>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link as ChakraLink, Checkbox, Flex, Spacer, Box, Tag, HStack, Stack, Button, IconButton, useDisclosure, SlideFade, useToast } from "@chakra-ui/react"
-import { MinusIcon, ViewIcon } from "@chakra-ui/icons"
+import { ChevronDownIcon, ChevronUpIcon, MinusIcon, ViewIcon } from "@chakra-ui/icons"
 import { AlertDialog,AlertDialogBody,AlertDialogFooter, AlertDialogHeader,AlertDialogContent,AlertDialogOverlay} from '@chakra-ui/react'
 import { useQueryClient} from '@tanstack/react-query'
 import TaskEditModal from './TaskEditModal'
@@ -31,9 +31,11 @@ export type OngoingTaskProps = {
     collections: string[];
     onRemove: (id: string) => void;
     onClickLink: () => void;
+    onSendTop: (id:string) => void;
+    onSendBot: (id:string) => void;
 }
 
-const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, collections, onRemove, onClickLink}) => {
+const TaskOngoing: React.FC<OngoingTaskProps> = ({task, date, collections, onRemove, onClickLink, onSendTop, onSendBot}) => {
 
 // TODO: memo edit modals and collection popovers for performance
 // const MEditModal = React.memo(TaskEditModal);
@@ -99,6 +101,39 @@ const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, qu
     //     window.open(`/view/${_id}`, "_blank") //to open new page;
     // }
 
+    const sendToTop = (_id:string): void => {
+    /**
+     * sends a task to the top of the UI by saving it to the LocalStorage stack
+     * @param {string} _id the mongodb _id of the task
+     * @return {void} returns nothing
+     */
+      const currTime:number = new Date().getTime();
+      let currentOrder:string = localStorage.getItem('topTasksCache') === null ? "[]" : localStorage.getItem('topTasksCache')!;
+      let currentOrderList:any[] = JSON.parse(currentOrder);
+
+      if(currentOrderList.length > 0) {
+        currentOrderList = currentOrderList.filter((o) => o._id !== _id); // remove dup
+        currentOrderList.unshift({_id: _id, time: currTime}); // append _id and time to the front of array
+      } else {
+        currentOrderList.push({_id: _id, time: currTime});
+      }
+      localStorage.setItem("topTasksCache", JSON.stringify(currentOrderList));
+    }
+
+    const sendToBot = (_id:string): void => {
+        const currTime:number = new Date().getTime();
+        let currentOrder:string = localStorage.getItem('botTasksCache') === null ? "[]" : localStorage.getItem('botTasksCache')!;
+        let currentOrderList:any[] = JSON.parse(currentOrder);
+
+        if(currentOrderList.length > 0) {
+          currentOrderList = currentOrderList.filter((o) => o._id !== _id); // remove dup
+          currentOrderList.unshift({_id: _id, time: currTime}); // append _id and time to the front of array
+        } else {
+          currentOrderList.push({_id: _id, time: currTime});
+        }
+        localStorage.setItem("botTasksCache", JSON.stringify(currentOrderList));
+      }
+
     return (
       <SlideFade in={true} delay={.5} offsetY={'20px'}>
         <Box key={task._id} boxShadow='base' p='5' rounded='md' mt='3' mb='3' opacity={task.status === "complete" ? "70%" :"100%"} _dark={{border: "2px solid #718096"}}>
@@ -119,17 +154,24 @@ const {mutate: changeHideMutation} = useChangeTaskHiddenMutation(toast, task, qu
                 ))} <Spacer /> <Tag colorScheme={EXP_MAP.get(task.exp)!['colorScheme']}>{task.exp}</Tag>
             </HStack>
         </Stack>
-        <Stack direction={'row'} mt={'1em'} gap={'0'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
-            <TaskCollectionPopover onSuccess={()=> {
-              queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchCollections']});
+        <Flex>
+          <Stack direction={'row'} mt={'1em'} gap={'0'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
+              <TaskCollectionPopover onSuccess={()=> {
+                queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']}); queryClient.invalidateQueries({queryKey: ['fetchCollections']});
 
-              }} task={task} collections={collections}/>
-            <TaskEditModal onSuccess={() => { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
-            queryClient.invalidateQueries({queryKey: ['fetchSkills']});}} task_id={task._id} className='ongoingEdit'/>
-            <ChakraLink as={ReactRouterLink} to={"/view/" + task._id}>
-            <IconButton icon={<ViewIcon />} p={'2px'} size={'sm'}  bgColor={'whiteAlpha.100'} aria-label="viewTask" />
-            </ChakraLink>
-        </Stack>
+                }} task={task} collections={collections}/>
+              <TaskEditModal onSuccess={() => { queryClient.invalidateQueries({queryKey: ['fetchOngoingTasks']});
+              queryClient.invalidateQueries({queryKey: ['fetchSkills']});}} task_id={task._id} className='ongoingEdit'/>
+              <ChakraLink as={ReactRouterLink} to={"/view/" + task._id}>
+              <IconButton icon={<ViewIcon />} p={'2px'} size={'sm'}  bgColor={'whiteAlpha.100'} aria-label="viewTask" />
+              </ChakraLink>
+          </Stack>
+          <Spacer />
+          <Stack direction={'row'} mt={'1em'} gap={'0'} w={'min-content'} border={'1px solid #E2E8F0'} borderRadius={'sm'}>
+            <IconButton icon={<ChevronUpIcon />} p={'2px'} size={'sm'}  bgColor={'whiteAlpha.100'} aria-label="sendTaskTop" onClick={() => {sendToTop(task._id); onSendTop(task._id);}} />
+            <IconButton icon={<ChevronDownIcon />} p={'2px'} size={'sm'}  bgColor={'whiteAlpha.100'} aria-label="sendTaskTop" onClick={() => {sendToBot(task._id); onSendBot(task._id);}} />
+          </Stack>
+        </Flex>
     </Box>
     </SlideFade>
     )
