@@ -113,11 +113,14 @@ const Ongoing:React.FC<OngoingProps> = ({userData}) => {
       cachedTopTaskList?.forEach((t) => {
         const d = data.find((task:any) => task._id === t._id);
         if(d) {
-          ongoingTasks.push(d);
+          // add finished top cached tasks over a day to weekly display
+          if(d.status === "complete" && currDate.getTime() - t.time > 1000 * 60 * 60 * 24) {
+            weeklyTasks.push(d);
+          } else {
+            ongoingTasks.push(d);
+          }
           if(d.status === "complete") {
             weeklyExp += d.exp;
-            // ongoingExp += d.exp;
-            // ongoingComplete += 1;
             weeklyComplete += 1}
       }
     })
@@ -169,6 +172,7 @@ const Ongoing:React.FC<OngoingProps> = ({userData}) => {
       function getLink(url:string) {
         window.open(url, "_blank");
       }
+
       return(
       <Modal isOpen={isLinkOpen} onClose={onLinkClose}>
         <ModalOverlay />
